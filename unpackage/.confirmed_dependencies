@@ -1,0 +1,11 @@
+{
+  "index.html": {
+    "href": "index.html",
+    "resources": [
+      "css/mui.css",
+      "js/mui.js"
+    ],
+    "refer": [],
+    "priority": 0
+  }
+}

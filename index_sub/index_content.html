@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/content.css" />
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.css">
+		<!--App自定义的css-->
+		<style>
+			body {
+				background-color: #fff!important;
+			}
+			
+			div {
+				position: relative;
+				padding: 20px 30px 10px 40px;
+				border-bottom: 2px solid #DCD2D2;
+				line-height: 35px;
+			}
+			
+			.user-name {
+				font-size: 25px;
+			}
+			
+			.user-sex {
+				padding-left: 20px;
+			}
+			
+			.user-phone {
+				padding-left: 40px;
+			}
+			
+			.user-info-edit {
+				position: absolute;
+				top: 20px;
+				right: 30px;
+				width: 80px;
+				color: #259B2A;
+				text-align: center;
+				line-height: 0;
+				font-size: 13px;
+			}
+			
+			.user-info-edit i {
+				display: block;
+				font-size: 45px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<article id="event">
+			<!--待基检-->
+			<template v-if="event.status==1">
+				<div class="user-info">
+					<span class="user-name">涂显锋</span><span class="user-sex">先生</span><span class="user-phone">18012341234</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">北京市朝阳区小关北里204号楼</span>
+				</div>
+				<div class="waif-for-check">
+					<span class="status">待基检</span><br/><span class="check-time">预约上门时间：<span>2016年6月29日</span></span><span class="user-info-edit"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
+				</div>
+			</template>
+			<!--待排期-->
+			<template v-if="event.status==2">
+				<div class="user-info">
+					<span class="user-name">涂显锋1</span><span class="user-sex">先生</span><span class="user-phone">18012341234</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">北京市朝阳区小关北里204号楼</span>
+				</div>
+				<div class="waif-for-check">
+					<span class="status">待基检</span><br/><span class="check-time">预约上门时间：<span>2016年6月29日</span></span><span class="user-info-edit"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
+				</div>
+			</template>
+		</article>
+
+	</body>
+	<script src="../js/common.js"></script>
+	<script src="../js/data.js"></script>
+	<script src="../js/vue.js"></script>
+	<script src="../js/mui.js"></script>
+	<script>
+		"use strick"
+		mui.init({
+			swipeBack: false,
+			gestureConfig: {
+				doubletap: false,
+				longtap: false
+			}
+		});
+		var index_content = null;
+		var thisevent = fListAllFlowEvent(1)[0];
+
+		mui.plusReady(function() {
+			window.addEventListener('refresh', function(event) {
+				var aShow = event.detail.split(",");
+				vueContent.refresh(aShow[0],aShow[1]);
+			});
+
+		});
+		Vue.filter('statusNumtoString', function(value) {
+			return fFindObjById(value, gStatus.status).name;
+		})
+		var vueContent = new Vue({
+			el: '#event',
+			data: {
+				"event": thisevent
+			},
+			methods: {
+				refresh: function(a,b) {
+					this.event = fListAllFlowEvent(a)[b];
+				}
+			}
+		});
+	</script>
+
+</html>

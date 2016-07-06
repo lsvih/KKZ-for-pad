@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.css">
+		<!--App自定义的css-->
+		<style>
+			body {
+				background-color: #fff;
+			}
+			
+			.mui-table h4,
+			.mui-table h5,
+			.mui-table .mui-h5,
+			.mui-table .mui-h6,
+			.mui-table p {
+				margin-top: 0;
+			}
+			
+			.mui-table h4 {
+				line-height: 21px;
+				font-weight: 500;
+			}
+			
+			.event-status {
+				color: #FF9800;
+			}
+			
+			.mui-table-view-cell {
+				padding: 18px 15px;
+			}
+			
+			.list-selected {
+				background-color: #eee;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="event-list">
+			<!--加入mui-disabled来屏蔽mui-table-view-cell:active的变色-->
+			<li class="mui-table-view-cell mui-disabled" v-bind:class="{'list-selected':$index==nSelectSort}" v-for="event in list" v-on:tap="changecontent($index)">
+				<div class="mui-table">
+					<div class="mui-table-cell mui-col-xs-10">
+						<h4>{{event.name}} {{event.sex?"女":"男"}} {{event.phone}}</h4>
+						<p class="mui-h5 mui-ellipsis">{{event.address}}</p>
+					</div>
+					<div class="mui-table-cell mui-col-xs-2 mui-text-right">
+						<span class="event-status">{{event.status | statusNumtoString}}</span>
+					</div>
+				</div>
+			</li>
+
+		</ul>
+
+	</body>
+	<script src="../js/common.js"></script>
+	<script src="../js/data.js"></script>
+	<script src="../js/vue.js"></script>
+	<script src="../js/mui.js"></script>
+	<script>
+		"use strick"
+		mui.init({
+			gestureConfig: {
+				doubletap: false,
+				longtap: false
+			}
+		});
+		var nFlowID = 1;
+
+		var index_content = null;
+		var list = fListAllFlowEvent(1);
+
+		mui.plusReady(function() {
+			index_content = plus.webview.getWebviewById("index_content");
+			window.addEventListener('refresh', function(event) {
+				vueList.refresh(nFlowID = event.detail);
+			});
+
+		});
+		Vue.filter('statusNumtoString', function(value) {
+			return fFindObjById(value, gStatus.status).name;
+		})
+		var vueList = new Vue({
+			el: '#event-list',
+			data: {
+				"nSelectSort": 0,
+				"list": list
+			},
+			methods: {
+				refresh: function(event) {
+					this.list = fListAllFlowEvent(event);
+					this.nSelectSort = 0;
+				},
+				changecontent: function(sortId) {
+					this.nSelectSort = sortId;
+					mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nFlowID + "," + sortId);
+				}
+			}
+
+		});
+	</script>
+
+</html>

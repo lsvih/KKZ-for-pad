@@ -1,0 +1,13 @@
+a{
+	color:#000;
+}
+a:active{
+	color: #FF9800;
+}
+.mui-active{
+	color: #FF9800!important;
+}
+.mui-bar .mui-icon:active
+{
+    opacity: 1;
+}
