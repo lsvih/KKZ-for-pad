@@ -114,9 +114,19 @@ data = {
 		"address": "北京市朝阳区小关北里204号楼",
 		"phone": "19012341234",
 		"optional": [],
-		"content": {}
-	},{
+		"content": {"price":71702,"package":[{"id":1,"name":"厨房","num":10,"unit":"米²"},{"id":10,"name":"门","num":3,"unit":"个"}]}
+	},
+	{
 		"id": 3,
+		"name": "郑家园",
+		"sex": 1,
+		"status": 3,
+		"address": "北京市朝阳区小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {"price":71702,"package":[{"id":1,"name":"厨房","num":10,"unit":"米²"},{"id":10,"name":"门","num":3,"unit":"个"}],"schedule":"这儿是排期信息，一会儿会改成JSON"}
+	},{
+		"id": 5,
 		"name": "郑家园",
 		"sex": 0,
 		"status": 4,
