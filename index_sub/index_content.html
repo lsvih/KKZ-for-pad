@@ -50,27 +50,68 @@
 				display: block;
 				font-size: 45px;
 			}
+			
+			#select-time {
+				display: inline-block;
+				z-index: -100;
+				border: none;
+				width: auto;
+			}
+			
+			.btns {
+				text-align: center;
+				border: none;
+			}
+			
+			.event-btn {
+				margin: 0 40px;
+				display: inline-block;
+				width: 60px;
+				height: 60px;
+				border-radius: 40px;
+				color: #fff;
+				text-align: center;
+				line-height: 0;
+				font-size: 10px;
+				background-color: #259B2A;
+			}
+			
+			.event-btn i {
+				display: block;
+				font-size: 45px;
+			}
+			
+			#back-drop {
+				position: fixed;
+				z-index: 9999999;
+				width: 100%;
+				height: 100%;
+				background-color: rgba(0, 0, 0, 0.4)
+			}
 		</style>
 	</head>
 
 	<body>
+		<div id="back-drop"></div>
 		<article id="event">
 			<!--待基检-->
 			<template v-if="event.status==1">
 				<div class="user-info">
-					<span class="user-name">涂显锋</span><span class="user-sex">先生</span><span class="user-phone">18012341234</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">北京市朝阳区小关北里204号楼</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">北京市朝阳区小关北里204号楼</span>
 				</div>
 				<div class="waif-for-check">
-					<span class="status">待基检</span><br/><span class="check-time">预约上门时间：<span>2016年6月29日</span></span><span class="user-info-edit"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
+					<span class="status">待量房</span><br/><span class="check-time">预约上门时间：<span><input type="datetime-local" id="select-time" init-time="{{event.content.ordertime}}" v-bind:value="event.content.ordertime" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)"></span></span><span class="user-info-edit edit-time"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
 				</div>
+				<div class="btns"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>产品介绍</span><span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="mui-icon mui-icon-compose"></i>直接量房</span></div>
+
 			</template>
 			<!--待排期-->
 			<template v-if="event.status==2">
 				<div class="user-info">
-					<span class="user-name">涂显锋1</span><span class="user-sex">先生</span><span class="user-phone">18012341234</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">北京市朝阳区小关北里204号楼</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">北京市朝阳区小关北里204号楼</span>
 				</div>
 				<div class="waif-for-check">
-					<span class="status">待基检</span><br/><span class="check-time">预约上门时间：<span>2016年6月29日</span></span><span class="user-info-edit"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
+					<span class="status">待排期</span><br/><span class="check-time">预约上门时间：<span>2016年6月29日</span></span><span class="user-info-edit"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
 				</div>
 			</template>
 		</article>
@@ -95,7 +136,7 @@
 		mui.plusReady(function() {
 			window.addEventListener('refresh', function(event) {
 				var aShow = event.detail.split(",");
-				vueContent.refresh(aShow[0],aShow[1]);
+				vueContent.refresh(aShow[0], aShow[1]);
 			});
 
 		});
@@ -108,11 +149,85 @@
 				"event": thisevent
 			},
 			methods: {
-				refresh: function(a,b) {
+				refresh: function(a, b) {
+					document.getElementById("back-drop").style.display = "none";
 					this.event = fListAllFlowEvent(a)[b];
+				},
+				__fIntro: function(eventid) {
+					mui.openWindow({
+						url: "../intro.html",
+						id: "intro",
+						styles: {
+							top: 0,
+							bottom: 0,
+						},
+						extras: {
+							eventid: eventid
+						},
+						show: {
+							aniShow: "none"
+						},
+						waiting: {
+							autoShow: false,
+						}
+					})
+				},
+				__fGauge: function(eventid) {
+
+				},
+				__fEditUser: function(eventid) {
+					thispage = plus.webview.currentWebview();
+					document.getElementById("back-drop").style.display = "block";
+					mui.openWindow({
+						url: "edituser.html",
+						id: "sub_edituser",
+						styles: {
+							top: "20%",
+							bottom: 0,
+							right: "6.8%",
+							width: "48%",
+							height: "30%"
+						},
+						extras: {
+							eventid: eventid
+						},
+						show: {
+							aniShow: "fade-in"
+						},
+						waiting: {
+							autoShow: false,
+						}
+					});
 				}
 			}
 		});
+		document.getElementById("back-drop").addEventListener("tap", function() {
+			document.getElementById("back-drop").style.display = "none";
+			plus.webview.close("sub_edituser");
+		})
+		mui("#event").on("tap", ".edit-time", function() {
+			document.getElementById("select-time").focus();
+		});
+
+		function fSelecetTimeChange(e) {
+			var inittime = e.getAttribute("init-time");
+			if(!e.value)(e.value = inittime, e.blur()); //点击"清除"重新设定时间并关闭时间设定
+		}
+
+		function fSaveTime(e) {
+			if(e.value == "") e.value = e.getAttribute("init-time"); //防止出现时间为空的情况
+			if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
+				var tempobj = JSON.parse(localStorage.data);
+				tempobj.event[fFindObjSortById(thisevent.id, tempobj.event)].content.ordertime = e.value;
+				localStorage.data = JSON.stringify(tempobj); //在本地存储修改时间
+				var FIFO = JSON.parse(localStorage.FIFO);
+				FIFO.push({
+					"type": "PUT",
+					"object": "edit-order-time",
+					"data": e.value
+				}); //将修改时间存入队列等待同步
+			}
+		}
 	</script>
 
 </html>

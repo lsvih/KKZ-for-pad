@@ -2,6 +2,12 @@
 //全局变量
 var gVersion = "0.01";
 var gAppName = "快块装" + gVersion;
+
+
+
+
+//判断是否存在队列对象，如果不存在则创建
+if(!localStorage.FIFO) localStorage.FIFO=JSON.stringify([]);
 /**
  * 查找某元素是否有指定的ClassName
  * fHasClass(elements, cName)
@@ -76,8 +82,32 @@ function fListAllFlowEvent(flowId) {
  * 			false = 没有找到符合条件的对象
  */
 function fFindObjById(id, array) {
+	if(fFindObjSortById(id, array) === false) return false;
+	return array[fFindObjSortById(id, array)]
+}
+/**
+ * 根据id,在数组中查找并返回对象的下标
+ * @param {Number} id
+ * @param {Array} 查找的数组
+ * @return {Number} 返回对象在数组中的下标值
+ * 			false 没有找到符合条件的对象
+ */
+function fFindObjSortById(id, array) {
 	for(var p = 0; p < array.length; p++) {
-		if(id == array[p].id) return array[p];
+		if(id == array[p].id) return p;
 	}
 	return false;
+}
+
+/**
+ * 关闭当前所有打开的子页面（sub_开头id的页面）,并隐藏其父页面的遮罩
+ */
+function fCloseSubPage(){
+	var allwebview = plus.webview.all();
+	for(var i=0;i<allwebview.length;i++){
+		if(allwebview[i].id.split("_")[0] == "sub"){
+			var parentwebview = allwebview[i].opener();
+			plus.webview.close(allwebview[i]);
+		}
+	}	
 }

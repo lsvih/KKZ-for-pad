@@ -49,7 +49,7 @@
 			.cutoff-line {
 				position: fixed;
 				top: 60px;
-				left: 38.2%;
+				left: 38.4%;
 				height: 100%;
 				width: 0.2%;
 				background-color: #DCD2D2
@@ -67,10 +67,12 @@
 
 	<body>
 		<script src="js/common.js"></script>
+		
 		<!--加载测试数据-->
 		<script src="js/data.js"></script>
 		<script src="js/vue.js"></script>
 		<script src="js/mui.js"></script>
+		<script src="js/sync.js"></script>
 		<script type="text/javascript">
 			"use strick"
 			var menu = null,
@@ -119,8 +121,8 @@
 						id: 'menu',
 						url: 'index_sub/menu.html',
 						styles: {
-							left: '-38.2%',
-							width: '38.2%',
+							left: '-38.4%',
+							width: '38.4%',
 							zindex: 999
 						},
 						show: {
@@ -144,6 +146,7 @@
 						nActiveMenu = this.id.split("-")[1];
 						mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nActiveMenu + ",0"); //传值到index_content
 						mui.fire(plus.webview.getWebviewById("list"), "refresh", nActiveMenu); //点击图标时传值到list并刷新视图
+						fCloseSubPage();
 					});
 				}
 			});
@@ -197,7 +200,7 @@
 						mask: 'none'
 					})
 					menu.setStyle({
-						left: '-38.2%',
+						left: '-38.4%',
 						transition: {
 							duration: 200
 						}
@@ -209,7 +212,7 @@
 						menu.hide();
 					}, 300);
 				}
-			};
+			}
 			//点击左上角侧滑图标，打开侧滑菜单；
 			document.querySelector('.mui-icon-bars').addEventListener('tap', function(e) {
 				if(bShowMenu) {
