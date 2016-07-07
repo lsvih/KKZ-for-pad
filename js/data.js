@@ -11,25 +11,25 @@ gFlow = {
 		"name": "待支付",
 		"icon": "compose",
 		"num": 0,
-		"contain-event": [4, 5]
+		"contain-event": [4, 5, 6]
 	}, {
 		"id": 3,
 		"name": "待开工",
 		"icon": "redo",
 		"num": 0,
-		"contain-event": [6, 7, 8, 9]
+		"contain-event": [7, 8, 9]
 	}, {
 		"id": 4,
 		"name": "施工中",
 		"icon": "star",
 		"num": 0,
-		"contain-event": [10, 11, 12, 13, 14, 15]
+		"contain-event": [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
 	}, {
 		"id": 5,
 		"name": "待评价",
 		"icon": "chatbubble",
 		"num": 0,
-		"contain-event": [16]
+		"contain-event": [20]
 	}]
 };
 gStatus = {
@@ -101,40 +101,110 @@ data = {
 		"id": 1,
 		"name": "郑家园",
 		"sex": 0,
+		"contractid": "",
 		"status": 1,
-		"address": "北京市朝阳区小关北里204号楼",
+		"province":"北京",
+		"city":"北京",
+		"district":"朝阳",
+		"address": "小关北里204号楼",
 		"phone": "19012341234",
 		"optional": [],
-		"content": {"ordertime":"2016-06-30T15:25:33"}
-	},{
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	}, {
 		"id": 2,
 		"name": "郑家园",
 		"sex": 1,
+		"contractid": "",
 		"status": 2,
-		"address": "北京市朝阳区小关北里204号楼",
+		"province":"北京",
+		"city":"北京",
+		"district":"朝阳",
+		"address": "小关北里204号楼",
 		"phone": "19012341234",
 		"optional": [],
-		"content": {"price":71702,"package":[{"id":1,"name":"厨房","num":10,"unit":"米²"},{"id":10,"name":"门","num":3,"unit":"个"}]}
-	},
-	{
+		"content": {
+			"price": 71702,
+			"package": [{
+				"id": 1,
+				"name": "厨房",
+				"num": 10,
+				"unit": "米²"
+			}, {
+				"id": 10,
+				"name": "门",
+				"num": 3,
+				"unit": "个"
+			}]
+		}
+	}, {
 		"id": 3,
 		"name": "郑家园",
 		"sex": 1,
+		"contractid": "",
 		"status": 3,
-		"address": "北京市朝阳区小关北里204号楼",
+		"province":"北京",
+		"city":"北京",
+		"district":"朝阳",
+		"address": "小关北里204号楼",
 		"phone": "19012341234",
 		"optional": [],
-		"content": {"price":71702,"package":[{"id":1,"name":"厨房","num":10,"unit":"米²"},{"id":10,"name":"门","num":3,"unit":"个"}],"schedule":"这儿是排期信息，一会儿会改成JSON"}
-	},{
+		"content": {
+			"price": 71702,
+			"package": [{
+				"id": 1,
+				"name": "厨房",
+				"num": 10,
+				"unit": "米²"
+			}, {
+				"id": 10,
+				"name": "门",
+				"num": 3,
+				"unit": "个"
+			}],
+			"schedule": "这儿是排期信息，一会儿会改成JSON"
+		}
+	}, {
 		"id": 5,
 		"name": "郑家园",
 		"sex": 0,
+		"contractid": "",
 		"status": 4,
-		"address": "北京市朝阳区小关北里204号楼",
+		"province":"北京",
+		"city":"北京",
+		"district":"朝阳",
+		"address": "小关北里204号楼",
 		"phone": "19012341234",
 		"optional": [],
 		"content": {}
-	},]
+	}, {
+		"id": 15,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 20,
+		"province":"北京",
+		"city":"北京",
+		"district":"朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {}
+	}, {
+		"id": 55,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "181042470121123124",
+		"status": 20,
+		"province":"北京",
+		"city":"北京",
+		"district":"朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {}
+	}, ]
 }
 
 localStorage.data = JSON.stringify(data);

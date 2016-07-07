@@ -7,11 +7,138 @@
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.css" rel="stylesheet" />
 	</head>
+	<style>
+		.person {
+			position: absolute;
+			top: 15px;
+			left: 15px;
+		}
+		
+		.phonenum {
+			position: absolute;
+			right: 30px;
+			top: 15px;
+		}
+		
+		.address {
+			position: absolute;
+			left: 15px;
+			top: 40px;
+			font-size: 13px;
+			color: #999;
+		}
+		
+		.address-setting {
+			height: 35px;
+			line-height: 35px;
+			font-size: 15px;
+		}
+		
+		.mui-input-row label~ input {
+			float: left;
+		}
+		
+		label,
+		.address-setting i {
+			color: #999;
+		}
+		
+		.editaddress {
+			float: left;
+			margin-right: 15px;
+		}
+		
+		#pickcity {
+			border: 0px;
+			float: left;
+			width: 80%;
+			height: 40px;
+			text-align: left;
+			padding: 10px 0;
+		}
+		
+		.mui-input-row label {
+			width: 110px;
+		}
+		
+		.save {
+			width: 100%;
+		}
+		
+		#save {
+			width: 100%;
+			height: 44px;
+		}
+		
+		.mui-input-row label~ select {
+			float: left;
+			width: 20%;
+		}
+	</style>
 
 	<body>
-		<script src="../js/mui.js"></script>
+
+		<form class="mui-input-group" id="userinfo">
+			<div class="mui-input-row">
+				<label>姓名:</label>
+				<input type="text" class="mui-input-clear" id="person" value="{{event.name}}">
+			</div>
+			<div class="mui-input-row">
+				<label>性别:</label>
+				<select id="sex" name="sex" select>
+					<option value="0">先生</option>
+					<option value="1">女士</option>
+				</select>
+			</div>
+			<div class="mui-input-row">
+				<label>手机号码:</label>
+				<input type="text" class="mui-input-clear" id="phonenum" value="{{event.phone}}">
+			</div>
+			<div class="mui-input-row">
+				<label>所在地址:</label>
+				<select id="s_province" name="s_province" value="{{event.province}}"></select>&nbsp;&nbsp;
+				<select id="s_city" name="s_city"></select>&nbsp;&nbsp;
+				<select id="s_county" name="s_county"></select>
+			</div>
+			<div class="mui-input-row">
+				<label>详细地址:</label>
+				<input type="text" class="mui-input-clear" id="detailedaddress" value="{{event.address}}">
+			</div>
+
+		</form>
+		<div class="save"><button class="mui-btn mui-btn-danger" id="save" onclick="save()">保存</button></div>
+		<script class="resources library" src="../js/area.js"></script>
 		<script type="text/javascript">
-			mui.init();
+			_init_area();
+		</script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/vue.js"></script>
+		<script type="text/javascript">
+			mui.plusReady(function() {
+				var tempobj = JSON.parse(localStorage.data).event;
+				var objevent = fFindObjById(plus.webview.currentWebview().eventid, tempobj);
+				new Vue({
+					el: '#userinfo',
+					data: {
+						"event": objevent
+					},
+					ready: function(){
+						document.getElementById("sex").options[this.event.sex].selected = true;
+					}
+				});
+			});
+		</script>
+		<script type="text/javascript">
+			function Gid($) {
+				return document.getElementById($);
+			}
+			var showArea = function() {
+				//  Gid('show').innerHTML = "<h3>省" + Gid('s_province').value + " - 市" +     
+				//  Gid('s_city').value + " - 县/区" + 
+				//  Gid('s_county').value + "</h3>"
+			}
+			Gid('s_county').setAttribute('onchange', 'showArea()');
 		</script>
 	</body>
 
