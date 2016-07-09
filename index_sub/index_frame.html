@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+	<style>
+		body {
+			background-color: #fff;
+		}
+		
+		.mui-bar {
+			background-color: #fff;
+			box-shadow: none;
+		}
+		
+		.mui-bar .mui-icon {
+			font-size: 50px;
+			padding-top: 0;
+		}
+	</style>
+	<header class="mui-bar">
+		<span class="mui-action-back mui-icon mui-icon-closeempty mui-pull-right"></span>
+		<div class="mui-title"></div>
+
+	</header>
+
+	<body>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			mui.init({
+				beforeback: function() {
+					plus.webview.close("sub_content_detail")
+					return true;
+				}
+			});
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				switch(self.type) {
+					case "gauge": //量房详情
+						document.getElementsByClassName("mui-title")[0].innerText = "报价详情";
+						fOpenDetailPage("gauge", self.eventid);
+						break;
+					case "schedule": //排期详情
+						document.getElementsByClassName("mui-title")[0].innerText = "排期详情";
+						fOpenDetailPage("schedule", self.eventid);
+						break;
+	case "selection": //选材详情
+						document.getElementsByClassName("mui-title")[0].innerText = "选材详情";
+						fOpenDetailPage("selection", self.eventid);
+						break;
+					default:
+						mui.back();
+				}
+			});
+
+			function fOpenDetailPage(typename, eventid) {
+				mui.openWindow({
+					url: "detail_sub/" + typename + ".html",
+					id: "sub_content_detail",
+					styles: {
+						top: '100px',
+						bottom: 0,
+						left: "38.4%",
+						width: '61.6%',
+						bounce: 'vertical',
+						bounceBackground: '#ffffff'
+					},
+					extras: {
+						eventid: eventid
+					},
+					show: {
+						aniShow: "fade-in"
+					},
+					waiting: {
+						autoShow: false,
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

@@ -104,12 +104,50 @@
 				line-height: 30px;
 				color: #259B2A;
 			}
-			.remind-user-evaluate{
+			
+			.remind-user-evaluate {
 				position: absolute;
-				top:40%;
+				top: 40%;
 				left: 50%;
 				width: 40%;
 				margin-left: -20%;
+			}
+			
+			.rendering {
+				padding: 0;
+				border: none;
+			}
+			
+			.img-contain {
+				display: block;
+				padding: 0;
+				height: 150px;
+				width: 100%;
+				overflow: scroll;
+				overflow-y: hidden;
+			}
+			
+			.iteminner {
+				display: block;
+				width: 100%;
+				height: 100px;
+				overflow: hidden;
+			}
+			
+			.lineimg {
+				display: block;
+				width: 2000px;
+			}
+			
+			.item {
+				float: left;
+				display: inline;
+				margin-right: 10px;
+			}
+			
+			.item img {
+				height: 100px;
+				width: 180px;
 			}
 		</style>
 	</head>
@@ -117,7 +155,7 @@
 	<body>
 		<div id="back-drop"></div>
 		<article id="event">
-			<!--待基检-->
+			<!--待量房-->
 			<template v-if="event.status==1">
 				<div class="user-info">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
@@ -137,11 +175,11 @@
 					<span>量房报价信息</span><br/>
 					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.num}}{{item.unit}}</span></span><br />
 					<span>总价:{{event.content.price}}元</span>
-					<span class="more-info">详情 ></span>
+					<span class="more-info" v-on:tap="__fDetail(event.id,'gauge')">详情 ></span>
 				</div>
 				<div class="btns"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去排期</span></div>
 			</template>
-			
+
 			<!--待选材-->
 			<template v-if="event.status==3">
 				<div class="user-info">
@@ -151,16 +189,48 @@
 					<span>报价信息</span><br/>
 					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.num}}{{item.unit}}</span></span><br />
 					<span>总价:{{event.content.price}}元</span>
-					<span class="more-info">详情 ></span>
+					<span class="more-info" v-on:tap="__fDetail(event.id,'gauge')">详情 ></span>
 				</div>
 				<div>
 					<span>排期信息</span><br/>
 					<span>{{event.content.schedule}}</span>
-					<span class="more-info">详情 ></span>
+					<span class="more-info" v-on:tap="__fDetail(event.id,'schedule')">详情 ></span>
 				</div>
 				<div class="btns"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去选材</span></div>
 			</template>
-			
+
+			<!--待签约-->
+			<template v-if="event.status==4">
+				<div class="user-info">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+				</div>
+				<div class="rendering">
+					<span class="iteminner">
+						<span class="img-contain">
+					<span class="lineimg" >
+						<span class="item" v-for="img_src in event.content.renderings" track-by="$index"><img class="rendering-images" v-bind:src="img_src" v-on:tap="previewimages($event,$index)" data-preview-group="1"></span>
+					</span>
+					</span>
+					</span>
+				</div>
+				<div>
+					<span>报价信息</span><br/>
+					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.num}}{{item.unit}}</span></span><br />
+					<span>总价:{{event.content.price}}元</span>
+					<span class="more-info" v-on:tap="__fDetail(event.id,'gauge')">详情 ></span>
+				</div>
+				<div>
+					<span>选材信息</span><br/>
+					<span>{{event.content.selection}}</span>
+					<span class="more-info" v-on:tap="__fDetail(event.id,'selection')">详情 ></span>
+				</div>
+				<div>
+					<span>排期信息</span><br/>
+					<span>{{event.content.schedule}}</span>
+					<span class="more-info" v-on:tap="__fDetail(event.id,'schedule')">详情 ></span>
+				</div>
+			</template>
+
 			<!--待评价-->
 			<template v-if="event.status==20">
 				<button class="mui-btn mui-btn-block mui-btn-green remind-user-evaluate">提醒用户评价</button>
@@ -204,6 +274,7 @@
 					document.getElementById("back-drop").style.display = "none";
 					this.event = fListAllFlowEvent(a)[b];
 				},
+				//打开产品介绍
 				__fIntro: function(eventid) {
 					mui.openWindow({
 						url: "../intro.html",
@@ -223,9 +294,37 @@
 						}
 					})
 				},
+				//打开量房页面
 				__fGauge: function(eventid) {
 
 				},
+				//详情页面
+				__fDetail: function(eventid, type) {
+					mui.openWindow({
+						url: "index_frame.html",
+						id: "sub_detail",
+						styles: {
+							top: '60px',
+							bottom: 0,
+							left: "38.4%",
+							height: "100%",
+							width: '61.6%',
+							bounce: 'none',
+							bounceBackground: '#ffffff'
+						},
+						extras: {
+							type: type,
+							eventid: eventid
+						},
+						show: {
+							aniShow: "slide-in-right"
+						},
+						waiting: {
+							autoShow: false,
+						}
+					});
+				},
+				//编辑用户信息
 				__fEditUser: function(eventid) {
 					thispage = plus.webview.currentWebview();
 					document.getElementById("back-drop").style.display = "block";
@@ -249,7 +348,34 @@
 							autoShow: false,
 						}
 					});
+				},
+				//点击图片放大预览
+				previewimages: function(thisevent, indexId) {
+					var arrObjects = thisevent.target.parentNode.parentNode.innerHTML;
+					mui.openWindow({
+						url: "../module/preview_image.html",
+						id: "preview_image",
+						styles: {
+							top: 0,
+							bottom: 0,
+							right: 0,
+							width: "100%",
+							height: "100%"
+						},
+						extras: {
+							images: arrObjects
+						},
+						show: {
+							aniShow: "fade-in"
+						},
+						waiting: {
+							autoShow: false,
+						}
+					});
 				}
+			},
+			ready: function() {
+
 			}
 		});
 		document.getElementById("back-drop").addEventListener("tap", function() {
