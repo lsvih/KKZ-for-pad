@@ -22,7 +22,19 @@
 		</header>
 		<script src="js/mui.js"></script>
 		<script type="text/javascript">
-			mui.init();
+			mui.init({
+				subpages: [{
+					id: 'sub_product_intro',
+					url: 'step_sub/product_intro.html',
+					styles: {
+						top: '45px',
+						bottom: 0,
+						left: 0,
+						width: '100%',
+						bounceBackground: '#ffffff' //设置webview背景
+					} 
+				}]
+			});
 			
 		</script>
 	</body>

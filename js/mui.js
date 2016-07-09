@@ -4534,7 +4534,7 @@ Function.prototype.bind = Function.prototype.bind || function(to) {
 				snap: SELECTOR_SLIDER_ITEM
 			}, options));
 			if (this.options.startX) {
-				//				$.trigger(this.wrapper, 'scrollend', this);
+								$.trigger(this.wrapper, 'scrollend', this);
 			}
 		},
 		_init: function() {
@@ -4547,10 +4547,10 @@ Function.prototype.bind = Function.prototype.bind || function(to) {
 					this.progressBarStyle = this.progressBar.style;
 				}
 				//忘记这个代码是干什么的了？
-				//				this.x = this._getScroll();
-				//				if (this.options.startX === false) {
-				//					this.options.startX = this.x;
-				//				}
+								this.x = this._getScroll();
+								if (this.options.startX === false) {
+									this.options.startX = this.x;
+								}
 				//根据active修正startX
 
 				this._super();

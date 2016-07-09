@@ -3,11 +3,8 @@
 var gVersion = "0.01";
 var gAppName = "快块装" + gVersion;
 
-
-
-
 //判断是否存在队列对象，如果不存在则创建
-if(!localStorage.FIFO) localStorage.FIFO=JSON.stringify([]);
+if(!localStorage.FIFO) localStorage.FIFO = JSON.stringify([]);
 /**
  * 查找某元素是否有指定的ClassName
  * fHasClass(elements, cName)
@@ -102,12 +99,26 @@ function fFindObjSortById(id, array) {
 /**
  * 关闭当前所有打开的子页面（sub_开头id的页面）,并隐藏其父页面的遮罩
  */
-function fCloseSubPage(){
+function fCloseSubPage() {
 	var allwebview = plus.webview.all();
-	for(var i=0;i<allwebview.length;i++){
-		if(allwebview[i].id.split("_")[0] == "sub"){
+	for(var i = 0; i < allwebview.length; i++) {
+		if(allwebview[i].id.split("_")[0] == "sub") {
 			var parentwebview = allwebview[i].opener();
 			plus.webview.close(allwebview[i]);
 		}
-	}	
+	}
+}
+
+/**
+ * 获取当前元素的下标
+ * @param {Object} this,
+ * @param {Array} 元素集
+ */
+function index(current, obj) {
+	for(var i = 0, length = obj.length; i < length; i++) {
+		if(obj[i].outerHTML == current.outerHTML) {
+			return i;
+		}
+	}
+	return false;
 }

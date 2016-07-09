@@ -50,7 +50,7 @@ gStatus = {
 		"name": "待支付"
 	}, {
 		"id": 6,
-		"name": "待支付（锁定）"
+		"name": "待支付(锁定)"
 	}, {
 		"id": 7,
 		"name": "待确认物业"
@@ -194,7 +194,72 @@ data = {
 			"selection": "这儿是选材信息，一会儿改成JSON",
 			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"]
 		}
-	}, {
+	}, 
+	{
+		"id": 7,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 5,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"price": 71702,
+			"package": [{
+				"id": 1,
+				"name": "厨房",
+				"num": 10,
+				"unit": "米²"
+			}, {
+				"id": 10,
+				"name": "门",
+				"num": 3,
+				"unit": "个"
+			}],
+			"schedule": "这儿是排期信息，一会儿会改成JSON",
+			"selection": "这儿是选材信息，一会儿改成JSON",
+			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
+			"expected_start_date": "2016-07-15",
+			"left_time_for_pay": 3
+			
+		}
+	},
+	{
+		"id": 12,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 6,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"price": 71702,
+			"package": [{
+				"id": 1,
+				"name": "厨房",
+				"num": 10,
+				"unit": "米²"
+			}, {
+				"id": 10,
+				"name": "门",
+				"num": 3,
+				"unit": "个"
+			}],
+			"schedule": "这儿是排期信息，一会儿会改成JSON",
+			"selection": "这儿是选材信息，一会儿改成JSON",
+			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
+			"expected_start_date": "2016-07-15",
+			"left_time_for_pay":0
+		}
+	},{
 		"id": 15,
 		"name": "郑家园",
 		"sex": 0,

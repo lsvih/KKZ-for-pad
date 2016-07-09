@@ -149,6 +149,12 @@
 				height: 100px;
 				width: 180px;
 			}
+			.locked{
+				text-align: center;
+				padding: 80px 0;
+				font-size: 43px;
+				font-weight: bold;
+			}
 		</style>
 	</head>
 
@@ -208,7 +214,7 @@
 					<span class="iteminner">
 						<span class="img-contain">
 					<span class="lineimg" >
-						<span class="item" v-for="img_src in event.content.renderings" track-by="$index"><img class="rendering-images" v-bind:src="img_src" v-on:tap="previewimages($event,$index)" data-preview-group="1"></span>
+						<span class="item" v-for="img_src in event.content.renderings" track-by="$index"><img class="rendering-images" v-bind:src="img_src"   v-on:tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
 					</span>
 					</span>
 					</span>
@@ -231,6 +237,39 @@
 				</div>
 			</template>
 
+			<!--待支付-->
+			<template v-if="event.status==5">
+				<div class="user-info">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+				</div>
+				<div>
+					<span>已交定金</span><br/><span class="check-time">预约开工日期：{{event.content.expected_start_date}}</span>
+				<br /><span class="check-time">据全款截止日期还剩：<span style="color:red">{{event.content.left_time_for_pay}}天</span></span>
+				</div>
+				
+			</template>
+
+			<!--待支付（锁定）-->
+			<template v-if="event.status==6">
+				<div class="user-info">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+				</div>
+				<div>
+					<span>已交定金</span><br/><span class="check-time">预约开工日期：{{event.content.expected_start_date}}</span>
+				<br /><span>已截止</span>
+				</div>
+				<div class="locked">已锁</div>
+			</template>
+			<!--待确认物业-->
+			<template v-if="event.status==7">
+				<div class="user-info">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+				</div>
+				<div>
+					<span>物业交割信息</span><br/>
+				</div>
+				<div class="locked">已锁</div>
+			</template>
 			<!--待评价-->
 			<template v-if="event.status==20">
 				<button class="mui-btn mui-btn-block mui-btn-green remind-user-evaluate">提醒用户评价</button>
@@ -246,6 +285,7 @@
 		"use strick"
 		mui.init({
 			swipeBack: false,
+			statusBarBackground: '#f7f7f7',
 			gestureConfig: {
 				doubletap: false,
 				longtap: false
@@ -363,7 +403,8 @@
 							height: "100%"
 						},
 						extras: {
-							images: arrObjects
+							images: arrObjects,
+							indexid: indexId
 						},
 						show: {
 							aniShow: "fade-in"

@@ -48,14 +48,7 @@
 			margin-right: 15px;
 		}
 		
-		#pickcity {
-			border: 0px;
-			float: left;
-			width: 80%;
-			height: 40px;
-			text-align: left;
-			padding: 10px 0;
-		}
+		
 		
 		.mui-input-row label {
 			width: 110px;
@@ -69,11 +62,15 @@
 			width: 100%;
 			height: 44px;
 		}
-		
-		.mui-input-row label~ select {
+		.mui-input-row label ~ input,.mui-input-row label ~ select{
+			float: left;
+			width: 70%
+		}
+		.select-address label~ select {
 			float: left;
 			width: 20%;
 		}
+		
 	</style>
 
 	<body>
@@ -94,7 +91,7 @@
 				<label>手机号码:</label>
 				<input type="text" class="mui-input-clear" id="phonenum" value="{{event.phone}}">
 			</div>
-			<div class="mui-input-row">
+			<div class="mui-input-row select-address">
 				<label>所在地址:</label>
 				<select id="s_province" name="s_province" value="{{event.province}}"></select>&nbsp;&nbsp;
 				<select id="s_city" name="s_city"></select>&nbsp;&nbsp;
