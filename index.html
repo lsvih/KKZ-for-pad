@@ -156,12 +156,15 @@
 				ready: function() {
 					fAddClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
 					mui('#flow').on('tap', '.flow', function() {
-						fRemoveClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
-						fAddClass(this, "mui-active");
-						nActiveMenu = this.id.split("-")[1];
-						mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nActiveMenu + ",0"); //传值到index_content
-						mui.fire(plus.webview.getWebviewById("list"), "refresh", nActiveMenu); //点击图标时传值到list并刷新视图
-						fCloseSubPage();
+						if(!fHasClass(this, "mui-active")) {
+							fRemoveClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
+							fAddClass(this, "mui-active");
+							nActiveMenu = this.id.split("-")[1];
+							mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nActiveMenu + ",0"); //传值到index_content
+							mui.fire(plus.webview.getWebviewById("list"), "refresh", nActiveMenu); //点击图标时传值到list并刷新视图
+							fCloseSubPage();
+						}
+
 					});
 				}
 			});
