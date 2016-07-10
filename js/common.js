@@ -131,8 +131,12 @@ function fSetSubPageMask(maskoption) {
 	var allwebview = plus.webview.all();
 	for(var i = 0; i < allwebview.length; i++) {
 		if(allwebview[i].id.split("_")[0] == "sub") {
-			allwebview[i].setStyle({mask:maskoption})
-			allwebview[i].addEventListener('maskClick', mui.fire(plus.webview.getLaunchWebview(),"menu:close")) ;
+			allwebview[i].setStyle({
+				mask: maskoption
+			});
+			allwebview[i].addEventListener("maskClick", function() {
+				mui.fire(plus.webview.getLaunchWebview(), "menu:close");
+			})
 		}
 	}
 }
