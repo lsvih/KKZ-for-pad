@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../css/content.css" />
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../css/mui.css">
+		<!--App自定义的css-->
+		<link rel="stylesheet" href="../css/index_content.css" />
+	</head>
+
+	<body>
+		<div id="back-drop"></div>
+		<article id="event">
+
+			<!--物业确认-->
+			<template v-if="event.status==7">
+				<div class="user-info block">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+				</div>
+				<div class="block">
+					<span>物业交割信息</span>
+				</div>
+				<div id="status7-insert-input"></div>
+				<iframe src="../step_sub/product_intro.html"></iframe>
+				<div class="contain-text">{{event.content.property_text}}</div>
+				<div class="contain-img">{{event.content.property_img}}</div>
+			</template>
+
+		</article>
+		<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#" data="1">拍照</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a href="#" data="2">从相册中选择</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#picture" data="0"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script src="../js/common.js"></script>
+	<script src="../js/data.js"></script>
+	<script src="../js/vue.js"></script>
+	<script src="../js/mui.js"></script>
+	<script>
+		"use strick"
+		mui.init({
+			swipeBack: false,
+			statusBarBackground: '#f7f7f7',
+			gestureConfig: {
+				doubletap: false,
+				longtap: false
+			},
+
+			
+		});
+		var index_content = null;
+		var thisevent = fListAllFlowEvent(1)[0];
+		var MAXIMAGECOUNT = 10;
+		mui.plusReady(function() {
+			window.addEventListener('refresh', function(event) {
+				var aShow = event.detail.split(",");
+				vueContent.refresh(aShow[0], aShow[1]);
+			});
+
+		});
+		Vue.filter('statusNumtoString', function(value) {
+			return fFindObjById(value, gStatus.status).name;
+		})
+		var vueContent = new Vue({
+			el: '#event',
+			data: {
+				"event": thisevent
+			},
+			methods: {
+				refresh: function(a, b) {
+					document.getElementById("back-drop").style.display = "none";
+					this.event = fListAllFlowEvent(a)[b];
+					mui.openWindow({
+						url: "../module/text_and_pictures_input.html",
+						id: "sub_input",
+						styles: {
+						top: '60px',
+						bottom: 0,
+						left: "38.4%",
+						width: '61.6%',
+						bounce: 'vertical',
+						bounceBackground: '#ffffff',
+					},
+						show: {
+							aniShow: "fade-in"
+						},
+						waiting: {
+							autoShow: false,
+						}
+					});
+				},
+
+				//编辑用户信息
+				__fEditUser: function(eventid) {
+					thispage = plus.webview.currentWebview();
+					document.getElementById("back-drop").style.display = "block";
+					mui.openWindow({
+						url: "edituser.html",
+						id: "sub_edituser",
+						styles: {
+							top: "13%",
+							bottom: 0,
+							right: "6.8%",
+							width: "48%",
+							height: "244px"
+						},
+						extras: {
+							eventid: eventid
+						},
+						show: {
+							aniShow: "fade-in"
+						},
+						waiting: {
+							autoShow: false,
+						}
+					});
+				},
+				//点击图片放大预览
+				previewimages: function(thisevent, indexId) {
+					var arrObjects = thisevent.target.parentNode.parentNode.innerHTML;
+					mui.openWindow({
+						url: "../module/preview_image.html",
+						id: "preview_image",
+						styles: {
+							top: 0,
+							bottom: 0,
+							right: 0,
+							width: "100%",
+							height: "100%"
+						},
+						extras: {
+							images: arrObjects,
+							indexid: indexId
+						},
+						show: {
+							aniShow: "fade-in"
+						},
+						waiting: {
+							autoShow: false,
+						}
+					});
+				}
+			},
+			ready: function() {
+
+			}
+		});
+		document.getElementById("back-drop").addEventListener("tap", function() {
+			document.getElementById("back-drop").style.display = "none";
+			plus.webview.close("sub_edituser");
+		})
+		mui("#event").on("tap", ".edit-time", function() {
+			document.getElementById("select-time").focus();
+		});
+
+		function fSelecetTimeChange(e) {
+			var inittime = e.getAttribute("init-time");
+			if(!e.value)(e.value = inittime, e.blur()); //点击"清除"重新设定时间并关闭时间设定
+		}
+
+		function fSaveTime(e) {
+			if(e.value == "") e.value = e.getAttribute("init-time"); //防止出现时间为空的情况
+			if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
+				var tempobj = JSON.parse(localStorage.data);
+				tempobj.event[fFindObjSortById(thisevent.id, tempobj.event)].content.ordertime = e.value;
+				localStorage.data = JSON.stringify(tempobj); //在本地存储修改时间
+				var FIFO = JSON.parse(localStorage.FIFO);
+				FIFO.push({
+					"type": "PUT",
+					"object": "edit-order-time",
+					"data": e.value
+				}); //将修改时间存入队列等待同步
+			}
+		}
+
+
+	</script>
+
+</html>

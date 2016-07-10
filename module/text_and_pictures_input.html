@@ -67,7 +67,6 @@
 			var MAXIMAGECOUNT = 10;
 			var nImageCount = 0;
 			mui.plusReady(function() {
-				alert(1)
 				window.addEventListener('delete', function(event) {
 					var deleteid = event.detail - 1;
 					document.getElementById("pictures").removeChild(document.getElementById("pictures").getElementsByTagName("img")[deleteid].parentNode);
@@ -122,7 +121,6 @@
 			})
 
 			function getImage() {
-				alert(1)
 				var cmr = plus.camera.getCamera();
 				cmr.captureImage(function(p) {
 					console.log("成功：" + p);

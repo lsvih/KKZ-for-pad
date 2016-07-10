@@ -122,3 +122,17 @@ function index(current, obj) {
 	}
 	return false;
 }
+
+/**
+ * 设置所有子页面的遮罩
+ * @param {String} maskoption 遮罩样式
+ */
+function fSetSubPageMask(maskoption) {
+	var allwebview = plus.webview.all();
+	for(var i = 0; i < allwebview.length; i++) {
+		if(allwebview[i].id.split("_")[0] == "sub") {
+			allwebview[i].setStyle({mask:maskoption})
+			allwebview[i].addEventListener('maskClick', mui.fire(plus.webview.getLaunchWebview(),"menu:close")) ;
+		}
+	}
+}

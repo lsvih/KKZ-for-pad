@@ -9,3 +9,4 @@ Powered by mui,vuejs
 *  选材 selection
 *  效果图 rendering
 *  预计开工时间 expected_start_date
+*  物业 property

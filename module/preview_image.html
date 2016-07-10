@@ -552,16 +552,7 @@
 					var activeId = PreviewImage.indicator.innerText.split("/")[0];
 					var TotolCount = PreviewImage.indicator.innerText.split("/")[1];
 					mui.fire(plus.webview.currentWebview().opener(), "delete", activeId);
-					if(activeId == TotolCount){
-						PreviewImage.indicator.innerText =(--activeId) + '/' + (--TotolCount);
-						mui.trigger(document.getElementsByClassName("mui-slider-group")[0],"swipeleft")
-					}
-					else{
-						PreviewImage.indicator.innerText =(activeId) + '/' + (--TotolCount);
-					}
-					
-					PreviewImage.scroller.removeChild(document.getElementsByClassName("mui-slider-item mui-zoom-wrapper mui-active")[0]);  
-					if(!TotolCount) PreviewImage.close();
+					PreviewImage.close();
 				})
 			}
 		})

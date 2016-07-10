@@ -67,7 +67,7 @@
 
 	<body>
 		<script src="js/common.js"></script>
-		
+
 		<!--加载测试数据-->
 		<script src="js/data.js"></script>
 		<script src="js/vue.js"></script>
@@ -86,7 +86,7 @@
 					doubletap: false,
 					longtap: true
 				},
-				subpages: [{
+				subpages: [{ //引入子webview
 					id: 'list',
 					url: 'index_sub/list.html',
 					styles: {
@@ -96,7 +96,7 @@
 						width: '38.2%',
 						bounce: 'vertical',
 						bounceBackground: '#ffffff' //设置webview背景
-					} //引入子webview
+					}
 				}, {
 					id: 'index_content',
 					url: 'index_sub/index_content.html',
@@ -106,7 +106,19 @@
 						left: "38.4%",
 						width: '61.6%',
 						bounce: 'vertical',
-						bounceBackground: '#ffffff'
+						bounceBackground: '#ffffff',
+					}
+				}],
+				preloadPages: [{
+					id: 'index_content2',
+					url: 'index_sub/index_content2.html',
+					styles: {
+						top: '60px',
+						bottom: 0,
+						left: "38.4%",
+						width: '61.6%',
+						bounce: 'vertical',
+						bounceBackground: '#ffffff',
 					}
 				}]
 			});
@@ -115,6 +127,8 @@
 				plus.screen.lockOrientation("landscape");
 				main = plus.webview.currentWebview();
 				main.addEventListener('maskClick', fCloseMenu);
+				window.addEventListener("menu:close", fCloseMenu);
+				window.addEventListener("menu:open", fOpenMenu);
 				//处理侧滑导航，为了避免和子页面初始化等竞争资源，延迟加载侧滑页面；
 				setTimeout(function() {
 					menu = mui.preload({
@@ -169,6 +183,7 @@
 						main.setStyle({
 							mask: 'rgba(0,0,0,0.4)',
 						});
+						fSetSubPageMask("rgba(0,0,0,0.4)");
 						menu.setStyle({
 							left: '0%',
 							transition: {
@@ -199,6 +214,7 @@
 					main.setStyle({
 						mask: 'none'
 					})
+					fSetSubPageMask("none");
 					menu.setStyle({
 						left: '-38.4%',
 						transition: {
@@ -225,8 +241,7 @@
 			document.querySelector('header').addEventListener('doubletap', function() {
 				main.children()[0].evalJS('mui.scrollTo(0, 100)');
 			});
-			window.addEventListener("menu:close", fCloseMenu);
-			window.addEventListener("menu:open", fOpenMenu);
+
 			mui.menu = function() {
 				if(bShowMenu) {
 					fCloseMenu();

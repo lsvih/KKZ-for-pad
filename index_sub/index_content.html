@@ -11,151 +11,7 @@
 		<!--标准mui.css-->
 		<link rel="stylesheet" href="../css/mui.css">
 		<!--App自定义的css-->
-		<style>
-			body {
-				background-color: #fff!important;
-			}
-			
-			div {
-				position: relative;
-				padding: 20px 50px 10px 40px;
-				border-bottom: 2px solid #DCD2D2;
-				line-height: 35px;
-			}
-			
-			.user-name {
-				font-size: 25px;
-			}
-			
-			.user-sex {
-				padding-left: 20px;
-			}
-			
-			.user-phone {
-				padding-left: 40px;
-			}
-			
-			.user-info-edit {
-				position: absolute;
-				top: 20px;
-				right: 30px;
-				width: 80px;
-				color: #259B2A;
-				text-align: center;
-				line-height: 0;
-				font-size: 13px;
-			}
-			
-			.user-info-edit i {
-				display: block;
-				font-size: 45px;
-			}
-			
-			#select-time {
-				display: inline-block;
-				z-index: -100;
-				border: none;
-				width: auto;
-			}
-			
-			.btns {
-				text-align: center;
-				border: none;
-			}
-			
-			.event-btn {
-				margin: 0 40px;
-				display: inline-block;
-				width: 60px;
-				height: 60px;
-				border-radius: 40px;
-				color: #fff;
-				text-align: center;
-				line-height: 0;
-				font-size: 10px;
-				background-color: #259B2A;
-			}
-			
-			.event-btn i {
-				display: block;
-				font-size: 45px;
-			}
-			
-			#back-drop {
-				display: none;
-				position: fixed;
-				z-index: 9999999;
-				width: 100%;
-				height: 100%;
-				background-color: rgba(0, 0, 0, 0.4)
-			}
-			
-			.package-item {
-				margin-right: 20px;
-			}
-			
-			.more-info {
-				display: block;
-				position: absolute;
-				top: 50%;
-				right: 20px;
-				margin-top: -15px;
-				height: 30px;
-				line-height: 30px;
-				color: #259B2A;
-			}
-			
-			.remind-user-evaluate {
-				position: absolute;
-				top: 40%;
-				left: 50%;
-				width: 40%;
-				margin-left: -20%;
-			}
-			
-			.rendering {
-				padding: 0;
-				border: none;
-			}
-			
-			.img-contain {
-				display: block;
-				padding: 0;
-				height: 150px;
-				width: 100%;
-				overflow: scroll;
-				overflow-y: hidden;
-			}
-			
-			.iteminner {
-				display: block;
-				width: 100%;
-				height: 100px;
-				overflow: hidden;
-			}
-			
-			.lineimg {
-				display: block;
-				width: 2000px;
-			}
-			
-			.item {
-				float: left;
-				display: inline;
-				margin-right: 10px;
-			}
-			
-			.item img {
-				height: 100px;
-				width: 180px;
-			}
-			.locked{
-				text-align: center;
-				padding: 80px 0;
-				font-size: 43px;
-				font-weight: bold;
-			}
-		</style>
+		<link rel="stylesheet" href="../css/index_content.css" />
 	</head>
 
 	<body>
@@ -163,54 +19,54 @@
 		<article id="event">
 			<!--待量房-->
 			<template v-if="event.status==1">
-				<div class="user-info">
+				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
-				<div>
+				<div class="block">
 					<span>待量房</span><br/><span class="check-time">预约上门时间：<span><input type="datetime-local" id="select-time" init-time="{{event.content.ordertime}}" v-bind:value="event.content.ordertime" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)"></span></span><span class="user-info-edit edit-time"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
 				</div>
-				<div class="btns"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>产品介绍</span><span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="mui-icon mui-icon-compose"></i>直接量房</span></div>
+				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>产品介绍</span><span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="mui-icon mui-icon-compose"></i>直接量房</span></div>
 
 			</template>
 			<!--待排期-->
 			<template v-if="event.status==2">
-				<div class="user-info">
+				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
-				<div>
+				<div class="block">
 					<span>量房报价信息</span><br/>
 					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.num}}{{item.unit}}</span></span><br />
 					<span>总价:{{event.content.price}}元</span>
 					<span class="more-info" v-on:tap="__fDetail(event.id,'gauge')">详情 ></span>
 				</div>
-				<div class="btns"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去排期</span></div>
+				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去排期</span></div>
 			</template>
 
 			<!--待选材-->
 			<template v-if="event.status==3">
-				<div class="user-info">
+				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
-				<div>
+				<div class="block">
 					<span>报价信息</span><br/>
 					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.num}}{{item.unit}}</span></span><br />
 					<span>总价:{{event.content.price}}元</span>
 					<span class="more-info" v-on:tap="__fDetail(event.id,'gauge')">详情 ></span>
 				</div>
-				<div>
+				<div class="block">
 					<span>排期信息</span><br/>
 					<span>{{event.content.schedule}}</span>
 					<span class="more-info" v-on:tap="__fDetail(event.id,'schedule')">详情 ></span>
 				</div>
-				<div class="btns"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去选材</span></div>
+				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去选材</span></div>
 			</template>
 
 			<!--待签约-->
 			<template v-if="event.status==4">
-				<div class="user-info">
+				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
-				<div class="rendering">
+				<div class="rendering block">
 					<span class="iteminner">
 						<span class="img-contain">
 					<span class="lineimg" >
@@ -219,18 +75,18 @@
 					</span>
 					</span>
 				</div>
-				<div>
+				<div class="block">
 					<span>报价信息</span><br/>
 					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.num}}{{item.unit}}</span></span><br />
 					<span>总价:{{event.content.price}}元</span>
 					<span class="more-info" v-on:tap="__fDetail(event.id,'gauge')">详情 ></span>
 				</div>
-				<div>
+				<div class="block">
 					<span>选材信息</span><br/>
 					<span>{{event.content.selection}}</span>
 					<span class="more-info" v-on:tap="__fDetail(event.id,'selection')">详情 ></span>
 				</div>
-				<div>
+				<div class="block">
 					<span>排期信息</span><br/>
 					<span>{{event.content.schedule}}</span>
 					<span class="more-info" v-on:tap="__fDetail(event.id,'schedule')">详情 ></span>
@@ -239,37 +95,28 @@
 
 			<!--待支付-->
 			<template v-if="event.status==5">
-				<div class="user-info">
+				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
-				<div>
+				<div class="block">
 					<span>已交定金</span><br/><span class="check-time">预约开工日期：{{event.content.expected_start_date}}</span>
-				<br /><span class="check-time">据全款截止日期还剩：<span style="color:red">{{event.content.left_time_for_pay}}天</span></span>
+					<br /><span class="check-time">据全款截止日期还剩：<span style="color:red">{{event.content.left_time_for_pay}}天</span></span>
 				</div>
-				
+
 			</template>
 
 			<!--待支付（锁定）-->
 			<template v-if="event.status==6">
-				<div class="user-info">
+				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
-				<div>
+				<div class="block">
 					<span>已交定金</span><br/><span class="check-time">预约开工日期：{{event.content.expected_start_date}}</span>
-				<br /><span>已截止</span>
+					<br /><span>已截止</span>
 				</div>
-				<div class="locked">已锁</div>
+				<div class="locked block">已锁</div>
 			</template>
-			<!--待确认物业-->
-			<template v-if="event.status==7">
-				<div class="user-info">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
-				</div>
-				<div>
-					<span>物业交割信息</span><br/>
-				</div>
-				<div class="locked">已锁</div>
-			</template>
+
 			<!--待评价-->
 			<template v-if="event.status==20">
 				<button class="mui-btn mui-btn-block mui-btn-green remind-user-evaluate">提醒用户评价</button>
@@ -293,7 +140,7 @@
 		});
 		var index_content = null;
 		var thisevent = fListAllFlowEvent(1)[0];
-
+		var MAXIMAGECOUNT = 10;
 		mui.plusReady(function() {
 			window.addEventListener('refresh', function(event) {
 				var aShow = event.detail.split(",");
@@ -313,6 +160,28 @@
 				refresh: function(a, b) {
 					document.getElementById("back-drop").style.display = "none";
 					this.event = fListAllFlowEvent(a)[b];
+					if(this.event.status == 7) {
+						mui.openWindow({
+							url: "../module/text_and_pictures_input.html",
+							id: "sub_input",
+							styles: {
+								top: '60px',
+								bottom: 0,
+								left: "38.4%",
+								width: '61.6%',
+								bounce: 'vertical',
+								bounceBackground: '#ffffff',
+							},
+							extras: {
+							},
+							show: {
+								aniShow: "fade-in"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+					}
 				},
 				//打开产品介绍
 				__fIntro: function(eventid) {
