@@ -99,7 +99,7 @@ function fFindObjSortById(id, array) {
 /**
  * 关闭当前所有打开的子页面（sub_开头id的页面）,并隐藏其父页面的遮罩
  */
-function fCloseSubPage() {
+function fCloseSubPage(callback) {
 	var allwebview = plus.webview.all();
 	for(var i = 0; i < allwebview.length; i++) {
 		if(allwebview[i].id.split("_")[0] == "sub") {
@@ -107,6 +107,8 @@ function fCloseSubPage() {
 			plus.webview.close(allwebview[i]);
 		}
 	}
+	plus.webview.hide("plg_input", "fade-out")
+	if(typeof(callback) === "function") callback();
 }
 
 /**
@@ -136,7 +138,14 @@ function fSetSubPageMask(maskoption) {
 			});
 			allwebview[i].addEventListener("maskClick", function() {
 				mui.fire(plus.webview.getLaunchWebview(), "menu:close");
-			})
+			});
 		}
 	}
+	plus.webview.getWebviewById("plg_input").setStyle({
+		mask: maskoption
+	});
+	plus.webview.getWebviewById("plg_input").addEventListener("maskClick", function() {
+		mui.fire(plus.webview.getLaunchWebview(), "menu:close");
+	});
 }
+

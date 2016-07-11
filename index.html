@@ -79,6 +79,7 @@
 				main = null;
 			var bShowMenu = false;
 			var nActiveMenu = 1;
+			localStorage.thisflow = 1;
 			mui.init({
 				swipeBack: false,
 				statusBarBackground: '#f7f7f7',
@@ -95,7 +96,7 @@
 						left: 0,
 						width: '38.2%',
 						bounce: 'vertical',
-						bounceBackground: '#ffffff' //设置webview背景
+						bounceBackground: '#ffffff', //设置webview背景
 					}
 				}, {
 					id: 'index_content',
@@ -110,8 +111,8 @@
 					}
 				}],
 				preloadPages: [{
-					id: 'index_content2',
-					url: 'index_sub/index_content2.html',
+					url: "module/text_and_pictures_input.html",
+					id: "plg_input",
 					styles: {
 						top: '60px',
 						bottom: 0,
@@ -119,6 +120,16 @@
 						width: '61.6%',
 						bounce: 'vertical',
 						bounceBackground: '#ffffff',
+					},
+					extras: {
+						data: JSON.stringify(this.event)
+					},
+					show: {
+						autoShow: false,
+						aniShow: "fade-in"
+					},
+					waiting: {
+						autoShow: false,
 					}
 				}]
 			});
@@ -160,9 +171,10 @@
 							fRemoveClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
 							fAddClass(this, "mui-active");
 							nActiveMenu = this.id.split("-")[1];
-							mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nActiveMenu + ",0"); //传值到index_content
+//							fCloseSubPage();
 							mui.fire(plus.webview.getWebviewById("list"), "refresh", nActiveMenu); //点击图标时传值到list并刷新视图
-							fCloseSubPage();
+							mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nActiveMenu + ",0"); //传值到index_content
+							localStorage.thisflow = nActiveMenu;
 						}
 
 					});

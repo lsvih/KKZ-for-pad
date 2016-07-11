@@ -10,3 +10,4 @@ Powered by mui,vuejs
 *  效果图 rendering
 *  预计开工时间 expected_start_date
 *  物业 property
+*  待施工 pending_construction

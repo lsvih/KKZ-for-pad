@@ -146,19 +146,19 @@ body {
 #add-picture {
 	display: block;
 	float: left;
-	width: 100px;
-	height: 100px;
+	width: 95px;
+	height: 95px;
 	border: 7px solid #259B2A;
 	border-radius: 10px;
 	line-height: 57px;
 	text-align: center;
-	font-size: 100px;
+	font-size: 95px;
 	font-weight: bold;
 	color: #259B2A;
 }
 
 #pictures img {
-	height: 100px;
+	height: 95px;
 	width: auto;
 	float: left;
 	margin-right: 20px;
@@ -167,4 +167,10 @@ body {
 
 #imgcount {
 	color: #259B2A;
+}
+.submit-button{
+	clear:both;
+	display: block;
+	width:50%;
+	margin: 0 auto;
 }

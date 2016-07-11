@@ -293,6 +293,73 @@ data = {
 			"property_text":"",
 			"property_img":[]
 		}
+	},
+	{
+		"id": 14,
+		"name": "郑家园2",
+		"sex": 0,
+		"contractid": "",
+		"status": 7,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"price": 71702,
+			"package": [{
+				"id": 1,
+				"name": "厨房",
+				"num": 10,
+				"unit": "米²"
+			}, {
+				"id": 10,
+				"name": "门",
+				"num": 3,
+				"unit": "个"
+			}],
+			"schedule": "这儿是排期信息，一会儿会改成JSON",
+			"selection": "这儿是选材信息，一会儿改成JSON",
+			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
+			"expected_start_date": "2016-07-15",
+			"left_time_for_pay":0,
+			"property_text":"",
+			"property_img":[]
+		}
+	},{
+		"id": 16,
+		"name": "郑家园2",
+		"sex": 0,
+		"contractid": "",
+		"status": 9,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"price": 71702,
+			"package": [{
+				"id": 1,
+				"name": "厨房",
+				"num": 10,
+				"unit": "米²"
+			}, {
+				"id": 10,
+				"name": "门",
+				"num": 3,
+				"unit": "个"
+			}],
+			"schedule": "这儿是排期信息，一会儿会改成JSON",
+			"selection": "这儿是选材信息，一会儿改成JSON",
+			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
+			"expected_start_date": "2016-07-15",
+			"left_time_for_pay":0,
+			"pending_construction_text":"",
+			"pending_construction_img":[],
+		}
 	},{
 		"id": 15,
 		"name": "郑家园",

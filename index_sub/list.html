@@ -47,7 +47,7 @@
 
 		<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="event-list">
 			<!--加入mui-disabled来屏蔽mui-table-view-cell:active的变色-->
-			<li class="mui-table-view-cell mui-disabled" v-bind:class="{'list-selected':$index==nSelectSort}" v-for="event in list" v-on:tap="changecontent($index,$event)">
+			<li class="mui-table-view-cell mui-disabled" v-bind:class="{'list-selected':$index==nSelectSort}" v-for="event in list" v-on:tap="changecontent($index,$event,event.status)">
 				<div class="mui-table">
 					<div class="mui-table-cell mui-col-xs-10">
 						<h4>{{event.name}} {{event.sex?"女士":"先生"}} {{event.phone}}</h4>
@@ -75,7 +75,7 @@
 			}
 		});
 		var nFlowID = 1;
-
+		localStorage.thiseventsort = 0;
 		var index_content = null;
 		var list = fListAllFlowEvent(1);
 
@@ -100,11 +100,22 @@
 					this.list = fListAllFlowEvent(event);
 					this.nSelectSort = 0;
 				},
-				changecontent: function(sortId, thisObject) {
+				changecontent: function(sortId, thisObject, status) {
 					if(!fHasClass(thisObject.currentTarget, "list-selected")) {
 						this.nSelectSort = sortId;
-						mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nFlowID + "," + sortId);
-						fCloseSubPage();
+						localStorage.thiseventsort = sortId;
+						switch(status) {
+							case 7:
+							case 9:
+								mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", nFlowID + "," + sortId);
+								plus.webview.show("plg_input");
+								break;
+							default:
+								fCloseSubPage();
+								mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nFlowID + "," + sortId);
+								break;
+						}
+
 					}
 				}
 			}
