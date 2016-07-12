@@ -11,3 +11,6 @@ Powered by mui,vuejs
 *  预计开工时间 expected_start_date
 *  物业 property
 *  待施工 pending_construction
+*  工龄 seniority
+*  工序 process
+*  播报 broadcast

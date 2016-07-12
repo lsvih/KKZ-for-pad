@@ -58,6 +58,7 @@ function fCaculateNumOfFlow() {
 function fListAllFlowEvent(flowId) {
 	var aEventList;
 	var aFlowEvent = new Array;
+	if(!localStorage.data) return false;
 	var aEvent = JSON.parse(localStorage.data)["event"]
 	for(var i = 0; i < gFlow.flow.length; i++) {
 		if(gFlow.flow[i].id == flowId) aEventList = gFlow.flow[i]["contain-event"];
@@ -108,6 +109,7 @@ function fCloseSubPage(callback) {
 		}
 	}
 	plus.webview.hide("plg_input", "fade-out");
+	plus.webview.hide("plg_work", "fade-out");
 	if(typeof(callback) === "function") callback();
 }
 
@@ -146,6 +148,58 @@ function fSetSubPageMask(maskoption) {
 	});
 	plus.webview.getWebviewById("plg_input").addEventListener("maskClick", function() {
 		mui.fire(plus.webview.getLaunchWebview(), "menu:close");
+	}); //为工作流3增加遮罩及事件
+	plus.webview.getWebviewById("plg_work").setStyle({
+		mask: maskoption
 	});
+	plus.webview.getWebviewById("plg_work").addEventListener("maskClick", function() {
+		mui.fire(plus.webview.getLaunchWebview(), "menu:close");
+	}); //为工作流4增加遮罩及事件
 }
 
+/**
+ * 拍照传入指定vueContent.event.content的Vue对象中
+ * @param {String} targetJSON 目标图片JSONkey,如向property.img插入图片
+ */
+function getImage(targetJSON) {
+	var inserTarget = eval("vueContent.event.content." + targetJSON);
+	var cmr = plus.camera.getCamera();
+	cmr.captureImage(function(p) {
+		console.log("成功：" + p);
+		plus.io.resolveLocalFileSystemURL(p, function(entry) {
+			console.log(entry.fullPath); //真实路径
+			plus.gallery.save(p, function() {
+				console.log("保存图片到相册成功");
+			});
+			var localurl = entry.toLocalURL();
+			var pictureContaint = document.getElementById("pictures");
+			inserTarget.push(localurl);
+		}, function(e) {
+			console.log("读取拍照文件错误：" + e.message);
+		});
+	}, function(e) {
+		console.log("失败：" + e.message);
+	}, {
+		filename: "_doc/camera/"
+	});
+}
+/**
+ * 由相册获取图片传入vueContent.event.content目标Vue对象中
+ * @param {String} targetJSON 目标图片JSONkey,如向property.img插入图片
+ */
+function galleryImg(targetJSON) {
+	// 从相册中选择图片
+	var inserTarget = eval("vueContent.event.content." + targetJSON);
+	plus.gallery.pick(function(path) {
+		for(var i in path.files) {
+			inserTarget.push(path.files[i]);
+		}
+
+	}, function(e) {
+		console.log("取消选择图片");
+	}, {
+		filter: "image",
+		multiple: true,
+		maximum: MAXIMAGECOUNT - inserTarget.length
+	});
+}

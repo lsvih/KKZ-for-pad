@@ -146,7 +146,6 @@
 		"use strick";
 
 		mui.init({
-			swipeBack: false,
 			statusBarBackground: '#f7f7f7',
 			gestureConfig: {
 				doubletap: false,
@@ -182,10 +181,33 @@
 				refresh: function(a, b) {
 					document.getElementById("back-drop").style.display = "none";
 					this.event = fListAllFlowEvent(a)[b];
-					localStorage.thisstatus = this.event.status;
-					if(this.event.status == 7) {
-						mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", a + "," + b);
-						plus.webview.show("plg_input");
+					if(this.event) {//判断内容为空的情况
+						localStorage.thisstatus = this.event.status;
+						switch(this.event.status) {
+							case 7:
+							case 9:
+								mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", a + "," + b);
+								plus.webview.hide("plg_work", "fade-out");
+								plus.webview.show("plg_input", "fade-in");
+								break;
+							case 10:
+							case 11:
+							case 12:
+							case 13:
+							case 14:
+							case 15:
+							case 16:
+							case 17:
+							case 18:
+							case 19:
+								mui.fire(plus.webview.getWebviewById("plg_work"), "refresh", a + "," + b);
+								plus.webview.hide("plg_input", "fade-out");
+								plus.webview.show("plg_work", "fade-in");
+								break;
+							default:
+								fCloseSubPage();
+								break;
+						}
 					} else {
 						fCloseSubPage();
 					}

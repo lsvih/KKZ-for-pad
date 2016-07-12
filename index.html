@@ -81,11 +81,10 @@
 			var nActiveMenu = 1;
 			localStorage.thisflow = 1;
 			mui.init({
-				swipeBack: false,
 				statusBarBackground: '#f7f7f7',
 				gestureConfig: {
 					doubletap: false,
-					longtap: true
+					longtap: false
 				},
 				subpages: [{ //引入子webview
 					id: 'list',
@@ -111,8 +110,30 @@
 					}
 				}],
 				preloadPages: [{
-					url: "module/text_and_pictures_input.html",
+					url: "index_sub/index_content3.html",
 					id: "plg_input",
+					styles: {
+						top: '60px',
+						bottom: 0,
+						left: "38.4%",
+						width: '61.6%',
+						bounce: 'vertical',
+						bounceBackground: '#ffffff',
+					},
+					extras: {
+						data: JSON.stringify(this.event)
+					},
+					show: {
+						autoShow: false,
+						aniShow: "fade-in"
+					},
+					waiting: {
+						autoShow: false,
+					}
+				},
+				{
+					url: "index_sub/index_content4.html",
+					id: "plg_work",
 					styles: {
 						top: '60px',
 						bottom: 0,
@@ -167,7 +188,7 @@
 				ready: function() {
 					fAddClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
 					mui('#flow').on('tap', '.flow', function() {
-						if(!fHasClass(this, "mui-active")) {
+						if(!fHasClass(this, "mui-active")) {//重复点击不进行切换
 							fRemoveClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
 							fAddClass(this, "mui-active");
 							nActiveMenu = this.id.split("-")[1];

@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/index_content.css" />
+	</head>
+	<style>
+		#add-picture {
+			display: block;
+			float: left;
+			width: 100px;
+			height: 100px;
+			border: 7px solid #259B2A;
+			border-radius: 10px;
+			line-height: 57px;
+			text-align: center;
+			font-size: 100px;
+			font-weight: bold;
+			color: #259B2A;
+		}
+		
+		#pictures img {
+			height: 95px;
+			width: auto;
+			float: left;
+			margin-right: 15px;
+			margin-bottom: 10px;
+		}
+		
+		#imgcount {
+			color: #259B2A;
+		}
+		
+		#history-detail {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			height: 60px;
+			width: 60px;
+			text-align: center;
+			line-height: 30px;
+			font-size: 60px;
+			border-radius: 30px;
+			background-color: rgba(37, 155, 42, 0.4);
+			color: #eee;
+		}
+	</style>
+
+	<body>
+		<div id="history-detail"><span class="mui-icon mui-icon-arrowright"></span></div>
+		<div id="back-drop"></div>
+		<article id="event">
+			<!--安装施工中-->
+			<template v-if="event.status==19">
+
+				<div id="slider-contain" class="mui-slider">
+					<div class="mui-slider-group">
+						<!--分为左右两部分-->
+						<div class="mui-slider-item">
+							<div class="user-info block">
+								<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+							</div>
+							<div class="block">
+								<span>今日详情</span>
+							</div>
+							<div class="mui-content-padded" style="margin: 5px 10px;" v-if="!event.content.today_broadcast.submit">
+								<div class="mui-input-row" style="margin: 10px 0;">
+									<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.property_text">{{event.content.today_broadcast.text}}</textarea>
+									<h5>您还可以添加<span id="imgcount">{{10 - event.content.today_broadcast.img.length }}</span>张图片</h5>
+								</div>
+								<div id="pictures">
+									<div class="picture" v-for="images in event.content.today_broadcast.img"><img class="adds" v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1'  v-on:tap="__fEditPictures($event)"/></div>
+								</div>
+								<div id="add-picture" v-show="event.content.today_broadcast.img.length < 10" v-on:tap="__fAddPic()">+</div>
+							</div>
+							<div class="mui-content-padded" style="margin: 5px 10px;" v-if="event.content.today_broadcast.submit">
+								<div class="block">
+									<span>{{event.content.today_broadcast.text}}</span>
+								</div>
+								<div id="pictures">
+									<div class="picture" v-for="images in event.content.today_broadcast.img"><img v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1'  v-on:tap="__fEditPictures($event)"/></div>
+								</div>
+							</div>
+							
+							
+							
+							<button class="mui-btn mui-btn-block mui-btn-green submit-button">提交</button>
+						</div>
+						<div class="mui-slider-item">
+							page2
+						</div>
+
+					</div>
+
+				</div>
+			</template>
+
+			<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<a href="#" data="1">拍照</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a href="#" data="2">从相册中选择</a>
+					</li>
+				</ul>
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<a href="#picture" data="0"><b>取消</b></a>
+					</li>
+				</ul>
+			</div>
+		</article>
+		<script type="text/javascript" src="../js/data.js"></script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript" src="../js/vue.js"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript">
+			"use strick"
+			mui.init({
+				swipeBack: false
+			});
+			var MAXIMAGECOUNT = 10;
+			var vueContent;
+			mui.plusReady(function() {
+				window.addEventListener('refresh', function(event) {
+					var aShow = event.detail.split(",");
+					vueContent.refresh(aShow[0], aShow[1]);
+				});
+				window.addEventListener('delete', function(event) {//TODO 不同的状态下需要删除不同的图片。参考index_content3.html同段代码
+					var deleteitem = vueContent.event.content.today_broadcast.img[event.detail - 1];
+					vueContent.event.content.today_broadcast.img.$remove(deleteitem);
+				});
+				vueContent = new Vue({
+					el: "#event",
+					data: {
+						"event": fListAllFlowEvent(localStorage.thisflow)[localStorage.thiseventsort]
+					},
+					methods: {
+						refresh: function(a, b) {
+							var tempobj = JSON.parse(localStorage.data);
+							tempobj.event[fFindObjSortById(this.event.id, tempobj.event)] = this.event;
+							localStorage.data = JSON.stringify(tempobj); //在本地存储修改
+							this.event = fListAllFlowEvent(a)[b];
+							localStorage.thisstatus = this.event.status;
+
+						},
+						//编辑用户信息
+						__fEditUser: function(eventid) {
+							thispage = plus.webview.currentWebview();
+							document.getElementById("back-drop").style.display = "block";
+							mui.openWindow({
+								url: "../index_sub/edituser.html",
+								id: "sub_edituser",
+								styles: {
+									top: "13%",
+									bottom: 0,
+									right: "6.8%",
+									width: "48%",
+									height: "244px"
+								},
+								extras: {
+									eventid: eventid
+								},
+								show: {
+									aniShow: "fade-in"
+								},
+								waiting: {
+									autoShow: false,
+								}
+							});
+						},
+						__fAddPic: function() {
+							document.activeElement.blur();
+							mui("#picture").popover('toggle');
+						},
+						__fEditPictures: function(thisobj) {//编辑图片
+							mui.openWindow({
+								url: "../module/preview_image.html",
+								id: "preview_image",
+								styles: {
+									top: 0,
+									bottom: 0,
+									right: 0,
+									width: "100%",
+									height: "100%"
+								},
+								extras: {
+									images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
+									indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
+									deletemode: fHasClass(thisobj.currentTarget,"adds")?"true":"false"
+								},
+								show: {
+									aniShow: "fade-in"
+								},
+								waiting: {
+									autoShow: false,
+								}
+							});
+						}
+					}
+				});
+			});
+			document.getElementById("back-drop").addEventListener("tap", function() {
+				document.getElementById("back-drop").style.display = "none";
+				plus.webview.close("sub_edituser");
+			})
+			mui('#picture').on('tap', '.mui-popover-action li>a', function() {
+				switch(this.getAttribute("data")) {
+					case "1": //拍照
+						mui("#picture").popover('toggle');
+						getImage("today_broadcast.img");
+						break;
+					case "2": //从相册选择
+						mui("#picture").popover('toggle');
+						galleryImg("today_broadcast.img");
+						break;
+					default:
+						break;
+				}
+			});
+			
+
+			
+			document.getElementById("history-detail").addEventListener("tap", function() {
+				var innerIcon = this.getElementsByClassName("mui-icon")[0];
+				if(fHasClass(innerIcon, "mui-icon-arrowright")) {
+					fRemoveClass(innerIcon, "mui-icon-arrowright");
+					fAddClass(innerIcon, "mui-icon-arrowleft")
+					var sliderApi = mui("#slider-contain").slider({
+						scrollTime: 500
+					});
+					sliderApi.gotoItem(1);
+					sliderApi.destroy();
+				} else {
+					fRemoveClass(innerIcon, "mui-icon-arrowleft");
+					fAddClass(innerIcon, "mui-icon-arrowright")
+					var sliderApi = mui("#slider-contain").slider({
+						scrollTime: 500
+					});
+					sliderApi.gotoItem(0);
+					sliderApi.destroy();
+				}
+			});
+		</script>
+	</body>
+
+</html>

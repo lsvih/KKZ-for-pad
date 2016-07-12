@@ -112,6 +112,546 @@ data = {
 		"content": {
 			"ordertime": "2016-06-30T15:25:33"
 		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
+	},{
+		"id": 1,
+		"name": "郑家园",
+		"sex": 0,
+		"contractid": "",
+		"status": 1,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"ordertime": "2016-06-30T15:25:33"
+		}
 	}, {
 		"id": 2,
 		"name": "郑家园",
@@ -194,8 +734,7 @@ data = {
 			"selection": "这儿是选材信息，一会儿改成JSON",
 			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"]
 		}
-	}, 
-	{
+	}, {
 		"id": 7,
 		"name": "郑家园",
 		"sex": 0,
@@ -225,10 +764,9 @@ data = {
 			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
 			"expected_start_date": "2016-07-15",
 			"left_time_for_pay": 3
-			
+
 		}
-	},
-	{
+	}, {
 		"id": 12,
 		"name": "郑家园",
 		"sex": 0,
@@ -257,10 +795,9 @@ data = {
 			"selection": "这儿是选材信息，一会儿改成JSON",
 			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
 			"expected_start_date": "2016-07-15",
-			"left_time_for_pay":0
+			"left_time_for_pay": 0
 		}
-	},
-	{
+	}, {
 		"id": 13,
 		"name": "郑家园",
 		"sex": 0,
@@ -289,12 +826,13 @@ data = {
 			"selection": "这儿是选材信息，一会儿改成JSON",
 			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
 			"expected_start_date": "2016-07-15",
-			"left_time_for_pay":0,
-			"property_text":"",
-			"property_img":[]
+			"left_time_for_pay": 0,
+			"property": {
+				"text": "",
+				"img": []
+			}
 		}
-	},
-	{
+	}, {
 		"id": 14,
 		"name": "郑家园2",
 		"sex": 0,
@@ -323,11 +861,13 @@ data = {
 			"selection": "这儿是选材信息，一会儿改成JSON",
 			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
 			"expected_start_date": "2016-07-15",
-			"left_time_for_pay":0,
-			"property_text":"",
-			"property_img":[]
+			"left_time_for_pay": 0,
+			"property": {
+				"text": "",
+				"img": []
+			}
 		}
-	},{
+	}, {
 		"id": 16,
 		"name": "郑家园2",
 		"sex": 0,
@@ -356,11 +896,13 @@ data = {
 			"selection": "这儿是选材信息，一会儿改成JSON",
 			"renderings": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
 			"expected_start_date": "2016-07-15",
-			"left_time_for_pay":0,
-			"pending_construction_text":"",
-			"pending_construction_img":[],
+			"left_time_for_pay": 0,
+			"pending_construction": {
+				"text": "",
+				"img": []
+			}
 		}
-	},{
+	}, {
 		"id": 15,
 		"name": "郑家园",
 		"sex": 0,
@@ -373,6 +915,58 @@ data = {
 		"phone": "19012341234",
 		"optional": [],
 		"content": {}
+	}, {
+		"id": 21,
+		"name": "郑家园2",
+		"sex": 0,
+		"contractid": "1",
+		"status": 19,
+		"province": "北京",
+		"city": "北京",
+		"district": "朝阳",
+		"address": "小关北里204号楼",
+		"phone": "19012341234",
+		"optional": [],
+		"content": {
+			"price": 71702,
+			"package": [{
+				"id": 1,
+				"name": "厨房",
+				"num": 10,
+				"unit": "米²"
+			}, {
+				"id": 10,
+				"name": "门",
+				"num": 3,
+				"unit": "个"
+			}],
+			"schedule": "这儿是排期信息，一会儿会改成JSON",
+			"selection": "这儿是选材信息，一会儿改成JSON",
+			"expected_start_date": "2016-07-15",
+			"pending_construction": {
+				"text": "",
+				"img": []
+			},
+			"worker": {
+				"id": 1023,
+				"name": "涂显锋",
+				"sex": 0,
+				"worder_type": "瓦工",
+				"tel": "17701322774",
+				"seniority": "5",
+				"photo": "http://www.ld12.com/upimg358/20160130/15480563199962.jpg"
+			},
+			"today": [{
+				"process_name": "贴砖",
+				"process_text": "清楚，勾缝剂等等等等",
+				"process_img": ["https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=333724665,2937436334&fm=116&gp=0.jpg", "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3621235604,538405218&fm=116&gp=0.jpg"]
+			}],
+			"today_broadcast": {
+				"submit": false,
+				"text": "",
+				"img": []
+			}
+		}
 	}, {
 		"id": 55,
 		"name": "郑家园",
@@ -389,4 +983,5 @@ data = {
 	}, ]
 }
 
-//localStorage.data = JSON.stringify(data);
+localStorage.data = JSON.stringify(data);
+//localStorage.clear("data")

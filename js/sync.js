@@ -26,7 +26,7 @@ function fSync(type, object, data) {
  */
 FIFOtimer =  setInterval(function() {
 	console.log("FIFO running...")
-	var FIFO = JSON.parse(localStorage.FIFO);
+	localStorage.FIFO?var FIFO = JSON.parse(localStorage.FIFO):FIFO = [];
 	if(!gOnline){
 		console.log("Offline");
 		clearInterval(FIFOtimer);

@@ -71,7 +71,9 @@
 		mui.init({
 			gestureConfig: {
 				doubletap: false,
-				longtap: false
+				longtap: false,
+				grag: false,
+				swipe:false
 			}
 		});
 		var nFlowID = 1;
@@ -101,22 +103,42 @@
 					this.nSelectSort = 0;
 				},
 				changecontent: function(sortId, thisObject, status) {
-					if(!fHasClass(thisObject.currentTarget, "list-selected")) {
-						this.nSelectSort = sortId;
-						localStorage.thiseventsort = sortId;
-						switch(status) {
-							case 7:
-							case 9:
-								mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", nFlowID + "," + sortId);
-								plus.webview.show("plg_input");
-								break;
-							default:
-								fCloseSubPage();
-								mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nFlowID + "," + sortId);
-								break;
-						}
+					if(status) {//判断列表为空的情况
+						if(!fHasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
+							this.nSelectSort = sortId;
+							localStorage.thiseventsort = sortId;
+							switch(status) {
+								case 7:
+								case 9:
+									mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", nFlowID + "," + sortId);
+									plus.webview.hide("plg_work", "fade-out");
+									plus.webview.show("plg_input", "fade-in");
+									break;
+								case 10:
+								case 11:
+								case 12:
+								case 13:
+								case 14:
+								case 15:
+								case 16:
+								case 17:
+								case 18:
+								case 19:
+									mui.fire(plus.webview.getWebviewById("plg_work"), "refresh", nFlowID + "," + sortId);
+									plus.webveiw.hide("plg_input", "fade-out");
+									plus.webview.show("plg_work", "fade-in");
+									break;
+								default:
+									fCloseSubPage();
+									mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nFlowID + "," + sortId);
+									break;
+							}
 
+						}
+					} else {
+						fCloseSubPage();
 					}
+
 				}
 			}
 
