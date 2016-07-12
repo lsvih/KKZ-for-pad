@@ -55,7 +55,7 @@
 					<div id="pictures">
 						<div class="picture" v-for="images in event.content.property_img"><img v-bind:src="images" data-preview-src='' data-preview-group='1' /></div>
 					</div>
-					<div id="add-picture" v-show="event.content.property_img.length < 10"  v-on:tap="__fAddPic()">+</div>
+					<div id="add-picture" v-show="event.content.property_img.length < 10" v-on:tap="__fAddPic()">+</div>
 				</div>
 				<button class="mui-btn mui-btn-block mui-btn-green submit-button">提交</button>
 			</template>
@@ -66,7 +66,7 @@
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
-					<span class="check-time">预计开工时间：<span><input type="date" id="select-time"  v-bind:value="event.content.expected_start_date" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)"></span></span><span class="user-info-edit edit-time"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
+					<span class="check-time">预计开工时间：<span><input type="date" id="select-time"  v-bind:value="event.content.expected_start_date" init-time="{{event.content.expected_start_date}}" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)"></span></span><span class="user-info-edit edit-time"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
 				</div>
 				<div class="mui-content-padded" style="margin: 5px 10px;">
 					<div class="mui-input-row" style="margin: 10px 0;">
@@ -105,6 +105,7 @@
 			"use strick"
 			mui.init();
 			var MAXIMAGECOUNT = 10;
+			var vueContent;
 			mui.plusReady(function() {
 				window.addEventListener('refresh', function(event) {
 					var aShow = event.detail.split(",");
@@ -114,13 +115,11 @@
 					var deleteitem = vueContent.event.content.property_img[event.detail - 1];
 					vueContent.event.content.property_img.$remove(deleteitem);
 				});
-				var thiswebview = plus.webview.currentWebview();
 				vueContent = new Vue({
 					el: "#event",
 					data: {
 						"event": fListAllFlowEvent(localStorage.thisflow)[localStorage.thiseventsort]
 					},
-					compiled: function() {},
 					methods: {
 						refresh: function(a, b) {
 							var tempobj = JSON.parse(localStorage.data);
@@ -242,6 +241,37 @@
 					multiple: true,
 					maximum: MAXIMAGECOUNT - vueContent.event.content.property_img.length
 				});
+			}
+			mui("#event").on("tap", ".edit-time", function() {
+				document.getElementById("select-time").focus();
+			});
+
+			function fSelecetTimeChange(e) {
+				var inittime = e.getAttribute("init-time");
+				if(!e.value)(e.value = inittime, e.blur()); //点击"清除"重新设定时间并关闭时间设定
+			}
+
+			function fSaveTime(e) {
+				if(e.value == "") e.value = e.getAttribute("init-time"); //防止出现时间为空的情况
+				if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
+					mui.confirm('是否将预约上门时间从' + e.getAttribute("init-time") + '修改为' + e.value + '？',gAppName, ['否', '是'], function(f) {
+						if(f.index == 1) {
+							var tempobj1 = JSON.parse(localStorage.data);
+							tempobj1.event[fFindObjSortById(vueContent.event.id, tempobj1.event)].content.expected_start_date = e.value;
+							vueContent.event.content.expected_start_date = e.value;
+							localStorage.data = JSON.stringify(tempobj1); //在本地存储修改时间
+							var FIFO = JSON.parse(localStorage.FIFO);
+							FIFO.push({
+								"type": "PUT",
+								"object": "edit-expected_start_date",
+								"data": e.value
+							}); //将修改时间存入队列等待同步
+						} else {
+							e.value = e.getAttribute("init-time");
+						}
+					});
+
+				}
 			}
 		</script>
 	</body>

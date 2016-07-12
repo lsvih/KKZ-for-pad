@@ -107,7 +107,7 @@ function fCloseSubPage(callback) {
 			plus.webview.close(allwebview[i]);
 		}
 	}
-	plus.webview.hide("plg_input", "fade-out")
+	plus.webview.hide("plg_input", "fade-out");
 	if(typeof(callback) === "function") callback();
 }
 

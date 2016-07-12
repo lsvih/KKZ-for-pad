@@ -331,7 +331,7 @@ data = {
 		"id": 16,
 		"name": "郑家园2",
 		"sex": 0,
-		"contractid": "",
+		"contractid": "1",
 		"status": 9,
 		"province": "北京",
 		"city": "北京",
@@ -389,4 +389,4 @@ data = {
 	}, ]
 }
 
-localStorage.data = JSON.stringify(data);
+//localStorage.data = JSON.stringify(data);
