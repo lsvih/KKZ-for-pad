@@ -9,45 +9,7 @@
 		<link rel="stylesheet" href="../css/index_content.css" />
 	</head>
 	<style>
-		#add-picture {
-			display: block;
-			float: left;
-			width: 100px;
-			height: 100px;
-			border: 7px solid #259B2A;
-			border-radius: 10px;
-			line-height: 57px;
-			text-align: center;
-			font-size: 100px;
-			font-weight: bold;
-			color: #259B2A;
-		}
 		
-		#pictures img {
-			height: 95px;
-			width: auto;
-			float: left;
-			margin-right: 15px;
-			margin-bottom: 10px;
-		}
-		
-		#imgcount {
-			color: #259B2A;
-		}
-		
-		#history-detail {
-			position: fixed;
-			bottom: 20px;
-			right: 20px;
-			height: 60px;
-			width: 60px;
-			text-align: center;
-			line-height: 30px;
-			font-size: 60px;
-			border-radius: 30px;
-			background-color: rgba(37, 155, 42, 0.4);
-			color: #eee;
-		}
 	</style>
 
 	<body>
@@ -69,7 +31,7 @@
 							</div>
 							<div class="mui-content-padded" style="margin: 5px 10px;" v-if="!event.content.today_broadcast.submit">
 								<div class="mui-input-row" style="margin: 10px 0;">
-									<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.property_text">{{event.content.today_broadcast.text}}</textarea>
+									<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.property.text">{{event.content.today_broadcast.text}}</textarea>
 									<h5>您还可以添加<span id="imgcount">{{10 - event.content.today_broadcast.img.length }}</span>张图片</h5>
 								</div>
 								<div id="pictures">
@@ -122,6 +84,10 @@
 		<script type="text/javascript">
 			"use strick"
 			mui.init({
+				gestureConfig: {
+					doubletap: false,
+					longtap: false
+				},
 				swipeBack: false
 			});
 			var MAXIMAGECOUNT = 10;
@@ -147,7 +113,6 @@
 							localStorage.data = JSON.stringify(tempobj); //在本地存储修改
 							this.event = fListAllFlowEvent(a)[b];
 							localStorage.thisstatus = this.event.status;
-
 						},
 						//编辑用户信息
 						__fEditUser: function(eventid) {

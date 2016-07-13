@@ -8,33 +8,7 @@
 		<link href="../css/mui.css" rel="stylesheet" />
 		<link rel="stylesheet" href="../css/index_content.css" />
 	</head>
-	<style>
-		#add-picture {
-			display: block;
-			float: left;
-			width: 100px;
-			height: 100px;
-			border: 7px solid #259B2A;
-			border-radius: 10px;
-			line-height: 57px;
-			text-align: center;
-			font-size: 100px;
-			font-weight: bold;
-			color: #259B2A;
-		}
-		
-		#pictures img {
-			height: 95px;
-			width: auto;
-			float: left;
-			margin-right: 15px;
-			margin-bottom: 10px;
-		}
-		
-		#imgcount {
-			color: #259B2A;
-		}
-	</style>
+	
 
 	<body>
 		<div id="back-drop"></div>
@@ -103,7 +77,12 @@
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript">
 			"use strick"
-			mui.init();
+			mui.init({
+				gestureConfig: {
+					doubletap: false,
+					longtap: false
+				},
+				swipeBack:false});
 			var MAXIMAGECOUNT = 10;
 			var vueContent;
 			mui.plusReady(function() {
@@ -216,7 +195,7 @@
 			function fSaveTime(e) {
 				if(e.value == "") e.value = e.getAttribute("init-time"); //防止出现时间为空的情况
 				if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
-					mui.confirm('是否将预约上门时间从' + e.getAttribute("init-time") + '修改为' + e.value + '？', gAppName, ['否', '是'], function(f) {
+					mui.confirm('是否将预计开工时间从' + e.getAttribute("init-time") + '修改为' + e.value + '？', gAppName, ['否', '是'], function(f) {
 						if(f.index == 1) {
 							var tempobj1 = JSON.parse(localStorage.data);
 							tempobj1.event[fFindObjSortById(vueContent.event.id, tempobj1.event)].content.expected_start_date = e.value;

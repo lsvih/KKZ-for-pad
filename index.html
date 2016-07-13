@@ -96,6 +96,7 @@
 						width: '38.2%',
 						bounce: 'vertical',
 						bounceBackground: '#ffffff', //设置webview背景
+						scrollIndicator: 'none'
 					}
 				}, {
 					id: 'index_content',
@@ -141,6 +142,7 @@
 						width: '61.6%',
 						bounce: 'vertical',
 						bounceBackground: '#ffffff',
+						
 					},
 					extras: {
 						data: JSON.stringify(this.event)
@@ -151,8 +153,10 @@
 					},
 					waiting: {
 						autoShow: false,
-					}
-				}]
+					},
+					
+				}],
+				swipeBack:false
 			});
 			mui.plusReady(function() {
 				//仅支持竖屏显示

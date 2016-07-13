@@ -150,7 +150,8 @@
 			gestureConfig: {
 				doubletap: false,
 				longtap: false
-			}
+			},
+			swipeBack:false
 		});
 
 		function plusReady() {}
@@ -180,15 +181,14 @@
 			methods: {
 				refresh: function(a, b) {
 					document.getElementById("back-drop").style.display = "none";
-					this.event = fListAllFlowEvent(a)[b];
-					if(this.event) {//判断内容为空的情况
-						localStorage.thisstatus = this.event.status;
-						switch(this.event.status) {
+					var nextevent = fListAllFlowEvent(a)[b];
+					if(nextevent) {//判断内容为空的情况
+						localStorage.thisstatus = nextevent.status;
+						switch(nextevent.status) {
 							case 7:
 							case 9:
 								mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", a + "," + b);
-								plus.webview.hide("plg_work", "fade-out");
-								plus.webview.show("plg_input", "fade-in");
+								plus.webview.show("plg_input", "fade-in",200);
 								break;
 							case 10:
 							case 11:
@@ -201,11 +201,11 @@
 							case 18:
 							case 19:
 								mui.fire(plus.webview.getWebviewById("plg_work"), "refresh", a + "," + b);
-								plus.webview.hide("plg_input", "fade-out");
-								plus.webview.show("plg_work", "fade-in");
+								plus.webview.show("plg_work", "fade-in",200);
 								break;
 							default:
 								fCloseSubPage();
+								this.event = nextevent;
 								break;
 						}
 					} else {
@@ -333,8 +333,8 @@
 		function fSaveTime(e) {
 			if(e.value == "") e.value = e.getAttribute("init-time"); //防止出现时间为空的情况
 			if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
-				var olddate = e.getAttribute("init-time").split("T")[0] + '   ' + e.getAttribute("init-time").split("T")[1];
-				var newdate = e.value.split("T")[0] + '   ' + e.value.split("T")[1];
+				var olddate = (e.getAttribute("init-time").split("T")[0] + ' ' + e.getAttribute("init-time").split("T")[1]).split(":33")[0];
+				var newdate = (e.value.split("T")[0] + ' ' + e.value.split("T")[1]).split(":33")[0];
 				mui.confirm('是否将预约上门时间从' + olddate + '修改为' + newdate + '？', gAppName, ['否', '是'], function(f) {
 					if(f.index == 1) {
 						var tempobj = JSON.parse(localStorage.data);

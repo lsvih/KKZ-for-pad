@@ -13,7 +13,9 @@
     "refer": [
       "index_sub/list.html",
       "index_sub/menu.html",
-      "index_sub/index_content.html"
+      "index_sub/index_content.html",
+      "index_sub/index_content3.html",
+      "index_sub/index_content4.html"
     ],
     "priority": 0
   },
@@ -53,7 +55,9 @@
       "css/mui.css",
       "js/mui.js"
     ],
-    "refer": [],
+    "refer": [
+      "step_sub/product_intro.html"
+    ],
     "priority": 0
   },
   "index_sub/edituser.html": {
@@ -76,12 +80,68 @@
       "js/vue.js",
       "js/mui.js",
       "css/content.css",
-      "css/mui.css"
+      "css/mui.css",
+      "css/index_content.css"
     ],
     "refer": [
       "index_sub/index_frame.html",
       "intro.html",
-      "index_sub/edituser.html"
+      "index_sub/edituser.html",
+      "module/preview_image.html"
+    ],
+    "priority": 0
+  },
+  "module/preview_image.html": {
+    "href": "module/preview_image.html",
+    "resources": [
+      "js/mui.js",
+      "js/mui.zoom.js",
+      "css/mui.css"
+    ],
+    "refer": [],
+    "priority": 0
+  },
+  "index_sub/index_content3.html": {
+    "href": "index_sub/index_content3.html",
+    "resources": [
+      "css/mui.css",
+      "css/index_content.css",
+      "js/data.js",
+      "js/common.js",
+      "js/vue.js",
+      "js/mui.js"
+    ],
+    "refer": [
+      "index_sub/edituser.html",
+      "module/preview_image.html"
+    ],
+    "priority": 0
+  },
+  "index_sub/index_content4.html": {
+    "href": "index_sub/index_content4.html",
+    "resources": [
+      "css/mui.css",
+      "css/index_content.css",
+      "js/data.js",
+      "js/common.js",
+      "js/vue.js",
+      "js/mui.js"
+    ],
+    "refer": [
+      "index_sub/edituser.html",
+      "module/preview_image.html"
+    ],
+    "priority": 0
+  },
+  "step_sub/product_intro.html": {
+    "href": "step_sub/product_intro.html",
+    "resources": [
+      "css/mui.css",
+      "js/common.js",
+      "js/mui.js"
+    ],
+    "refer": [
+      "module/preview_image.html"
     ],
     "priority": 0
   }

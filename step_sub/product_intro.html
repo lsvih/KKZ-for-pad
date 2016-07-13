@@ -63,11 +63,14 @@
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript">
-			mui.init();
+			mui.init({gestureConfig: {
+					doubletap: false,
+					longtap: false
+				},
+				swipeBack:false});
 			var MAXIMAGECOUNT = 10;
 			var nImageCount = 0;
 			mui.plusReady(function() {
-				alert(1)
 				window.addEventListener('delete', function(event) {
 					var deleteid = event.detail - 1;
 					document.getElementById("pictures").removeChild(document.getElementById("pictures").getElementsByTagName("img")[deleteid].parentNode);

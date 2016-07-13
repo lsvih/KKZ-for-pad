@@ -32,10 +32,15 @@
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript">
 			mui.init({
+				gestureConfig: {
+					doubletap: false,
+					longtap: false
+				},
 				beforeback: function() {
 					plus.webview.close("sub_content_detail")
 					return true;
-				}
+				},
+				
 			});
 			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
