@@ -146,12 +146,11 @@
 		"use strick";
 
 		mui.init({
-			statusBarBackground: '#f7f7f7',
 			gestureConfig: {
 				doubletap: false,
 				longtap: false
 			},
-			swipeBack:false
+			swipeBack: false
 		});
 
 		function plusReady() {}
@@ -182,13 +181,13 @@
 				refresh: function(a, b) {
 					document.getElementById("back-drop").style.display = "none";
 					var nextevent = fListAllFlowEvent(a)[b];
-					if(nextevent) {//判断内容为空的情况
+					if(nextevent) { //判断内容为空的情况
 						localStorage.thisstatus = nextevent.status;
 						switch(nextevent.status) {
 							case 7:
 							case 9:
 								mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", a + "," + b);
-								plus.webview.show("plg_input", "fade-in",200);
+								plus.webview.show("plg_input", "fade-in", 200);
 								break;
 							case 10:
 							case 11:
@@ -201,7 +200,7 @@
 							case 18:
 							case 19:
 								mui.fire(plus.webview.getWebviewById("plg_work"), "refresh", a + "," + b);
-								plus.webview.show("plg_work", "fade-in",200);
+								plus.webview.show("plg_work", "fade-in", 200);
 								break;
 							default:
 								fCloseSubPage();
@@ -235,7 +234,23 @@
 				},
 				//打开量房页面
 				__fGauge: function(eventid) {
-
+					mui.openWindow({
+						url: "../module/drawing_board.html",
+						id: "drawing_board",
+						styles: {
+							top: 0,
+							bottom: 0,
+						},
+						extras: {
+							eventid: eventid
+						},
+						show: {
+							aniShow: "none"
+						},
+						waiting: {
+							autoShow: false,
+						}
+					})
 				},
 				//详情页面
 				__fDetail: function(eventid, type) {
@@ -243,7 +258,7 @@
 						url: "index_frame.html",
 						id: "sub_detail",
 						styles: {
-							top: '60px',
+							top: 60 + gTopbarHeight + 'px',
 							bottom: 0,
 							left: "38.4%",
 							height: "100%",
@@ -271,7 +286,7 @@
 						url: "edituser.html",
 						id: "sub_edituser",
 						styles: {
-							top: "13%",
+							top: "15%",
 							bottom: 0,
 							right: "6.8%",
 							width: "48%",

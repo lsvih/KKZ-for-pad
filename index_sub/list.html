@@ -16,6 +16,12 @@
 				background-color: #fff;
 			}
 			
+			.mui-table {
+				height: 100%;
+				padding: 10px 15px;
+				line-height: 30px;
+			}
+			
 			.mui-table h4,
 			.mui-table h5,
 			.mui-table .mui-h5,
@@ -34,12 +40,16 @@
 			}
 			
 			.mui-table-view-cell {
-				padding: 18px 15px;
+				padding: 0;
+				height: 80px;
 			}
 			
 			.list-selected {
 				background-color: #eee;
 			}
+			/*li:active{
+				background-color: #eee;
+			}*/
 		</style>
 	</head>
 
@@ -47,7 +57,7 @@
 
 		<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="event-list">
 			<!--加入mui-disabled来屏蔽mui-table-view-cell:active的变色-->
-			<li class="mui-table-view-cell mui-disabled" v-bind:class="{'list-selected':$index==nSelectSort}" v-for="event in list" v-on:tap="changecontent($index,$event,event.status)">
+			<li class="mui-table-view-cell mui-disabled" v-bind:class="{'list-selected':$index==nSelectSort}" v-for="event in list" v-on:tap="changecontent($index,$event,event.status)" v-on:longtap="changecontent($index,$event,event.status)">
 				<div class="mui-table">
 					<div class="mui-table-cell mui-col-xs-10">
 						<h4>{{event.name}} {{event.sex?"女士":"先生"}} {{event.phone}}</h4>
@@ -71,7 +81,7 @@
 		mui.init({
 			gestureConfig: {
 				doubletap: false,
-				longtap: false,
+				longtap: true,
 				grag: false,
 				swipe: false
 			}
@@ -86,53 +96,50 @@
 			window.addEventListener('refresh', function(event) {
 				vueList.refresh(nFlowID = event.detail);
 			});
-
-		});
-		Vue.filter('statusNumtoString', function(value) {
-			return fFindObjById(value, gStatus.status).name;
-		})
-		Vue.config.async = false;
-		var vueList = new Vue({
-			el: '#event-list',
-			data: {
-				"nSelectSort": 0,
-				"list": list
-			},
-			methods: {
-				refresh: function(event) {
-					this.list = fListAllFlowEvent(event);
-					this.nSelectSort = 0;
+			Vue.filter('statusNumtoString', function(value) {
+				return fFindObjById(value, gStatus.status).name;
+			})
+			var vueList = new Vue({
+				el: '#event-list',
+				data: {
+					"nSelectSort": 0,
+					"list": list
 				},
-				changecontent: function(sortId, thisObject, status) {
-					if(status) { //判断列表为空的情况
-						if(!fHasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
-							this.nSelectSort = sortId;
-							localStorage.thiseventsort = sortId;
-							if(status == 7 || status == 9) {
-								mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", nFlowID + "," + sortId);
-								plus.webview.hide("plg_work", "fade-out");
-								plus.webview.show("plg_input", "fade-in");
-							} else if(status >= 10 && status <= 19) {
-								mui.fire(plus.webview.getWebviewById("plg_work"), "refresh", nFlowID + "," + sortId);
-								plus.webveiw.hide("plg_input", "fade-out");
-								plus.webview.show("plg_work", "fade-in");
-							} else {
+				methods: {
+					refresh: function(event) {
+						this.list = fListAllFlowEvent(event);
+						this.nSelectSort = 0;
+					},
+					changecontent: function(sortId, thisObject, status) {
+						if(status) { //判断列表为空的情况
+							if(!fHasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
+								this.nSelectSort = sortId;
+								localStorage.thiseventsort = sortId;
+								if(status == 7 || status == 9) {
+									mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", nFlowID + "," + sortId);
+									plus.webview.hide("plg_work", "fade-out");
+									plus.webview.show("plg_input", "fade-in");
+								} else if(status >= 10 && status <= 19) {
+									mui.fire(plus.webview.getWebviewById("plg_work"), "refresh", nFlowID + "," + sortId);
+									plus.webveiw.hide("plg_input", "fade-out");
+									plus.webview.show("plg_work", "fade-in");
+								} else {
+									mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nFlowID + "," + sortId);
+									plus.webveiw.hide("plg_input", "fade-out");
+									plus.webview.hide("plg_work", "fade-out");
+								}
 
-								mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nFlowID + "," + sortId);
-								plus.webveiw.hide("plg_input", "fade-out");
-								plus.webview.hide("plg_work", "fade-out");
 							}
-
+						} else {
+							plus.webveiw.hide("plg_input", "fade-out");
+							plus.webview.hide("plg_work", "fade-out");
+							fCloseSubPage();
 						}
-					} else {
-						plus.webveiw.hide("plg_input", "fade-out");
-						plus.webview.hide("plg_work", "fade-out");
-						fCloseSubPage();
+
 					}
-
 				}
-			}
 
+			});
 		});
 	</script>
 

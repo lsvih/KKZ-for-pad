@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<style>
+		* {
+			padding: 0;
+			margin: 0;
+			list-style: none;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+		
+		body {
+			cursor: default;
+			width: 1024px;
+			height: 748px;
+		}
+		/*中间样式*/
+		
+		section {
+			margin: 0 auto;
+			width: 1024px;
+			height: 748px;
+			background: #fff;
+		}
+		
+		ul {
+			width: 1023px;
+			height: 60px;
+		}
+		
+		ul li {
+			float: left;
+			width: 233px;
+			height: 80px;
+			background: #eee;
+			text-align: center;
+			border-left: solid 1px gray;
+		}
+		/*图像*/
+		
+		#img li {
+			float: none;
+			width: 50px;
+			height: 30px;
+			border: none;
+		}
+		
+		#img li button {
+			height: 30px;
+			width: 50px;
+			padding: 2px 5px;
+		}
+		
+		.means {
+			/*工具、形状*/
+			width: 233px;
+			padding: 0 5px;
+		}
+		
+		.means li {
+			float: left;
+			width: 45px;
+			height: 45px;
+			padding: 0 5px;
+			border: solid 1px #999;
+		}
+		
+		.means img {
+			width: 45px;
+			height: 45px;
+		}
+		
+		.means li:hover,
+		#Line li:hover,
+		#color li:hover {
+			border: solid 1px red;
+		}
+		
+		.shape {
+			width: 345px;
+			padding: 0px 0px;
+		}
+		
+		#Line {
+			/*粗细*/
+			width: 150px;
+			padding: 0px 0px;
+		}
+		
+		#Line img {
+			height: 10px;
+			width: 150px;
+		}
+		
+		#Line li {
+			float: none;
+			width: 150px;
+			height: 12px;
+			padding-bottom: 12px;
+			margin: 0;
+			border: solid 1px #eee;
+		}
+		
+		.Line {
+			width: 150px;
+		}
+		
+		#color {
+			/*颜色*/
+			width: 240px;
+			padding: 20px 18px 0;
+		}
+		
+		#color li {
+			float: left;
+			width: 40px;
+			height: 40px;
+			margin-right: 5px;
+			border: solid 1px #ccc;
+		}
+		
+		.color {
+			width: 290px;
+		}
+		
+		#red {
+			background: red
+		}
+		
+		
+		#blue {
+			background: blue
+		}
+		
+		#yellow {
+			background: yellow
+		}
+		
+		#black {
+			background: black
+		}
+		
+	
+		#orange {
+			background: orange
+		}
+		
+		canvas {
+			display: block;
+			margin: 0 auto;
+		}
+		/*canvas:hover{
+	cursor:crosshair;
+}*/
+		
+		#canvas {
+			z-index: 0;
+		}
+		
+		#canvas_bak {
+			position: absolute;
+			z-index: 1;
+			top: 0;
+		}
+	</style>
+
+	<body>
+		<section>
+			<!-- 工具区域 -->
+
+			<!-- 画图面板区域 -->
+			<canvas id="canvas" width="1024" height="665"></canvas>
+			<canvas id="canvas_bak" width="1024" height="665"></canvas>
+			<ul>
+				<!--<li>
+					<h3>图像</h3>
+					<hr/>
+					<ul id="img">
+						<li>
+							<button id="savePic">保存图片</button>
+						</li>
+						<li><button id="clearPic">清除画布</button></li>
+						<li><button id="cancel">撤销</button></li>
+					</ul>
+				</li>-->
+				<li>
+
+					<ul class="means">
+						<li id="Brush" onClick="dBrush(0)"><img src="../images/draw/Brush.png" /></li>
+						<li id="Eraser" onClick="dEraser(1)"><img src="../images/draw/Eraser.png" /></li>
+						<li id="Paint" onClick="dPaint(2)"><img src="../images/draw/Paint.png" /></li>
+						<li id="Text" onClick="dText(3)"><img src="../images/draw/Text.png" /></li>
+					</ul>
+				</li>
+				<li class="shape">
+					<ul class="means shape">
+						<li id="line" onClick="dLine(4)"><img src="../images/draw/line.png" /></li>
+						<li id="arc" onClick="dArc(5)"><img src="../images/draw/arc.png" /></li>
+						<li id="rect" onClick="dRect(6)"><img src="../images/draw/rect.png" /></li>
+						<li id="poly" onClick="dPoly(7)"><img src="../images/draw/poly.png" /></li>
+						<li id="arcfill" onClick="dArcFill(8)"><img src="../images/draw/arcfill.png" /></li>
+						<li id="rectfill" onClick="dRectFill(9)"><img src="../images/draw/rectfill.png" /></li>
+					</ul>
+				</li>
+				<li class="Line">
+					<ul id="Line">
+						<li id="line1px" onClick="sL(0)"><img src="../images/draw/line1px.png" /></li>
+						<li id="line5px" onClick="sL(1)"><img src="../images/draw/line5px.png" /></li>
+					</ul>
+				</li>
+				<li class="color">
+					<ul id="color">
+						<li id="red" onClick="setColor(0)"></li>
+						<li id="blue" onClick="setColor(1)"></li>
+						<li id="yellow" onClick="setColor(2)"></li>
+						<li id="black" onClick="setColor(3)"></li>
+						<li id="orange" onClick="setColor(4)"></li>
+					</ul>
+				</li>
+			</ul>
+		</section>
+	</body>
+	<script type="text/javascript" src="../js/mui.js"></script>
+	<script>
+		mui.init({
+			gestureConfig: {
+				doubletap: false,
+				longtap: false
+			},
+			swipeBack: false
+		});
+		//获取画布
+		var canvas = document.getElementById('canvas');
+		var can = canvas.getContext('2d');
+		var canvas_bak = document.getElementById('canvas_bak');
+		var can_bak = canvas_bak.getContext('2d');
+		// 清除画布功能
+		//		document.getElementById('clearPic').onclick = function() {
+		//				can.clearRect(0, 0, 1024, 665);
+		//			}
+		//图片保存功能，将从 data 协议中获取的图像信息送到后台处理，提供下载功能
+		//		document.getElementById('savePic').onclick = function() {
+		//				var b64 = canvas.toDataURL();
+		//				//利用 data 协议获取图片信息，一般文件比较大，用 post 传到后台
+		//				console.log(b64);
+		//			}
+		//获取 工具按钮
+		var Brush = document.getElementById('Brush'); //画笔
+		var Eraser = document.getElementById('Eraser'); //橡皮擦
+		var Paint = document.getElementById('Paint'); //油漆桶
+		var Text = document.getElementById('Text'); //文字
+		//获取 形状按钮
+		var line = document.getElementById('line'); //直线
+		var arc = document.getElementById('arc'); //圆圈
+		var rect = document.getElementById('rect'); //矩形圈
+		var poly = document.getElementById('poly'); //三角形
+		var arcfill = document.getElementById('arcfill'); //实心圆
+		var rectfill = document.getElementById('rectfill'); //实心矩形
+
+		//将12个工具和形状放入一个数组 actions[] 中 
+		var actions = [Brush, Eraser, Paint, Text, line, arc, rect, poly, arcfill, rectfill];
+		//状态设定，显示是否选中状态，type=1为工具，形状和粗细的选中状态，type=0为颜色选中状态
+		function setStatus(arr, num, type) {
+			for(var i = 0; i < arr.length; i++) {
+				i == num ? (type ? arr[i].style.background = "yellow" : arr[i].style.border = "1px solid red") : (type ? arr[i].style.background = "#eee" : arr[i].style.border = "1px solid #ccc");
+			}
+		}
+		//清空
+		function clearContext(type) {
+			if(!type) {
+				can_bak.clearRect(0, 0, 1024, 665);
+			} else {
+				can.clearRect(0, 0, 1024, 665);
+				can_bak.clearRect(0, 0, 1024, 665);
+			}
+		}
+		//将can_bak内容复制到can里，清空can_bak
+		function copytocan() {
+			var img = new Image(); //创建一个Image对象，实现图片的预下载  
+			img.src = canvas_bak.toDataURL();
+			img.onload = function() { //图片下载完毕时异步调用callback函数。  
+				console.log(img.src)
+				can.drawImage(img, 0, 0);
+				clearContext();
+				//						saveImageToAry();
+				status = 0;
+			}
+
+		}
+		/******* 自由画笔 *******/
+		function dBrush(n) {
+			setStatus(actions, n, 1);
+			//鼠标按下的时候
+			var status = 0;
+			canvas_bak.ontouchstart = function(e) {
+					e = window.event || e;
+					var sX = e.pageX - this.offsetLeft;
+					var sY = e.pageY - this.offsetTop;
+					can.beginPath();
+					can.moveTo(sX, sY);
+					status = 1;
+				}
+				//鼠标移动的时候
+			canvas_bak.ontouchmove = function(e) {
+					e = window.event || e;
+					var eX = e.pageX - this.offsetLeft;
+					var eY = e.pageY - this.offsetTop;
+					if(status == 1) {
+						can.lineTo(eX, eY);
+						can.stroke();
+					} else {
+						return false;
+					}
+				}
+				//鼠标抬起的时候
+			canvas_bak.ontouchend = function() {
+					can.closePath();
+				}
+				//鼠标移出canvas画布结束画图
+			canvas_bak.onmouseout = function() {
+				can.closePath();
+				status = 0;
+			}
+		}
+
+		/******* 橡皮擦 *******/
+		function dEraser(n) {
+			setStatus(actions, n, 1);
+			var status = 0;
+			//鼠标按下也开始清除，范围为当前线宽的两倍
+			canvas_bak.ontouchstart = function(e) {
+					e = window.event || e;
+					var sX = e.pageX - this.offsetLeft;
+					var sY = e.pageY - this.offsetTop;
+					can.clearRect(sX - can.lineWidth, sY - can.lineWidth, can.lineWidth * 2, can.lineWidth * 2);
+					status = 1; //状态标志位
+				}
+				// 鼠标移动时跟着轨迹一齐擦除
+			canvas_bak.ontouchmove = function(e) {
+					e = window.event || e;
+					var X = e.pageX - this.offsetLeft;
+					var Y = e.pageY - this.offsetTop;
+					if(status) can.clearRect(X - can.lineWidth, Y - can.lineWidth, can.lineWidth * 2, can.lineWidth * 2);
+				}
+				//鼠标抬起，清除状态标志位
+			canvas_bak.ontouchend = function() {
+				status = 0;
+			}
+			canvas_bak.onmouseout = null
+		}
+
+		/******* 油漆桶 *******/
+		function dPaint(n) {
+			setStatus(actions, n, 1);
+			canvas_bak.ontouchstart = function() {
+				can.fillRect(0, 0, 1024, 665);
+			}
+			canvas_bak.ontouchmove = null;
+			canvas_bak.ontouchend = null;
+			canvas_bak.onmouseout = null;
+		}
+
+		/******* 文字 *******/
+		function dText(n) {
+			setStatus(actions, n, 1);
+			canvas_bak.ontouchend = function(e) {
+				e = window.event || e;
+				var x = e.pageX - this.offsetLeft;
+				var y = e.pageY - this.offsetTop;
+				var val = window.prompt('输入填充的文字', '');
+				if(val == null) return false; //输入为空则返回
+				can.fillText(val, x, y);
+				dBrush(0); //填入文字后返回自由画笔工具
+			}
+			canvas_bak.ontouchmove = function(e) {
+				e = window.event || e;
+				clearContext();
+				var x = e.pageX - this.offsetLeft;
+				var y = e.pageY - this.offsetTop;
+				var val = "TEXT";
+				can_bak.fillText(val, x, y);
+			}
+			canvas_bak.onmouseout = null;
+		}
+
+		/******* 直线 *******/
+		function dLine(n) {
+			var sX;
+			var sY;
+			setStatus(actions, n, 1);
+			//画直线，鼠标按下时，当前鼠标位置为起点
+			canvas_bak.ontouchstart = function(e) {
+					e = window.event || e;
+					sX = e.pageX - this.offsetLeft;
+					sY = e.pageY - this.offsetTop;
+					can.beginPath();
+					can.moveTo(sX, sY);
+				}
+				//移动时显示线
+			canvas_bak.ontouchmove = function(e) {
+					e = window.event || e;
+					clearContext();
+					var eX = e.pageX - this.offsetLeft;
+					var eY = e.pageY - this.offsetTop;
+					can_bak.beginPath();
+					can_bak.moveTo(sX, sY);
+					can_bak.lineTo(eX, eY);
+					can_bak.stroke();
+				}
+				//画直线，鼠标抬起时，当前鼠标位置为终点
+			canvas_bak.ontouchend = function(e) {
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				can.lineTo(eX, eY);
+				can.closePath();
+				can.stroke();
+			}
+			canvas_bak.onmouseout = null;
+		}
+		/******* 空心圆圈 *******/
+		function dArc(n) {
+			setStatus(actions, n, 1);
+			var sX = 0; //内部的“全局标量”
+			var sY = 0;
+			//画空心圆，鼠标按下时，当前鼠标位置为圆心
+			canvas_bak.ontouchstart = function(e) {
+					e = window.event || e;
+					sX = e.pageX - this.offsetLeft;
+					sY = e.pageY - this.offsetTop;
+				}
+				//画空心圆，鼠标抬起时，当前鼠标位置为外圆结束点
+			canvas_bak.ontouchend = function(e) {
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var dX = eX - sX
+				var dY = eY - sY;
+				var r = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2)); //计算出半径
+				can.beginPath();
+				can.arc(sX, sY, r, 0, 360, false);
+				can.closePath();
+				can.stroke();
+			}
+			canvas_bak.ontouchmove = function(e) {
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var dX = eX - sX
+				var dY = eY - sY;
+				var r = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2)); //计算出半径
+				can_bak.beginPath();
+				can_bak.arc(sX, sY, r, 0, 360, false);
+				can_bak.closePath();
+				can_bak.stroke();
+			}
+			canvas_bak.onmouseout = null;
+		}
+		/******* 空心矩形 *******/
+		function dRect(n) {
+			setStatus(actions, n, 1);
+			var sX = 0; //内部的“全局标量”
+			var sY = 0;
+			//画空心矩形，鼠标按下时，当前鼠标位置为矩形的左上角
+			canvas_bak.ontouchstart = function(e) {
+					e = window.event || e;
+					sX = e.pageX - this.offsetLeft;
+					sY = e.pageY - this.offsetTop;
+				}
+				//画空心矩形，鼠标抬起时，当前鼠标位置为矩形的右下角
+			canvas_bak.ontouchend = function(e) {
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var w = eX - sX; //矩形的宽
+				var h = eY - sY; //矩形的高
+				can.strokeRect(sX, sY, w, h);
+			}
+			canvas_bak.ontouchmove = function(e) {
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var w = eX - sX; //矩形的宽
+				var h = eY - sY; //矩形的高
+				can_bak.strokeRect(sX, sY, w, h);
+			}
+			canvas_bak.onmouseout = null;
+		}
+
+		/******* 空心三角形 *******/
+		function dPoly(n) {
+			setStatus(actions, n, 1);
+			var sX = 0;
+			var sY = 0;
+			//画三角形，鼠标按下，当前鼠标位置为三角形顶点坐标
+			canvas_bak.ontouchstart = function(e) {
+					e = window.event || e;
+					sX = e.pageX - this.offsetLeft;
+					sY = e.pageY - this.offsetTop;
+				}
+				//画三角形，鼠标抬起时，当前鼠标位置为三角形右边的结束点
+			canvas_bak.ontouchend = function(e) {
+				can.beginPath();
+				can.moveTo(sX, sY);
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var dX = eX - sX;
+				var dY = eY - sY; //三角形的高
+				var w = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2)); //三角形腰的长度
+				var bottom = 2 * Math.sqrt(Math.pow(w, 2) - Math.pow(dY, 2)); //底边长度
+				can.lineTo(eX, eY);
+				can.lineTo(eX - bottom, eY);
+				can.lineTo(sX, sY);
+				can.closePath();
+				can.stroke();
+				sX = 0;
+				sY = 0;
+			}
+			canvas_bak.ontouchmove = function(e) {
+				can_bak.beginPath();
+				can_bak.moveTo(sX, sY);
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var dX = eX - sX;
+				var dY = eY - sY; //三角形的高
+				var w = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2)); //三角形腰的长度
+				var bottom = 2 * Math.sqrt(Math.pow(w, 2) - Math.pow(dY, 2)); //底边长度
+				can_bak.lineTo(eX, eY);
+				can_bak.lineTo(eX - bottom, eY);
+				can_bak.closePath();
+				can_bak.stroke();
+			}
+			canvas_bak.onmouseout = null;
+		}
+
+		/******* 实心圆形 *******/
+		function dArcFill(n) {
+			setStatus(actions, n, 1);
+			var sX = 0; //内部的“全局标量”
+			var sY = 0;
+			//画实心圆，鼠标按下时，当前鼠标位置为圆心
+			canvas_bak.ontouchstart = function(e) {
+					e = window.event || e;
+					sX = e.pageX - this.offsetLeft;
+					sY = e.pageY - this.offsetTop;
+				}
+				//画实心圆，鼠标抬起时，当前鼠标位置为外圆结束点
+			canvas_bak.ontouchend = function(e) {
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var dX = eX - sX
+				var dY = eY - sY;
+				var r = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2)); //计算出半径
+				can.beginPath();
+				can.arc(sX, sY, r, 0, 360, false);
+				can.closePath();
+				can.fill();
+			}
+			canvas_bak.ontouchmove = function(e) {
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var dX = eX - sX
+				var dY = eY - sY;
+				var r = Math.sqrt(Math.pow(dX, 2) + Math.pow(dY, 2)); //计算出半径
+				can_bak.beginPath();
+				can_bak.arc(sX, sY, r, 0, 360, false);
+				can_bak.closePath();
+				can_bak.fill();
+			}
+			canvas_bak.onmouseout = null;
+		}
+
+		/******* 实心矩形 *******/
+		function dRectFill(n) {
+			setStatus(actions, n, 1);
+			var sX = 0; //内部的“全局标量”
+			var sY = 0;
+			//画实心矩形，鼠标按下时，当前鼠标位置为矩形的左上角
+			canvas_bak.ontouchstart = function(e) {
+					e = window.event || e;
+					sX = e.pageX - this.offsetLeft;
+					sY = e.pageY - this.offsetTop;
+				}
+				//画实心矩形，鼠标抬起时，当前鼠标位置为矩形的右下角
+			canvas_bak.ontouchend = function(e) {
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var w = eX - sX; //矩形的宽
+				var h = eY - sY; //矩形的高
+				can.fillRect(sX, sY, w, h);
+			}
+			canvas_bak.ontouchmove = function(e) {
+				e = window.event || e;
+				clearContext();
+				var eX = e.pageX - this.offsetLeft;
+				var eY = e.pageY - this.offsetTop;
+				var w = eX - sX; //矩形的宽
+				var h = eY - sY; //矩形的高
+				can_bak.fillRect(sX, sY, w, h);
+			}
+			canvas_bak.onmouseout = null;
+		}
+
+		//设置默认值（暂不默认）
+		//dBrush(0); 
+
+		//画线种类的获取
+		var line1 = document.getElementById('line1px');
+		var line5 = document.getElementById('line5px');
+		//将画线的类型放入lArr中，便于取值
+		var lArr = [line1, line5];
+
+		//线宽设置
+		function sL(n) {
+			setStatus(lArr, n, 1);
+			switch(n) {
+				case 0:
+					can.lineWidth = 1;
+					break;
+				case 1:
+					can.lineWidth = 5;
+					break;
+				default:
+					can.lineWidth = 1;
+			}
+		}
+
+		//颜色对象的获取
+		var Red = document.getElementById('red');
+		var Blue = document.getElementById('blue');
+		var Yellow = document.getElementById('yellow');
+		var Black = document.getElementById('black');
+		var Orange = document.getElementById('orange');
+		//将颜色的类型放入cArr中，便于取值
+		var cArr = [Red, Blue, Yellow, Black, Orange];
+		//颜色设置
+		function setColor(n) {
+			setStatus(cArr, n, 0);
+			switch(n) {
+				case 0:
+					{
+						can.strokeStyle = "red";
+						can.fillStyle = "red";
+					}
+					break;
+				case 1:
+					{
+						can.strokeStyle = "blue";
+						can.fillStyle = "blue";
+					}
+					break;
+				case 2:
+					{
+						can.strokeStyle = "yellow";
+						can.fillStyle = "yellow";
+					}
+					break;
+				case 3:
+					{
+						can.strokeStyle = "black";
+						can.fillStyle = "black";
+					}
+					break;
+				
+
+				case 4:
+					{
+						can.strokeStyle = "orange";
+						can.fillStyle = "orange";
+					}
+					break;
+				default:
+					{
+						can.strokeStyle = "black";
+						can.fillStyle = "black";
+					};
+			}
+		}
+	</script>
+
+</html>

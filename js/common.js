@@ -2,7 +2,16 @@
 //全局变量
 var gVersion = "0.01";
 var gAppName = "快块装" + gVersion;
+var gTopbarHeight = 20; //状态栏高度，沉浸式使用
 
+/**
+ * 获得当前日期
+ * 日期返回格式：YYYY-MM-DD
+ */
+function fGetDate() {
+	var d = new Date();
+	return d.getFullYear() + "-" + ((d.getMonth() + 1) < 10 ? "0" : "") + (d.getMonth() + 1) + "-" + d.getDate();
+}
 //判断是否存在队列对象，如果不存在则创建
 if(!localStorage.FIFO) localStorage.FIFO = JSON.stringify([]);
 /**
@@ -108,8 +117,8 @@ function fCloseSubPage(callback) {
 			plus.webview.close(allwebview[i]);
 		}
 	}
-	plus.webview.hide("plg_input", "fade-out",200);
-	plus.webview.hide("plg_work", "fade-out",200);
+	plus.webview.hide("plg_input", "fade-out", 200);
+	plus.webview.hide("plg_work", "fade-out", 200);
 	if(typeof(callback) === "function") callback();
 }
 

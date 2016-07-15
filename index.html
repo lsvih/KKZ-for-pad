@@ -9,7 +9,8 @@
 		<link rel="stylesheet" href="css/common.css" />
 		<style>
 			.mui-bar {
-				height: 60px;
+				height: 80px;
+				padding-top:20px
 			}
 			
 			.mui-icon-bars {
@@ -81,7 +82,6 @@
 			var nActiveMenu = 1;
 			localStorage.thisflow = 1;
 			mui.init({
-				statusBarBackground: '#f7f7f7',
 				gestureConfig: {
 					doubletap: false,
 					longtap: false
@@ -90,7 +90,7 @@
 					id: 'list',
 					url: 'index_sub/list.html',
 					styles: {
-						top: '60px',
+						top: 60 + gTopbarHeight + 'px',
 						bottom: 0,
 						left: 0,
 						width: '38.2%',
@@ -102,7 +102,7 @@
 					id: 'index_content',
 					url: 'index_sub/index_content.html',
 					styles: {
-						top: '60px',
+						top: 60 + gTopbarHeight + 'px',
 						bottom: 0,
 						left: "38.4%",
 						width: '61.6%',
@@ -114,7 +114,7 @@
 					url: "index_sub/index_content3.html",
 					id: "plg_input",
 					styles: {
-						top: '60px',
+						top: 60 + gTopbarHeight + 'px',
 						bottom: 0,
 						left: "38.4%",
 						width: '61.6%',
@@ -136,7 +136,7 @@
 					url: "index_sub/index_content4.html",
 					id: "plg_work",
 					styles: {
-						top: '60px',
+						top: 60 + gTopbarHeight + 'px',
 						bottom: 0,
 						left: "38.4%",
 						width: '61.6%',

@@ -8,11 +8,16 @@
 		<link href="css/mui.css" rel="stylesheet" />
 	</head>
 	<style>
+	.mui-bar{
+		height: 65px;
+		padding-top: 20px;
+	}
 		.mui-pull-right {
 			float: right;
 			width: auto;
 			line-height: 44px;
 		}
+		
 	</style>
 	<body>
 		<header class="mui-bar mui-bar-nav">
@@ -20,6 +25,7 @@
 			<div class="mui-title">产品介绍列表</div>
 			<span class="next-step mui-pull-right">选套餐 ></span>
 		</header>
+		<script type="text/javascript" src="js/common.js" ></script>
 		<script src="js/mui.js"></script>
 		<script type="text/javascript">
 			mui.init({gestureConfig: {
@@ -30,7 +36,7 @@
 					id: 'sub_product_intro',
 					url: 'step_sub/product_intro.html',
 					styles: {
-						top: '45px',
+						top: 45 + gTopbarHeight + 'px',
 						bottom: 0,
 						left: 0,
 						width: '100%',

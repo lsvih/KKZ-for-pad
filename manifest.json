@@ -1,11 +1,13 @@
-﻿{
+{
 	"@platforms": [
+		"android",
+		"iPhone",
 		"iPad"
 	],
 	"id": "H5A5ABF46",
 	"name": "块块装 for Pad",
 	"version": {
-		"name": "0.1",
+		"name": "1.0",
 		"code": ""
 	},
 	"description": "",
@@ -130,13 +132,25 @@
 				"ios": {
 					"prerendered": true, 
 					"auto": "", 
-					"ipad": {
-						"normal": "",
+					"iphone": {
+						"normal": "", 
 						"retina": "", 
-						"normal7": "",
-						"retina7": "",
+						"retina7": "", 
+						"retina8": "", 
 						"spotlight-normal": "",
-						"spotlight-retina": "",
+						"spotlight-retina": "", 
+						"spotlight-retina7": "", 
+						"settings-normal": "", 
+						"settings-retina": "", 
+						"settings-retina8": ""
+					},
+					"ipad": {
+						"normal": "", 
+						"retina": "", 
+						"normal7": "", 
+						"retina7": "", 
+						"spotlight-normal": "", 
+						"spotlight-retina": "", 
 						"spotlight-normal7": "",
 						"spotlight-retina7": "",
 						"settings-normal": "",
@@ -146,14 +160,22 @@
 			},
 			"splashscreen": {
 				"ios": {
+					"iphone": {
+						"default": "", 
+						"retina35": "",
+						"retina40": "",
+						"retina47": "",
+						"retina55": "",
+						"retina55l": ""
+					},
 					"ipad": {
 						"portrait": "", 
 						"portrait-retina": "",
-						"landscape": "",
-						"landscape-retina": "",
-						"portrait7": "", 
+						"landscape": "", 
+						"landscape-retina": "", 
+						"portrait7": "",
 						"portrait-retina7": "",
-						"landscape7": "",
+						"landscape7": "", 
 						"landscape-retina7": ""
 					}
 				}
@@ -179,9 +201,7 @@
 	      "refer": [
 	        "index_sub/list.html",
 	        "index_sub/menu.html",
-	        "index_sub/index_content.html",
-	        "index_sub/index_content3.html",
-	        "index_sub/index_content4.html"
+	        "index_sub/index_content.html"
 	      ]
 	    },
 	    "index_sub/list.html": {
@@ -194,8 +214,7 @@
 	        "css/mui.css",
 	        "fonts/mui.ttf"
 	      ],
-	      "priority": 0,
-	      "refer": []
+	      "priority": 0
 	    },
 	    "index_sub/menu.html": {
 	      "href": "index_sub/menu.html",
@@ -204,8 +223,7 @@
 	        "fonts/mui.ttf",
 	        "js/mui.js"
 	      ],
-	      "priority": 1,
-	      "refer": []
+	      "priority": 1
 	    },
 	    "index_sub/index_frame.html": {
 	      "href": "index_sub/index_frame.html",
@@ -214,8 +232,7 @@
 	        "fonts/mui.ttf",
 	        "js/mui.js"
 	      ],
-	      "priority": 2,
-	      "refer": []
+	      "priority": 2
 	    },
 	    "intro.html": {
 	      "href": "intro.html",
@@ -224,10 +241,7 @@
 	        "fonts/mui.ttf",
 	        "js/mui.js"
 	      ],
-	      "priority": 3,
-	      "refer": [
-	        "step_sub/product_intro.html"
-	      ]
+	      "priority": 3
 	    },
 	    "index_sub/edituser.html": {
 	      "href": "index_sub/edituser.html",
@@ -239,8 +253,7 @@
 	        "js/mui.js",
 	        "js/vue.js"
 	      ],
-	      "priority": 4,
-	      "refer": []
+	      "priority": 4
 	    },
 	    "index_sub/index_content.html": {
 	      "href": "index_sub/index_content.html",
@@ -251,81 +264,18 @@
 	        "js/mui.js",
 	        "css/content.css",
 	        "css/mui.css",
-	        "fonts/mui.ttf",
-	        "css/index_content.css"
+	        "fonts/mui.ttf"
 	      ],
 	      "refer": [
 	        "index_sub/index_frame.html",
 	        "intro.html",
-	        "index_sub/edituser.html",
-	        "module/preview_image.html"
+	        "index_sub/edituser.html"
 	      ],
 	      "priority": 2
-	    },
-	    "module/preview_image.html": {
-	      "href": "module/preview_image.html",
-	      "resources": [
-	        "js/mui.js",
-	        "js/mui.zoom.js",
-	        "css/mui.css",
-	        "fonts/mui.ttf"
-	      ],
-	      "priority": 1
-	    },
-	    "index_sub/index_content3.html": {
-	      "href": "index_sub/index_content3.html",
-	      "resources": [
-	        "css/mui.css",
-	        "fonts/mui.ttf",
-	        "css/index_content.css",
-	        "js/data.js",
-	        "js/common.js",
-	        "js/vue.js",
-	        "js/mui.js"
-	      ],
-	      "refer": [
-	        "index_sub/edituser.html",
-	        "module/preview_image.html"
-	      ],
-	      "priority": 0
-	    },
-	    "index_sub/index_content4.html": {
-	      "href": "index_sub/index_content4.html",
-	      "resources": [
-	        "css/mui.css",
-	        "fonts/mui.ttf",
-	        "css/index_content.css",
-	        "js/data.js",
-	        "js/common.js",
-	        "js/vue.js",
-	        "js/mui.js"
-	      ],
-	      "refer": [
-	        "index_sub/edituser.html",
-	        "module/preview_image.html"
-	      ],
-	      "priority": 3
-	    },
-	    "step_sub/product_intro.html": {
-	      "href": "step_sub/product_intro.html",
-	      "resources": [
-	        "css/mui.css",
-	        "fonts/mui.ttf",
-	        "js/common.js",
-	        "js/mui.js"
-	      ],
-	      "refer": [
-	        "module/preview_image.html"
-	      ],
-	      "priority": 6
 	    }
 	  },
 	  "idle": {
 	    "resources": [
-	      "images/preview.png",
-	      "index_sub/detail_sub/selection.html",
-	      "index_sub/detail_sub/gauge.html",
-	      "index_sub/detail_sub/schedule.html",
 	      "README.md"
 	    ]
 	  }

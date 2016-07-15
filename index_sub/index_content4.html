@@ -9,7 +9,7 @@
 		<link rel="stylesheet" href="../css/index_content.css" />
 	</head>
 	<style>
-		
+
 	</style>
 
 	<body>
@@ -18,24 +18,26 @@
 		<article id="event">
 			<!--安装施工中-->
 			<template v-if="event.status==19">
-
+				<div class="user-info block">
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span>
+					<span class="more-info" v-on:tap="__fDetail(event.id,'userdetail')">详情 ></span>
+				</div>
 				<div id="slider-contain" class="mui-slider">
 					<div class="mui-slider-group">
+
 						<!--分为左右两部分-->
 						<div class="mui-slider-item">
-							<div class="user-info block">
-								<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
-							</div>
+
 							<div class="block">
 								<span>今日详情</span>
 							</div>
 							<div class="mui-content-padded" style="margin: 5px 10px;" v-if="!event.content.today_broadcast.submit">
 								<div class="mui-input-row" style="margin: 10px 0;">
-									<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.property.text">{{event.content.today_broadcast.text}}</textarea>
+									<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.today_broadcast.text">{{event.content.today_broadcast.text}}</textarea>
 									<h5>您还可以添加<span id="imgcount">{{10 - event.content.today_broadcast.img.length }}</span>张图片</h5>
 								</div>
 								<div id="pictures">
-									<div class="picture" v-for="images in event.content.today_broadcast.img"><img class="adds" v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1'  v-on:tap="__fEditPictures($event)"/></div>
+									<div class="picture" v-for="images in event.content.today_broadcast.img"><img class="adds" v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
 								</div>
 								<div id="add-picture" v-show="event.content.today_broadcast.img.length < 10" v-on:tap="__fAddPic()">+</div>
 							</div>
@@ -44,16 +46,18 @@
 									<span>{{event.content.today_broadcast.text}}</span>
 								</div>
 								<div id="pictures">
-									<div class="picture" v-for="images in event.content.today_broadcast.img"><img v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1'  v-on:tap="__fEditPictures($event)"/></div>
+									<div class="picture" v-for="images in event.content.today_broadcast.img"><img v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
 								</div>
 							</div>
-							
-							
-							
+
 							<button class="mui-btn mui-btn-block mui-btn-green submit-button">提交</button>
 						</div>
 						<div class="mui-slider-item">
-							page2
+							<div><div style="width: 100%;text-align: center;">整体时光轴</div>
+							<div class="block" v-for="timelineevent in event.content.timeline"><span>{{timelineevent.date}}</span>&nbsp;<span>{{timelineevent.process.process_name}}</span><br />
+							<span v-if=" timelineevent.date == fGetDate()">今天</span>
+							</div>
+							</div>
 						</div>
 
 					</div>
@@ -97,7 +101,7 @@
 					var aShow = event.detail.split(",");
 					vueContent.refresh(aShow[0], aShow[1]);
 				});
-				window.addEventListener('delete', function(event) {//TODO 不同的状态下需要删除不同的图片。参考index_content3.html同段代码
+				window.addEventListener('delete', function(event) { //TODO 不同的状态下需要删除不同的图片。参考index_content3.html同段代码
 					var deleteitem = vueContent.event.content.today_broadcast.img[event.detail - 1];
 					vueContent.event.content.today_broadcast.img.$remove(deleteitem);
 				});
@@ -122,7 +126,7 @@
 								url: "../index_sub/edituser.html",
 								id: "sub_edituser",
 								styles: {
-									top: "13%",
+									top: "15%",
 									bottom: 0,
 									right: "6.8%",
 									width: "48%",
@@ -143,7 +147,7 @@
 							document.activeElement.blur();
 							mui("#picture").popover('toggle');
 						},
-						__fEditPictures: function(thisobj) {//编辑图片
+						__fEditPictures: function(thisobj) { //编辑图片
 							mui.openWindow({
 								url: "../module/preview_image.html",
 								id: "preview_image",
@@ -157,10 +161,36 @@
 								extras: {
 									images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
 									indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
-									deletemode: fHasClass(thisobj.currentTarget,"adds")?"true":"false"
+									deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
 								},
 								show: {
 									aniShow: "fade-in"
+								},
+								waiting: {
+									autoShow: false,
+								}
+							});
+						},
+						//详情页面
+						__fDetail: function(eventid, type) {
+							mui.openWindow({
+								url: "index_frame.html",
+								id: "sub_detail",
+								styles: {
+									top: 60 + gTopbarHeight + 'px',
+									bottom: 0,
+									left: "38.4%",
+									height: "100%",
+									width: '61.6%',
+									bounce: 'none',
+									bounceBackground: '#ffffff'
+								},
+								extras: {
+									type: type,
+									eventid: eventid
+								},
+								show: {
+									aniShow: "slide-in-right"
 								},
 								waiting: {
 									autoShow: false,
@@ -188,9 +218,8 @@
 						break;
 				}
 			});
-			
 
-			
+			//分屏切换看整体时间轴
 			document.getElementById("history-detail").addEventListener("tap", function() {
 				var innerIcon = this.getElementsByClassName("mui-icon")[0];
 				if(fHasClass(innerIcon, "mui-icon-arrowright")) {

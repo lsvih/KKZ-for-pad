@@ -29,6 +29,7 @@
 	</header>
 
 	<body>
+		<script type="text/javascript" src="../js/common.js"></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript">
 			mui.init({
@@ -40,7 +41,7 @@
 					plus.webview.close("sub_content_detail")
 					return true;
 				},
-				
+
 			});
 			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
@@ -53,9 +54,13 @@
 						document.getElementsByClassName("mui-title")[0].innerText = "排期详情";
 						fOpenDetailPage("schedule", self.eventid);
 						break;
-	case "selection": //选材详情
+					case "selection": //选材详情
 						document.getElementsByClassName("mui-title")[0].innerText = "选材详情";
 						fOpenDetailPage("selection", self.eventid);
+						break;
+					case "userdetail": //用户详情
+						document.getElementsByClassName("mui-title")[0].innerText = "用户详情";
+						fOpenDetailPage("userdetail", self.eventid);
 						break;
 					default:
 						mui.back();
@@ -67,7 +72,7 @@
 					url: "detail_sub/" + typename + ".html",
 					id: "sub_content_detail",
 					styles: {
-						top: '100px',
+						top: 100 + gTopbarHeight + 'px',
 						bottom: 0,
 						left: "38.4%",
 						width: '61.6%',

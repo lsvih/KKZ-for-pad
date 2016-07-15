@@ -26,7 +26,7 @@
 		
 		.mui-preview-header {
 			height: 44px;
-			top: 0;
+			top: 20px;
 		}
 		
 		.mui-preview-footer {
@@ -536,9 +536,7 @@
 		})(mui, window);
 	</script>
 	<script>
-		mui.init({
-			statusBarBackground: '#000000',
-		})
+		mui.init();
 		var PreviewImage = mui.previewImage();
 		mui.plusReady(function() {
 			var self = plus.webview.currentWebview();
