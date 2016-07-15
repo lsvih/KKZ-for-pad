@@ -141,9 +141,10 @@
 			line-height: 40px;
 			background-color: rgba(255, 255, 255, 0.3)
 		}
-		.mui-icon{
+		
+		.mui-icon {
 			font-size: 45px;
-			color:#aaa;
+			color: #aaa;
 		}
 	</style>
 
@@ -154,8 +155,8 @@
 					<div id="clearPic">清除画布</div>
 					<div id="savePic">保存</div>
 					<!-- 画图面板区域 -->
-					<canvas id="canvas" width="1024" height="677"></canvas>
-					<canvas id="canvas_bak" width="1024" height="677"></canvas>
+					<canvas id="canvas" width="1024" height="697"></canvas>
+					<canvas id="canvas_bak" width="1024" height="697"></canvas>
 
 					<div class="menu">
 
@@ -181,9 +182,10 @@
 						<li class="circle" id="orange" onClick="setColor(4)"></li>
 						<span class="mui-pull-right mui-icon mui-icon-undo" onclick="undo()"></span>
 					</div>
-					
+
 		</section>
 	</body>
+	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../js/mui.js"></script>
 	<script>
 		mui.init({
@@ -200,8 +202,9 @@
 		var can_bak = canvas_bak.getContext('2d');
 		//清除画布功能
 		document.getElementById('clearPic').onclick = function() {
-				can.clearRect(0, 0, 1024, 677);
-				can_bak.clearRect(0, 0, 1024, 677);
+				can.clearRect(0, 0, 1024, 697);
+				can_bak.clearRect(0, 0, 1024, 697);
+				save();
 			}
 			//图片保存功能，将从 data 协议中获取的图像信息送到后台处理，提供下载功能
 			//		document.getElementById('savePic').onclick = function() {
@@ -232,10 +235,10 @@
 		//清空
 		function clearContext(type) {
 			if(!type) {
-				can_bak.clearRect(0, 0, 1024, 677);
+				can_bak.clearRect(0, 0, 1024, 697);
 			} else {
-				can.clearRect(0, 0, 1024, 677);
-				can_bak.clearRect(0, 0, 1024, 677);
+				can.clearRect(0, 0, 1024, 697);
+				can_bak.clearRect(0, 0, 1024, 697);
 			}
 		}
 
@@ -278,12 +281,12 @@
 		function dEraser(n) {
 			setStatus(actions, n, 1);
 			var status = 0;
-			//鼠标按下也开始清除，范围为当前线宽的两倍
+			//鼠标按下也开始清除，范围为当前线宽的10倍
 			canvas_bak.ontouchstart = function(e) {
 					e = window.event || e;
 					var sX = e.pageX - this.offsetLeft;
 					var sY = e.pageY - this.offsetTop;
-					can.clearRect(sX - can.lineWidth, sY - can.lineWidth, can.lineWidth * 2, can.lineWidth * 2);
+					can.clearRect(sX - can.lineWidth, sY - can.lineWidth, can.lineWidth * 10, can.lineWidth * 10);
 					status = 1; //状态标志位
 				}
 				// 鼠标移动时跟着轨迹一齐擦除
@@ -291,7 +294,7 @@
 					e = window.event || e;
 					var X = e.pageX - this.offsetLeft;
 					var Y = e.pageY - this.offsetTop;
-					if(status) can.clearRect(X - can.lineWidth, Y - can.lineWidth, can.lineWidth * 2, can.lineWidth * 2);
+					if(status) can.clearRect(X - can.lineWidth, Y - can.lineWidth, can.lineWidth * 10, can.lineWidth * 10);
 				}
 				//鼠标抬起，清除状态标志位
 			canvas_bak.ontouchend = function() {
@@ -305,7 +308,7 @@
 		function dPaint(n) {
 			setStatus(actions, n, 1);
 			canvas_bak.ontouchstart = function() {
-				can.fillRect(0, 0, 1024, 677);
+				can.fillRect(0, 0, 1024, 697);
 			}
 			canvas_bak.ontouchmove = null;
 			canvas_bak.ontouchend = null;
@@ -316,24 +319,30 @@
 		function dText(n) {
 			setStatus(actions, n, 1);
 			canvas_bak.ontouchend = function(e) {
-				clearContext();
 				e = window.event || e;
 				var x = e.pageX - this.offsetLeft;
 				var y = e.pageY - this.offsetTop;
-				var val = window.prompt('输入填充的文字', '');
-				if(val == null) return false; //输入为空则返回
-				can.fillText(val, x, y);
-				dBrush(0); //填入文字后返回自由画笔工具
-				save();
+				mui.prompt('请输入填充的文字：', '', gAppName, ['取消', '确定'], function(f) {
+					if(f.index == 1) {
+						clearContext();
+						if(f.value !== null) {
+							can.fillText(f.value, x, y);
+							save();
+						}
+					} else {
+						clearContext();
+					}
+				});
 			}
 			canvas_bak.ontouchmove = function(e) {
 				e = window.event || e;
 				clearContext();
 				var x = e.pageX - this.offsetLeft;
 				var y = e.pageY - this.offsetTop;
-				var val = "TEXT";
+				var val = "输入的文字";
 				can_bak.fillText(val, x, y);
 			}
+			canvas_bak.ontouchstart = null;
 			canvas_bak.onmouseout = null;
 		}
 
@@ -538,7 +547,6 @@
 				can_bak.arc(sX, sY, r, 0, 360, false);
 				can_bak.closePath();
 				can_bak.fill();
-				save();
 			}
 			canvas_bak.onmouseout = null;
 		}
@@ -663,26 +671,29 @@
 					};
 			}
 		}
-		var UndoStack = new Array();
+		//初始化工具
+		setColor(3);
+		dBrush(0);
+		sL(0);
+		var UndoStack = [canvas.toDataURL()];
 		var MAXUNDO = 6;
-		
-		function save(){ 
+
+		function save() {
 			UndoStack.push(canvas.toDataURL());
 			if(UndoStack.length > MAXUNDO) UndoStack.shift();
 			if(UndoStack.length > 1) document.getElementsByClassName("mui-icon-undo")[0].style.color = "#259B2A";
 		}
-		
-		function undo(){
+
+		function undo() {
 			if(UndoStack.length <= 1) return false;
+			if(UndoStack.length <= 2) document.getElementsByClassName("mui-icon-undo")[0].style.color = "#aaa";
 			var img = new Image();
 			UndoStack.pop();
-			if(UndoStack.length <= 1) document.getElementsByClassName("mui-icon-undo")[0].style.color = "#aaa";
-			img.src = UndoStack[UndoStack.length -1];
-			img.onload = function(){
-				can.clearRect(0, 0, 1024, 677);
-				can.drawImage(img,0,0);
+			img.src = UndoStack[UndoStack.length - 1];
+			img.onload = function() {
+				can.clearRect(0, 0, 1024, 697);
+				can.drawImage(img, 0, 0);
 			}
-//			if()
 		}
 	</script>
 
