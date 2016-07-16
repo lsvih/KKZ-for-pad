@@ -181,6 +181,9 @@
 						}
 					});
 				}, 200);
+				
+				
+				
 			});
 			/**
 			 * 绑定工作流与数据
@@ -296,7 +299,7 @@
 				var NSURL = plus.ios.import('NSURL');
 				var UIA = plus.ios.import('UIApplication');
 				var obj = new UIA.sharedApplication();
-				if(obj.canOpenURL(NSURL.URLWithString('weixin://'))) mui.alert("您尚未安装微信", gAppName);
+				if(obj.canOpenURL(NSURL.URLWithString('weixin://'))) (mui.alert("您尚未安装微信", gAppName),plus.ios.deleteObject(obj));
 			});
 		</script>
 	</body>

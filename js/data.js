@@ -5,7 +5,7 @@ gFlow = {
 		"name": "待上门",
 		"icon": "eye",
 		"num": 0,
-		"contain-event": [1, 2, 3]
+		"contain-event": [1, 2]
 	}, {
 		"id": 2,
 		"name": "待支付",
@@ -39,10 +39,7 @@ gStatus = {
 	}, {
 		"id": 2,
 		"name": "待排期"
-	}, {
-		"id": 3,
-		"name": "待选材"
-	}, {
+	},  {
 		"id": 4,
 		"name": "待签约"
 	}, {

@@ -88,6 +88,7 @@
 			height: 50px;
 			background-color: #eee;
 			padding-top: 5px;
+			z-index: 5;
 		}
 		
 		.menu li {
@@ -150,7 +151,7 @@
 
 	<body>
 		<section>
-			<div id="back" class="mui-action-back">
+			<div id="back">
 				<返回</div>
 					<div id="clearPic">清除画布</div>
 					<div id="savePic">保存</div>
@@ -160,27 +161,27 @@
 
 					<div class="menu">
 
-						<li id="Eraser" onClick="dEraser(1)"><img src="../images/draw/Eraser.png" /></li>
+						<li id="Eraser" ontouchstart="dEraser(0)"><img src="../images/draw/Eraser.png" /></li>
 						<li></li>
-						<li id="Text" onClick="dText(2)"><img src="../images/draw/Text.png" /></li>
+						<li id="Text" ontouchstart="dText(1)"><img src="../images/draw/Text.png" /></li>
 						<li></li>
-						<li id="Brush" onClick="dBrush(0)"><img src="../images/draw/Brush.png" /></li>
-						<li id="line" onClick="dLine(3)"><img src="../images/draw/line.png" /></li>
-						<li id="arc" onClick="dArc(4)"><img src="../images/draw/arc.png" /></li>
-						<li id="rect" onClick="dRect(5)"><img src="../images/draw/rect.png" /></li>
-						<li id="poly" onClick="dPoly(6)"><img src="../images/draw/poly.png" /></li>
-						<li id="arcfill" onClick="dArcFill(7)"><img src="../images/draw/arcfill.png" /></li>
-						<li id="rectfill" onClick="dRectFill(8)"><img src="../images/draw/rectfill.png" /></li>
+						<li id="Brush" ontouchstart="dBrush(2)"><img src="../images/draw/Brush.png" /></li>
+						<li id="line" ontouchstart="dLine(3)"><img src="../images/draw/line.png" /></li>
+						<li id="arc" ontouchstart="dArc(4)"><img src="../images/draw/arc.png" /></li>
+						<li id="rect" ontouchstart="dRect(5)"><img src="../images/draw/rect.png" /></li>
+						<li id="poly" ontouchstart="dPoly(6)"><img src="../images/draw/poly.png" /></li>
+						<li id="arcfill" ontouchstart="dArcFill(7)"><img src="../images/draw/arcfill.png" /></li>
+						<li id="rectfill" ontouchstart="dRectFill(8)"><img src="../images/draw/rectfill.png" /></li>
 						<li></li>
-						<li id="line1px" onClick="sL(0)"><img src="../images/draw/line1px.png" /></li>
-						<li id="line5px" onClick="sL(1)"><img src="../images/draw/line5px.png" /></li>
+						<li id="line1px" ontouchstart="sL(0)"><img src="../images/draw/line1px.png" /></li>
+						<li id="line5px" ontouchstart="sL(1)"><img src="../images/draw/line5px.png" /></li>
 						<li></li>
-						<li class="circle" id="red" onClick="setColor(0)"></li>
-						<li class="circle" id="blue" onClick="setColor(1)"></li>
-						<li class="circle" id="yellow" onClick="setColor(2)"></li>
-						<li class="circle" id="black" onClick="setColor(3)"></li>
-						<li class="circle" id="orange" onClick="setColor(4)"></li>
-						<span class="mui-pull-right mui-icon mui-icon-undo" onclick="undo()"></span>
+						<li class="circle" id="red" ontouchstart="setColor(0)"></li>
+						<li class="circle" id="blue" ontouchstart="setColor(1)"></li>
+						<li class="circle" id="yellow" ontouchstart="setColor(2)"></li>
+						<li class="circle" id="black" ontouchstart="setColor(3)"></li>
+						<li class="circle" id="orange" ontouchstart="setColor(4)"></li>
+						<span class="mui-pull-right mui-icon mui-icon-undo" ontouchstart="undo()"></span>
 					</div>
 
 		</section>
@@ -195,13 +196,14 @@
 			},
 			swipeBack: false
 		});
+
 		//获取画布
 		var canvas = document.getElementById('canvas');
 		var can = canvas.getContext('2d');
 		var canvas_bak = document.getElementById('canvas_bak');
 		var can_bak = canvas_bak.getContext('2d');
 		//清除画布功能
-		document.getElementById('clearPic').onclick = function() {
+		document.getElementById('clearPic').ontouchstart = function() {
 				can.clearRect(0, 0, 1024, 697);
 				can_bak.clearRect(0, 0, 1024, 697);
 				save();
@@ -223,9 +225,8 @@
 		var poly = document.getElementById('poly'); //三角形
 		var arcfill = document.getElementById('arcfill'); //实心圆
 		var rectfill = document.getElementById('rectfill'); //实心矩形
-
 		//将12个工具和形状放入一个数组 actions[] 中 
-		var actions = [Brush, Eraser, Text, line, arc, rect, poly, arcfill, rectfill];
+		var actions = [Eraser, Text, Brush, line, arc, rect, poly, arcfill, rectfill];
 		//状态设定，显示是否选中状态，type=1为工具，形状和粗细的选中状态，type=0为颜色选中状态
 		function setStatus(arr, num, type) {
 			for(var i = 0; i < arr.length; i++) {
@@ -317,8 +318,9 @@
 
 		/******* 文字 *******/
 		function dText(n) {
+			var status = 0;
 			setStatus(actions, n, 1);
-			canvas_bak.ontouchend = function(e) {
+			canvas_bak.onmouseup = function(e) {
 				e = window.event || e;
 				var x = e.pageX - this.offsetLeft;
 				var y = e.pageY - this.offsetTop;
@@ -334,7 +336,28 @@
 					}
 				});
 			}
+			canvas_bak.ontouchend = function(e) {
+				if(status) {
+					e = window.event || e;
+					var x = e.pageX - this.offsetLeft;
+					var y = e.pageY - this.offsetTop;
+					mui.prompt('请输入填充的文字：', '', gAppName, ['取消', '确定'], function(f) {
+						if(f.index == 1) {
+							status = 0;
+							clearContext();
+							if(f.value !== null) {
+								can.fillText(f.value, x, y);
+								save();
+							}
+						} else {
+							status = 0;
+							clearContext();
+						}
+					});
+				}
+			}
 			canvas_bak.ontouchmove = function(e) {
+				status = 1;
 				e = window.event || e;
 				clearContext();
 				var x = e.pageX - this.offsetLeft;
@@ -673,7 +696,7 @@
 		}
 		//初始化工具
 		setColor(3);
-		dBrush(0);
+		dBrush(2);
 		sL(0);
 		var UndoStack = [canvas.toDataURL()];
 		var MAXUNDO = 6;
