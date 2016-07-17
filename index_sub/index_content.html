@@ -153,6 +153,14 @@
 		Vue.filter('statusNumtoString', function(value) {
 			return fFindObjById(value, gStatus.status).name;
 		})
+		//TODO
+		//图片缓存----过滤器，将src提取出来与数据库中的地址进行对比，如果找到了就将其替换成数据库中的本地地址，如果没有找到则将src传回，并同时开始下载图片到本地，增加一条src与本地路径的记录到数据库
+		Vue.filter('img',function(src){
+			return 
+		})
+		
+		
+		
 		var vueContent = new Vue({
 			el: '#event',
 			data: {

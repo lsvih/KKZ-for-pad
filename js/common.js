@@ -213,12 +213,12 @@ function galleryImg(targetJSON) {
 	});
 }
 
+//TODO 使用indexDB进行缓存的映射管理
+	/**
+	 * 缓存机制。将src与数据库中的地址进行对比，如果找到了就将其替换成数据库中的本地地址，如果没有找到则将src传回，并同时开始下载图片到本地，增加一条src与本地路径的记录到数据库
+	 * @param {String} originalsrc 原地址
+	 */
+function fCache(originalsrc) {
+	if(!originalsrc) return false;
 
-
-/**
- * 缓存机制。将src与数据库中的地址进行对比，如果找到了就将其替换成数据库中的本地地址，如果没有找到则将src传回，并同时开始下载图片到本地，增加一条src与本地路径的记录到数据库
- * @param {Object} src
- */
-function fCache(src){
-	
-}
+}//TODO 在数据库中找到相对应数据并使用return返回，如果没有找到则进入下载缓存图片函数，并直接返回originalsrc
