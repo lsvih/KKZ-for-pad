@@ -62,11 +62,12 @@
 		<span id="flow"><span class="mui-icon mui-icon-{{flow.icon}} flow-icon flow" v-for="flow in flow" id="flow-{{flow.id}}"><span class="mui-badge mui-badge-danger" v-if="flow.num > 0">{{flow.num}}</span><span class="flow-name">{{flow.name}}</span></span>
 		<span class="mui-icon mui-icon-weixin flow-icon"><span class="flow-name">微信</span></span>
 		</span>
-
+<span class="mui-pull-right" onclick="fInstallTestData();">安装测试数据</span>
 	</header>
 	<div class="cutoff-line"></div>
 
 	<body>
+		<script type="text/javascript" src="js/initdata.js" ></script>>
 		<script src="js/common.js"></script>
 
 		<!--加载测试数据-->
@@ -200,8 +201,8 @@
 							fAddClass(this, "mui-active");
 							nActiveMenu = this.id.split("-")[1];
 //							fCloseSubPage();
-							mui.fire(plus.webview.getWebviewById("list"), "refresh", nActiveMenu); //点击图标时传值到list并刷新视图
-							mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nActiveMenu + ",0"); //传值到index_content
+							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", nActiveMenu); //点击图标时传值到list并刷新视图
+							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", nActiveMenu + ",0"); //传值到index_content
 							localStorage.thisflow = nActiveMenu;
 						}
 

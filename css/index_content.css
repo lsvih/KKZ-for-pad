@@ -188,6 +188,7 @@ body {
 	border-radius: 30px;
 	background-color: rgba(37, 155, 42, 0.4);
 	color: #eee;
+	z-index: 999;
 }
 
 .submit-button {
@@ -195,4 +196,13 @@ body {
 	display: block;
 	width: 50%;
 	margin: 0 auto;
+}
+.today-is-nothing-to-do{
+	margin-top: 100px;
+	text-align: center;
+}
+
+.today-is-nothing-to-do img{
+	height: 100px;
+	width: 100px!important;
 }

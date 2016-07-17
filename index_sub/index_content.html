@@ -44,27 +44,9 @@
 				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去排期</span></div>
 			</template>
 
-			<!--待选材-->
-			<template v-if="event.status==3">
-				<div class="user-info block">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
-				</div>
-				<div class="block">
-					<span>报价信息</span><br/>
-					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.num}}{{item.unit}}</span></span><br />
-					<span>总价:{{event.content.price}}元</span>
-					<span class="more-info" v-on:tap="__fDetail(event.id,'gauge')">详情 ></span>
-				</div>
-				<div class="block">
-					<span>排期信息</span><br/>
-					<span>{{event.content.schedule}}</span>
-					<span class="more-info" v-on:tap="__fDetail(event.id,'schedule')">详情 ></span>
-				</div>
-				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去选材</span></div>
-			</template>
 
 			<!--待签约-->
-			<template v-if="event.status==4">
+			<template v-if="event.status==3">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -96,7 +78,7 @@
 			</template>
 
 			<!--待支付-->
-			<template v-if="event.status==5">
+			<template v-if="event.status==4">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -107,8 +89,8 @@
 
 			</template>
 
-			<!--待支付（锁定）-->
-			<template v-if="event.status==6">
+			<!--待改期-->
+			<template v-if="event.status==5">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -119,7 +101,7 @@
 				<div class="locked block">已锁</div>
 			</template>
 			<!--待确认开工-->
-			<template v-if="event.status==8">
+			<template v-if="event.status==7">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -129,7 +111,7 @@
 				<div class="locked block">已锁</div>
 			</template>
 			<!--待评价-->
-			<template v-if="event.status==20">
+			<template v-if="event.status==10">
 				<button class="mui-btn mui-btn-block mui-btn-green remind-user-evaluate">提醒用户评价</button>
 			</template>
 		</article>
@@ -163,7 +145,7 @@
 		var thisevent = fListAllFlowEvent(1)[0]; //从LocalStorage里获取信息
 		var MAXIMAGECOUNT = 10;
 		mui.plusReady(function() {
-			window.addEventListener('refresh', function(event) {
+			window.addEventListener('refreshvue', function(event) {
 				var aShow = event.detail.split(",");
 				vueContent.refresh(aShow[0], aShow[1]);
 			});
@@ -184,22 +166,13 @@
 					if(nextevent) { //判断内容为空的情况
 						localStorage.thisstatus = nextevent.status;
 						switch(nextevent.status) {
-							case 7:
-							case 9:
-								mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", a + "," + b);
+							case 6:
+							case 8:
+								mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", a + "," + b);
 								plus.webview.show("plg_input", "fade-in", 200);
 								break;
-							case 10:
-							case 11:
-							case 12:
-							case 13:
-							case 14:
-							case 15:
-							case 16:
-							case 17:
-							case 18:
-							case 19:
-								mui.fire(plus.webview.getWebviewById("plg_work"), "refresh", a + "," + b);
+							case 9:
+								mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", a + "," + b);
 								plus.webview.show("plg_work", "fade-in", 200);
 								break;
 							default:
@@ -235,7 +208,7 @@
 				//打开量房页面
 				__fGauge: function(eventid) {
 					mui.openWindow({
-						url: "../module/drawing_board.html",
+						url: "../3.pdf",
 						id: "drawing_board",
 						styles: {
 							top: 0,

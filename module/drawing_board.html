@@ -1,3 +1,8 @@
+<!--
+	画图板模块drawing_board
+	用法：
+	TODO
+-->
 <!DOCTYPE html>
 <html>
 
@@ -196,25 +201,35 @@
 			},
 			swipeBack: false
 		});
-
+		var color = 3;
+		var line = 1;
 		//获取画布
 		var canvas = document.getElementById('canvas');
 		var can = canvas.getContext('2d');
 		var canvas_bak = document.getElementById('canvas_bak');
 		var can_bak = canvas_bak.getContext('2d');
 		//清除画布功能
-		document.getElementById('clearPic').ontouchstart = function() {
-				can.clearRect(0, 0, 1024, 697);
-				can_bak.clearRect(0, 0, 1024, 697);
-				save();
-			}
-			//图片保存功能，将从 data 协议中获取的图像信息送到后台处理，提供下载功能
-			//		document.getElementById('savePic').onclick = function() {
-			//				var b64 = canvas.toDataURL();
-			//				//利用 data 协议获取图片信息，一般文件比较大，用 post 传到后台
-			//				console.log(b64);
-			//			}
-			//获取 工具按钮
+		document.getElementById('clearPic').addEventListener('tap', function() {
+			can.clearRect(0, 0, 1024, 697);
+			can_bak.clearRect(0, 0, 1024, 697);
+			save();
+		});
+		document.getElementById('back').addEventListener('tap', function() {
+			mui.confirm('返回后将不会保存，确定返回吗？', gAppName, ['否', '是'], function(e) {
+				if(e.index == 1) {
+					mui.back();
+				} else {
+					return false;
+				}
+			})
+		});
+		//图片保存功能，将从 data 协议中获取的图像信息送到后台处理，提供下载功能
+		//		document.getElementById('savePic').onclick = function() {
+		//				var b64 = canvas.toDataURL();
+		//				//利用 data 协议获取图片信息，一般文件比较大，用 post 传到后台
+		//				console.log(b64);
+		//			}
+		//获取 工具按钮
 		var Brush = document.getElementById('Brush'); //画笔
 		var Eraser = document.getElementById('Eraser'); //橡皮擦
 		var Text = document.getElementById('Text'); //文字
@@ -281,26 +296,38 @@
 		} /******* 橡皮擦 *******/
 		function dEraser(n) {
 			setStatus(actions, n, 1);
-			var status = 0;
+			var lastcolor = color;
+			var lastline = line;
+
 			//鼠标按下也开始清除，范围为当前线宽的10倍
 			canvas_bak.ontouchstart = function(e) {
+					can.strokeStyle = "#fff";
+					can.lineWidth = 30;
 					e = window.event || e;
 					var sX = e.pageX - this.offsetLeft;
 					var sY = e.pageY - this.offsetTop;
-					can.clearRect(sX - can.lineWidth, sY - can.lineWidth, can.lineWidth * 10, can.lineWidth * 10);
+					can.beginPath();
+					can.moveTo(sX, sY);
 					status = 1; //状态标志位
 				}
 				// 鼠标移动时跟着轨迹一齐擦除
 			canvas_bak.ontouchmove = function(e) {
 					e = window.event || e;
-					var X = e.pageX - this.offsetLeft;
-					var Y = e.pageY - this.offsetTop;
-					if(status) can.clearRect(X - can.lineWidth, Y - can.lineWidth, can.lineWidth * 10, can.lineWidth * 10);
+					var eX = e.pageX - this.offsetLeft;
+					var eY = e.pageY - this.offsetTop;
+					if(status == 1) {
+						can.lineTo(eX, eY);
+						can.stroke();
+					} else {
+						return false;
+					}
 				}
 				//鼠标抬起，清除状态标志位
 			canvas_bak.ontouchend = function() {
-				status = 0;
+				can.closePath();
 				save();
+				setColor(lastcolor);
+				sL(lastline);
 			}
 			canvas_bak.onmouseout = null
 		}
@@ -620,15 +647,19 @@
 		//线宽设置
 		function sL(n) {
 			setStatus(lArr, n, 1);
+			line = n;
 			switch(n) {
 				case 0:
 					can.lineWidth = 1;
+					can_bak.lineWidth = 1;
 					break;
 				case 1:
 					can.lineWidth = 5;
+					can_bak.lineWidth = 5;
 					break;
 				default:
 					can.lineWidth = 1;
+					can_bak.lineWidth = 1;
 			}
 		}
 
@@ -643,6 +674,7 @@
 		//颜色设置
 		function setColor(n) {
 			setStatus(cArr, n, 0);
+			color = n;
 			switch(n) {
 				case 0:
 					{

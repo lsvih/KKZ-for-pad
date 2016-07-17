@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<script type="text/javascript" src="js/vue.js"></script>
+		<title></title>
+	</head>
+
+	<body>
+		<div id="ee"><span v-for="d in ss"><span v-for="z in d.bb"><span v-for="eee in z"></span></span>
+			</span>
+		</div>
+	</body>
+	<script>
+		data = {
+			"ss": [{
+					"bb": [{
+							"qq": [1, 2, 3, 4, 5]
+					},
+					{
+						"qq": [1, 2, 3, 4, 5, 6, 9]
+					}]
+			},
+			{
+				"bb": []
+			}]
+		}
+		new Vue({
+			el: "#ee",
+			data: data
+		})
+	</script>
+
+</html>

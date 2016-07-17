@@ -93,7 +93,7 @@
 
 		mui.plusReady(function() {
 			index_content = plus.webview.getWebviewById("index_content");
-			window.addEventListener('refresh', function(event) {
+			window.addEventListener('refreshvue', function(event) {
 				vueList.refresh(nFlowID = event.detail);
 			});
 			Vue.filter('statusNumtoString', function(value) {
@@ -115,17 +115,17 @@
 							if(!fHasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
 								this.nSelectSort = sortId;
 								localStorage.thiseventsort = sortId;
-								if(status == 7 || status == 9) {
-									mui.fire(plus.webview.getWebviewById("plg_input"), "refresh", nFlowID + "," + sortId);
+								if(status == 6 || status == 8) {
+									mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", nFlowID + "," + sortId);
 									plus.webview.hide("plg_work", "fade-out");
 									plus.webview.show("plg_input", "fade-in");
-								} else if(status >= 10 && status <= 19) {
-									mui.fire(plus.webview.getWebviewById("plg_work"), "refresh", nFlowID + "," + sortId);
-									plus.webveiw.hide("plg_input", "fade-out");
+								} else if(status == 9) {
+									mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", nFlowID + "," + sortId);
+//									plus.webveiw.hide("plg_input", "fade-out");
 									plus.webview.show("plg_work", "fade-in");
 								} else {
-									mui.fire(plus.webview.getWebviewById("index_content"), "refresh", nFlowID + "," + sortId);
-									plus.webveiw.hide("plg_input", "fade-out");
+									mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", nFlowID + "," + sortId);
+//									plus.webveiw.hide("plg_input", "fade-out");
 									plus.webview.hide("plg_work", "fade-out");
 								}
 

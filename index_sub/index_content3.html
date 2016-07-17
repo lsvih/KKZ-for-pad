@@ -14,7 +14,7 @@
 		<div id="back-drop"></div>
 		<article id="event">
 			<!--确认物业-->
-			<template v-if="event.status==7">
+			<template v-if="event.status==6">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -35,7 +35,7 @@
 			</template>
 
 			<!--待开工-->
-			<template v-if="event.status==9">
+			<template v-if="event.status==8">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -44,7 +44,7 @@
 				</div>
 				<div class="mui-content-padded" style="margin: 5px 10px;">
 					<div class="mui-input-row" style="margin: 10px 0;">
-						<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.property.text">{{event.content.pending_construction.text}}</textarea>
+						<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.pending_construction.text">{{event.content.pending_construction.text}}</textarea>
 						<h5>您还可以添加<span id="imgcount">{{10 - event.content.pending_construction.img.length }}</span>张图片</h5>
 					</div>
 					<div id="pictures">
@@ -86,7 +86,7 @@
 			var MAXIMAGECOUNT = 10;
 			var vueContent;
 			mui.plusReady(function() {
-				window.addEventListener('refresh', function(event) {
+				window.addEventListener('refreshvue', function(event) {
 					var aShow = event.detail.split(",");
 					vueContent.refresh(aShow[0], aShow[1]);
 				});

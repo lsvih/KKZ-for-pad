@@ -17,7 +17,7 @@
 		<div id="back-drop"></div>
 		<article id="event">
 			<!--安装施工中-->
-			<template v-if="event.status==19">
+			<template v-if="event.status==9">
 				<div class="user-info block">
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span>
 					<span class="more-info" v-on:tap="__fDetail(event.id,'userdetail')">详情 ></span>
@@ -27,36 +27,62 @@
 
 						<!--分为左右两部分-->
 						<div class="mui-slider-item">
-
-							<div class="block">
-								<span>今日详情</span>
-							</div>
-							<div class="mui-content-padded" style="margin: 5px 10px;" v-if="!event.content.today_broadcast.submit">
-								<div class="mui-input-row" style="margin: 10px 0;">
-									<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.today_broadcast.text">{{event.content.today_broadcast.text}}</textarea>
-									<h5>您还可以添加<span id="imgcount">{{10 - event.content.today_broadcast.img.length }}</span>张图片</h5>
-								</div>
-								<div id="pictures">
-									<div class="picture" v-for="images in event.content.today_broadcast.img"><img class="adds" v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
-								</div>
-								<div id="add-picture" v-show="event.content.today_broadcast.img.length < 10" v-on:tap="__fAddPic()">+</div>
-							</div>
-							<div class="mui-content-padded" style="margin: 5px 10px;" v-if="event.content.today_broadcast.submit">
+							<div v-if="event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)]">
+								<!--如果没有今日信息则隐藏今日模块-->
 								<div class="block">
-									<span>{{event.content.today_broadcast.text}}</span>
+									<span>今日详情</span>
+									<div v-for="processitem in event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].process">{{ processitem.process_name }}&nbsp;&nbsp;{{processitem.process_text}}
+										<div v-for="worker in processitem.workers">&nbsp;&nbsp;工人：{{worker.name}}&nbsp;&nbsp;
+											<a href="tel:{{worker.tel}}">{{worker.tel}}</a>
+										</div>
+									</div>
+									<span class="more-info" v-on:tap="__fDetail(event.id,'userdetail')">详情 ></span>
 								</div>
-								<div id="pictures">
-									<div class="picture" v-for="images in event.content.today_broadcast.img"><img v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
-								</div>
-							</div>
+								<div v-if="__fTodayIsChecked(event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)])">
+									<!--如果当日已经全部验收完则显示提交播报模块-->
+									<div v-if="!event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.submit">
+										<!--如果当日播报已上传则显示播报预览模块-->
+										<div class="mui-content-padded" style="margin: 5px 10px;">
+											<div class="mui-input-row" style="margin: 10px 0;">
+												<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.text">{{event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.text}}</textarea>
+												<h5>您还可以添加<span id="imgcount">{{10 - event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.img.length }}</span>张图片</h5>
+											</div>
+											<div id="pictures">
+												<div class="picture" v-for="images in event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.img"><img class="adds" v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
+											</div>
+											<div id="add-picture" v-show="event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.img.length < 10" v-on:tap="__fAddPic()">+</div>
+										</div>
+										<button class="mui-btn mui-btn-block mui-btn-green submit-button">提交播报</button>
+									</div>
 
-							<button class="mui-btn mui-btn-block mui-btn-green submit-button">提交</button>
+									<div class="mui-content-padded" style="margin: 5px 10px;" v-if="event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.submit">
+										<div class="block">
+											<span>{{event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.text}}</span>
+										</div>
+										<div id="pictures">
+											<div class="picture" v-for="images in event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.img"><img v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
+										</div>
+									</div>
+								</div>
+								<div v-if="!__fTodayIsChecked(event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)])">
+									<!--如果当日的验收还未全部完成则显示验收模块-->
+									<div class="block">
+										<span>今日验收</span>
+									</div>
+								</div>
+
+							</div>
+							<div v-if="!event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)]" class="today-is-nothing-to-do">
+								<!--如果没有今日信息，则显示没有信息模块-->
+								<img src="../images/smile.png">
+								<div>今天没有待办事项哦</div>
+							</div>
 						</div>
 						<div class="mui-slider-item">
-							<div><div style="width: 100%;text-align: center;">整体时光轴</div>
-							<div class="block" v-for="timelineevent in event.content.timeline"><span>{{timelineevent.date}}</span>&nbsp;<span>{{timelineevent.process.process_name}}</span><br />
-							<span v-if=" timelineevent.date == fGetDate()">今天</span>
-							</div>
+							<div style="width: 100%;text-align: center;font-size: 20px;padding-top: 20px;">整体时光轴</div>
+							<div class="block" v-for="timelineevent in event.content.timeline"><span>{{timelineevent.date}}</span>&nbsp;
+								<div v-for="processitem in timelineevent.process">{{processitem.process_name}}&nbsp;&nbsp;{{processitem.process_text}}
+								</div>
 							</div>
 						</div>
 
@@ -97,12 +123,12 @@
 			var MAXIMAGECOUNT = 10;
 			var vueContent;
 			mui.plusReady(function() {
-				window.addEventListener('refresh', function(event) {
+				window.addEventListener('refreshvue', function(event) {
 					var aShow = event.detail.split(",");
 					vueContent.refresh(aShow[0], aShow[1]);
 				});
-				window.addEventListener('delete', function(event) { //TODO 不同的状态下需要删除不同的图片。参考index_content3.html同段代码
-					var deleteitem = vueContent.event.content.today_broadcast.img[event.detail - 1];
+				window.addEventListener('delete', function(event) { //今日播报的删除图片
+					var deleteitem = vueContent.event.content.timeline[fGetSortIdByDate(fGetDate(), vueContent.event)].today_broadcast.img[event.detail - 1];
 					vueContent.event.content.today_broadcast.img.$remove(deleteitem);
 				});
 				vueContent = new Vue({
@@ -111,12 +137,25 @@
 						"event": fListAllFlowEvent(localStorage.thisflow)[localStorage.thiseventsort]
 					},
 					methods: {
+						__fTodayIsChecked: function(a) {
+							return fTodayIsChecked(a);
+						},
+						__fGetDate: function() {
+							return fGetDate();
+						},
+						__fGetSortIdByDate: function(a, b) {
+							return fGetSortIdByDate(a, b);
+						},
 						refresh: function(a, b) {
 							var tempobj = JSON.parse(localStorage.data);
 							tempobj.event[fFindObjSortById(this.event.id, tempobj.event)] = this.event;
 							localStorage.data = JSON.stringify(tempobj); //在本地存储修改
 							this.event = fListAllFlowEvent(a)[b];
 							localStorage.thisstatus = this.event.status;
+						},
+						//判断时光轴事件是不是今天
+						isToday: function(eventobj) {
+							alert(eventobj.currentTarget.innerText)
 						},
 						//编辑用户信息
 						__fEditUser: function(eventid) {
@@ -218,7 +257,6 @@
 						break;
 				}
 			});
-
 			//分屏切换看整体时间轴
 			document.getElementById("history-detail").addEventListener("tap", function() {
 				var innerIcon = this.getElementsByClassName("mui-icon")[0];
@@ -240,6 +278,40 @@
 					sliderApi.destroy();
 				}
 			});
+
+			/**
+			 * 在某次event的timeline中获取指定日期的timeline下标
+			 * Date: YYYY-MM-DD
+			 * 如果没找到相应的时期则返回false
+			 * @param {String} date 需要查找下标的日期
+			 * @param {Object} JSON 需要查找的event json对象
+			 */
+			function fGetSortIdByDate(date, JSON) {
+				var timeline = JSON.content.timeline;
+				if(timeline.length == 0) return false;
+				for(var i = 0; i < timeline.length; i++) {
+					if(timeline[i].date == date) return i;
+				}
+				return false;
+			}
+
+			/**
+			 * 判断当天验收是否全部完成
+			 * @param {Object} JSONobj 当天的json对象
+			 */
+			function fTodayIsChecked(JSONobj) {
+				var checkitem = JSONobj.check;
+				var checkednum = 0;
+				if(checkitem.length == 0) return true;
+				for(var j = 0; j < checkitem.length; j++) {
+					if(checkitem[j].checked == true) ++checkednum;
+				}
+				if(checkitem.length == checkednum) {
+					return true;
+				} else {
+					return false;
+				}
+			}
 		</script>
 	</body>
 
