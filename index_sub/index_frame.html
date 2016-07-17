@@ -47,27 +47,53 @@
 				var self = plus.webview.currentWebview();
 				switch(self.type) {
 					case "gauge": //量房详情
-						document.getElementsByClassName("mui-title")[0].innerText = "报价详情";
+						fSetTitle("报价详情");
 						fOpenDetailPage("gauge", self.eventid);
 						break;
 					case "schedule": //排期详情
-						document.getElementsByClassName("mui-title")[0].innerText = "排期详情";
+						fSetTitle("排期详情");
 						fOpenDetailPage("schedule", self.eventid);
 						break;
 					case "selection": //选材详情
-						document.getElementsByClassName("mui-title")[0].innerText = "选材详情";
+						fSetTitle("选材详情");
 						fOpenDetailPage("selection", self.eventid);
 						break;
 					case "userdetail": //用户详情
-						document.getElementsByClassName("mui-title")[0].innerText = "用户详情";
+						fSetTitle("用户详情");
 						fOpenDetailPage("userdetail", self.eventid);
+						break;
+					case "todaydetail": //今日详情
+						fSetTitle("今日详情");
+						fOpenDetailPage("todaydetail", self.eventid, self.option);
+						break;
+					case "tocheck": //去验收
+						fSetTitle("验收");
+						fOpenDetailPage("tocheck", self.eventid);
 						break;
 					default:
 						mui.back();
 				}
 			});
-
-			function fOpenDetailPage(typename, eventid) {
+			/**
+			 * 设置框架的标题
+			 * @param {String} title 标题
+			 */
+			function fSetTitle(title) {
+				document.getElementsByClassName("mui-title")[0].innerText = title;
+			}
+			/**
+			 * 根据typename打开指定子页面
+			 * @param {String} typename 打开的页面名称
+			 * @param {Number} eventid 当前的时间id
+			 * @param {JSONString} option 转化为字符串的JSON配置信息（可选）
+			 */
+			function fOpenDetailPage(typename, eventid, option) {
+				var extras = option ? {
+					eventid: eventid
+				} : {
+					eventid: eventid,
+					option: option
+				}
 				mui.openWindow({
 					url: "detail_sub/" + typename + ".html",
 					id: "sub_content_detail",
@@ -79,9 +105,7 @@
 						bounce: 'vertical',
 						bounceBackground: '#ffffff'
 					},
-					extras: {
-						eventid: eventid
-					},
+					extras: extras,
 					show: {
 						aniShow: "fade-in"
 					},

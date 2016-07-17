@@ -212,3 +212,13 @@ function galleryImg(targetJSON) {
 		maximum: MAXIMAGECOUNT - inserTarget.length
 	});
 }
+
+
+
+/**
+ * 缓存机制。将src与数据库中的地址进行对比，如果找到了就将其替换成数据库中的本地地址，如果没有找到则将src传回，并同时开始下载图片到本地，增加一条src与本地路径的记录到数据库
+ * @param {Object} src
+ */
+function fCache(src){
+	
+}

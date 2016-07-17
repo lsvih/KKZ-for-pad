@@ -651,7 +651,7 @@ data = {
 					"submit":false
 				}
 			},{
-				"date": "2016-07-16",
+				"date": "2016-07-17",
 				"process": [{
 					"process_name": "贴砖",
 					"process_text": "清楚，勾缝剂等等等等",
@@ -695,21 +695,27 @@ data = {
 				"check": [{
 					"id": 1,
 					"name": "验收1",
+					"description":"钩边完成，确认现场无残余杂物",
+					"checkitem":[{"name":"工序已完成","checked":false},{"name":"工艺已验收","checked":false},{"name":"未损坏设备","checked":false},{"name":"现场已清理完毕","checked":false},{"name":"文明施工","checked":false}],
 					"text": "",
 					"img": [],
 					"checked": true
 				}, {
 					"id": 2,
 					"name": "验收2",
+					"description":"钩边完成，确认现场无残余杂物",
+					"checkitem":[{"name":"工序已完成","checked":false},{"name":"工艺已验收","checked":false},{"name":"未损坏设备","checked":false},{"name":"现场已清理完毕","checked":false},{"name":"文明施工","checked":false}],
 					"text": "",
 					"img": [],
 					"checked": true
 				}, {
 					"id": 3,
 					"name": "验收3",
+					"description":"钩边完成，确认现场无残余杂物",
+					"checkitem":[{"name":"工序已完成","checked":false},{"name":"工艺已验收","checked":false},{"name":"未损坏设备","checked":false},{"name":"现场已清理完毕","checked":false},{"name":"文明施工","checked":false}],
 					"text": "",
 					"img": [],
-					"checked": true
+					"checked": false
 				}],
 				"today_broadcast": {
 					"text": "",

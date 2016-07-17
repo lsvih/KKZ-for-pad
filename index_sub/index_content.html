@@ -44,7 +44,6 @@
 				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去排期</span></div>
 			</template>
 
-
 			<!--待签约-->
 			<template v-if="event.status==3">
 				<div class="user-info block">
@@ -225,8 +224,15 @@
 						}
 					})
 				},
-				//详情页面
-				__fDetail: function(eventid, type) {
+				__fDetail: function(eventid, type, option) {
+					var extras = option ? {
+						type: type,
+						eventid: eventid
+					} : {
+						type: type,
+						eventid: eventid,
+						option: JSON.stringify(option)
+					};
 					mui.openWindow({
 						url: "index_frame.html",
 						id: "sub_detail",
@@ -239,10 +245,7 @@
 							bounce: 'none',
 							bounceBackground: '#ffffff'
 						},
-						extras: {
-							type: type,
-							eventid: eventid
-						},
+						extras: extras,
 						show: {
 							aniShow: "slide-in-right"
 						},

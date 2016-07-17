@@ -87,6 +87,7 @@ body {
 	right: 20px;
 	margin-top: -15px;
 	height: 30px;
+	font-size: 18px;
 	line-height: 30px;
 	color: #259B2A;
 }
@@ -205,4 +206,19 @@ body {
 .today-is-nothing-to-do img{
 	height: 100px;
 	width: 100px!important;
+}
+.check-ok{
+	font-size: 18px;
+	color:green;
+}
+.to-check{
+	display: block;
+	height: 30px;
+	width: 60px;
+	border-radius:5px;
+	text-align: center;
+	font-size: 18px;
+	line-height: 30px;
+	color: #fff;
+	background-color: green;
 }
