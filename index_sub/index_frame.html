@@ -62,8 +62,8 @@
 						fSetTitle("用户详情");
 						fOpenDetailPage("userdetail", self.eventid);
 						break;
-					case "todaydetail": //今日详情
-						fSetTitle("今日详情");
+					case "todaydetail": //每日详情
+						fSetTitle("每日详情");
 						fOpenDetailPage("todaydetail", self.eventid, self.option);
 						break;
 					case "tocheck": //去验收
@@ -88,7 +88,7 @@
 			 * @param {JSONString} option 转化为字符串的JSON配置信息（可选）
 			 */
 			function fOpenDetailPage(typename, eventid, option) {
-				var extras = option ? {
+				var extras = !option ? {
 					eventid: eventid
 				} : {
 					eventid: eventid,

@@ -2,34 +2,35 @@
 <html>
 
 	<head>
-		<meta charset="UTF-8">
-		<script type="text/javascript" src="js/vue.js"></script>
-		<title></title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title>WebSql Demo</title>
+		<script src="js/mui.js"></script>
+		<link href="css/mui.css" rel="stylesheet" />
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+		</script>
 	</head>
 
 	<body>
-		<div id="ee"><span v-for="d in ss"><span v-for="z in d.bb"><span v-for="eee in z"></span></span>
-			</span>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">WebSql Demo</h1>
+		</header>
+		<div class="mui-content">
+
 		</div>
+
+		<script src="js/cache.js"></script>
+		<script>
+			//		ExeSql("INSERT INTO CacheMapping (originalsrc,cachesrc) VALUES ('123456','123')")
+
+			fCache("444", function(e) {
+				alert(e);
+			})
+		</script>
 	</body>
-	<script>
-		data = {
-			"ss": [{
-					"bb": [{
-							"qq": [1, 2, 3, 4, 5]
-					},
-					{
-						"qq": [1, 2, 3, 4, 5, 6, 9]
-					}]
-			},
-			{
-				"bb": []
-			}]
-		}
-		new Vue({
-			el: "#ee",
-			data: data
-		})
-	</script>
 
 </html>

@@ -8,7 +8,6 @@
 		<link href="../css/mui.css" rel="stylesheet" />
 		<link rel="stylesheet" href="../css/index_content.css" />
 	</head>
-	
 
 	<body>
 		<div id="back-drop"></div>
@@ -32,6 +31,25 @@
 					<div id="add-picture" v-show="event.content.property.img.length < 10" v-on:tap="__fAddPic()">+</div>
 				</div>
 				<button class="mui-btn mui-btn-block mui-btn-green submit-button">提交</button>
+			</template>
+
+			<!--待确认-->
+			<template v-if="event.status==7">
+				<div class="user-info block">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+				</div>
+				<div class="block">
+					<span>选材信息</span><br/>
+					<span>{{event.content.selection.content}}</span>
+					<div v-if="event.content.selection.check" class="status-7-checked">已确认√</div>
+					<div v-if="!event.content.selection.check" class="status-7-pal"><span class="status-7-modify">修改</span><span class="status-7-check" v-on:tap="__fCheck('selection')">确认</span></div>
+				</div>
+				<div class="block">
+					<span>排期信息</span><br/>
+					<span>{{event.content.schedule.content}}</span>
+					<div v-if="event.content.schedule.check" class="status-7-checked">已确认√</div>
+					<div v-if="!event.content.schedule.check" class="status-7-pal"><span class="status-7-modify">修改</span><span class="status-7-check" v-on:tap="__fCheck('schedule')">确认</span></div>
+				</div>
 			</template>
 
 			<!--待开工-->
@@ -82,7 +100,8 @@
 					doubletap: false,
 					longtap: false
 				},
-				swipeBack:false});
+				swipeBack: false
+			});
 			var MAXIMAGECOUNT = 10;
 			var vueContent;
 			mui.plusReady(function() {
@@ -102,6 +121,8 @@
 					},
 					methods: {
 						refresh: function(a, b) {
+							document.getElementById("back-drop").style.display = "none";
+							plus.webview.close("sub_edituser"); //再切换时将阴影去掉，同时关闭打开的子页面（为了下一次打开子页面动画正常播放）
 							var tempobj = JSON.parse(localStorage.data);
 							tempobj.event[fFindObjSortById(this.event.id, tempobj.event)] = this.event;
 							localStorage.data = JSON.stringify(tempobj); //在本地存储修改
@@ -159,6 +180,25 @@
 									autoShow: false,
 								}
 							});
+						},
+						__fCheck: function(type) {
+							if(type == "selection") {
+								mui.confirm('是否确认以上选材信息？确认后将无法修改选材信息。', gAppName, ['否', '是'], function(f) {
+									if(f.index == 1) {
+										vueContent.event.content.selection.check = true;
+									} else {
+										
+									}
+								});
+							} else {
+								mui.confirm('是否确认以上排期信息？确认后将无法修改排期信息。', gAppName, ['否', '是'], function(f) {
+									if(f.index == 1) {
+										vueContent.event.content.schedule.check = true;
+									} else {
+										
+									}
+								});
+							}
 						}
 					}
 				});

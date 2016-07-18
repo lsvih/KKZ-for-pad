@@ -43,7 +43,13 @@ body {
 	border: none;
 	width: auto;
 }
-
+#select-start-date {
+	display: inline-block;
+	z-index: -100;
+	border: none;
+	width: auto;
+	color: #fff;
+}
 .btns {
 	text-align: center;
 	border: none;
@@ -221,4 +227,31 @@ body {
 	line-height: 30px;
 	color: #fff;
 	background-color: green;
+}
+.status-7-pal{
+	width: 100%;
+	clear: both;
+	height: 40px;
+}
+.status-7-pal span{
+	height: 40px;
+	width: 200px;
+	border-radius:8px;
+	line-height: 40px;
+	text-align: center;
+	color: #fff;
+}
+.status-7-modify{
+	float: left;
+	background-color: red;
+}
+.status-7-check{
+	float: right;
+	background-color: green;
+}
+.status-7-checked{
+	display: block;
+	width: 100%;
+	text-align: center;
+	color: green;
 }

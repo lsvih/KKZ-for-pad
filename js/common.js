@@ -107,9 +107,19 @@ function fFindObjSortById(id, array) {
 }
 
 /**
- * 关闭当前所有打开的子页面（sub_开头id的页面）,并隐藏其父页面的遮罩
+ * 关闭子页面并将工作流3与4隐藏
+ * @param {Function} callback 回调函数（如果有的话）
  */
 function fCloseSubPage(callback) {
+	fCloseSubOpenPage();
+	plus.webview.hide("plg_input", "fade-out", 200);
+	plus.webview.hide("plg_work", "fade-out", 200);
+	if(typeof(callback) === "function") callback();
+}
+/**
+ * 关闭当前所有打开的子页面（sub_开头id的页面）,并隐藏其父页面的遮罩
+ */
+function fCloseSubOpenPage() {
 	var allwebview = plus.webview.all();
 	for(var i = 0; i < allwebview.length; i++) {
 		if(allwebview[i].id.split("_")[0] == "sub") {
@@ -117,9 +127,6 @@ function fCloseSubPage(callback) {
 			plus.webview.close(allwebview[i]);
 		}
 	}
-	plus.webview.hide("plg_input", "fade-out", 200);
-	plus.webview.hide("plg_work", "fade-out", 200);
-	if(typeof(callback) === "function") callback();
 }
 
 /**
@@ -213,12 +220,18 @@ function galleryImg(targetJSON) {
 	});
 }
 
-//TODO 使用indexDB进行缓存的映射管理
-	/**
-	 * 缓存机制。将src与数据库中的地址进行对比，如果找到了就将其替换成数据库中的本地地址，如果没有找到则将src传回，并同时开始下载图片到本地，增加一条src与本地路径的记录到数据库
-	 * @param {String} originalsrc 原地址
-	 */
-function fCache(originalsrc) {
-	if(!originalsrc) return false;
-
-}//TODO 在数据库中找到相对应数据并使用return返回，如果没有找到则进入下载缓存图片函数，并直接返回originalsrc
+/**
+ * 在某次event的timeline中获取指定日期的timeline下标
+ * Date: YYYY-MM-DD
+ * 如果没找到相应的时期则返回false
+ * @param {String} date 需要查找下标的日期
+ * @param {Object} JSON 需要查找的event json对象
+ */
+function fGetSortIdByDate(date, JSON) {
+	var timeline = JSON.content.timeline;
+	if(timeline.length == 0) return false;
+	for(var i = 0; i < timeline.length; i++) {
+		if(timeline[i].date == date) return i;
+	}
+	return false;
+}
