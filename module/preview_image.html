@@ -530,8 +530,7 @@
 				}
 			};
 			proto.close = function() {
-				plus.navigator.setStatusBarBackground("#f7f7f7");
-				plus.webview.close("preview_image","fade-out",250);
+				plus.webview.close(plus.webview.currentWebview(),"fade-out",250);
 			};
 			proto.isShown = function() {
 				return this.element.classList.contains($.className('preview-in'));

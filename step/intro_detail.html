@@ -1,0 +1,453 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+	<style>
+		body {
+			background-color: rgba(0, 0, 0, 0.1);
+		}
+		
+		.circle-btn {
+			position: fixed;
+			top: 43px;
+			height: 40px;
+			width: 40px;
+			background-color: #FFF;
+			border-radius: 20px;
+			color: #00b06c;
+			line-height: 42px;
+			text-align: center;
+			box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+			z-index: 999;
+		}
+		
+		.close-btn {
+			left: 33px;
+			font-size: 28px;
+		}
+		
+		#cover-image {
+			position: fixed;
+			height: 631px;
+			width: 100%;
+			z-index: 0;
+			will-change: margin;
+			/*transition: 1s;*/
+		}
+		
+		#cover-image-mask {
+			position: fixed;
+			height: 631.5px;
+			width: 100%;
+			z-index: 1;
+			background-color: #000;
+			opacity: 0;
+			will-change: margin;
+			/*transition: 1s;*/
+		}
+		
+		.content {
+			position: relative;
+			background-color: #fff;
+			z-index: 999;
+			padding: 20px 30px;
+			width: 952px;
+			font-size: 18px;
+			height: auto;
+		}
+		
+		#wrapper {
+			z-index: 3;
+			padding: 1px;
+			height: 768px;
+		}
+		
+		#scroller {
+			margin: 1px;
+			height: auto;
+		}
+		
+		.blank {
+			height: 480px;
+		}
+		
+		.package-title {
+			font-size: 24px;
+			font-weight: bold;
+		}
+		
+		.line {
+			margin: 23px 0 25px;
+			height: 1px;
+			width: 100%;
+			background-color: #f0f0f0;
+		}
+		/*图片轴*/
+		
+		.img-contain {
+			display: block;
+			padding: 0;
+			height: 300px;
+			width: 100%;
+			overflow: scroll;
+			overflow-y: hidden;
+		}
+		
+		.iteminner {
+			display: block;
+			width: 100%;
+			height: 200px;
+			overflow: hidden;
+		}
+		
+		.lineimg {
+			display: block;
+			width: 2000px;
+		}
+		
+		.item {
+			float: left;
+			display: inline;
+			margin-right: 10px;
+		}
+		
+		.item img {
+			height: 200px;
+			width: 360px;
+		}
+		/*商品选择*/
+		
+		.product {
+			position: relative;
+			height: 220px;
+			width: 100%;
+		}
+		
+		.product-img {
+			width: 325px;
+			height: 190px;
+		}
+		
+		.product-img img {
+			width: 100%;
+			height: 100%;
+		}
+		.product-name{
+			position: absolute;
+			top:10px;
+			left:360px;
+			font-size: 18px;
+		}
+		.product-brand{
+			position: absolute;
+			top:50px;
+			left:360px;
+			font-size: 18px;
+			color:#8a8d8c;
+		}
+	</style>
+
+	<body>
+		<div class="circle-btn close-btn mui-action-back mui-icon mui-icon-arrowleft"></div>
+		<div id="detail">
+			<div id="cover-image-mask"></div>
+			<div id="cover-image" v-bind:style="{backgroundImage: 'url(' + detail.cover + ')'}"></div>
+			<div id="wrapper">
+				<ul id="scroller">
+					<div class="blank"></div>
+					<div class="content">
+						<div class="package-title">{{detail.name}}</div>
+						<div class="line"></div>
+						<div class="content-text">{{detail.detail_text}}</div>
+						<div class="line"></div>
+
+						<!--图片轴模块-->
+						<span class="iteminner">
+						<span class="img-contain">
+					<span class="lineimg" >
+						<span class="item" v-for="img_src in detail.detail_images" track-by="$index"><img class="rendering-images" v-bind:src="img_src"   v-on:tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
+						</span>
+						</span>
+						</span>
+						<!--end-->
+						<div class="line"></div>
+						<div v-for="product in detail.products">
+							<!--商品选择模块-->
+
+							<div class="product">
+								<div class="product-img"><img v-bind:src="product.cover|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
+								<div class="product-name">{{product.name}}</div>
+								<div class="product-brand">品牌：&nbsp;&nbsp;<span v-for="brand in product.brand">{{brand.brand_name}}&nbsp;</span></div>
+								<div class="product-model"></div>
+								<div class="product-color"></div>
+							</div>
+
+							<!--end-->
+							<div class="line"></div>
+						</div>
+
+						<div class="blank"></div>
+					</div>
+
+			</div>
+		</div>
+		</div>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/jroll.js"></script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript" src="../js/vue.js"></script>
+		<script type="text/javascript" src="../js/palette.js"></script>
+
+		<script type="text/javascript" src="../js/cache.js"></script>
+		<script>
+			var jroll;
+			mui.init({
+				beforeback: function() {
+					plus.navigator.setFullscreen(false);
+				}
+			});
+			mui.plusReady(function() {
+				fAddVueCacheFilter();
+				new Vue({
+					el: "#detail",
+					data: {
+						detail: detail
+					},
+					ready: function() {
+						jroll = new JRoll("#wrapper", {
+							preventDefault: false
+						}); //为了能够顺利滚动图片轴因此需要获取原生事件
+						jroll.on('scroll', function() {
+							if(this.y < 0) {
+								if(this.y > -567) { //停在向上移340px的位置上
+									document.getElementById("cover-image").style.marginTop = this.y * 0.6 + "px";
+									document.getElementById("cover-image-mask").style.marginTop = this.y * 0.6 + "px";
+									document.body.style.backgroundColor = "rgba(0,0,0," + (0.1 - this.y * 0.0007) + ")";
+									document.getElementById("cover-image-mask").style.opacity = -this.y * 0.001;
+								}
+							}
+						});
+					},
+					methods: {
+						previewimage: function(thisobj) {
+							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
+								images: thisobj.currentTarget.parentNode.innerHTML,
+								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.getElementsByTagName("img")),
+								deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+							}), "fade-in", 200);
+
+						},
+						previewimages: function(thisobj) {
+							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
+								images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
+								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
+								deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+							}), "fade-in", 200);
+
+						}
+					}
+				});
+
+			});
+			var detail = {
+				"name": "厨房",
+				"cover": "../images/preview.png",
+				"detail_text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。",
+				"detail_images": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
+				"products": [{
+					"name": "橱柜",
+					"cover": "../images/smile.png",
+					"brand": [{
+						"brand_name": "博洛尼",
+						"model": ["all-1", "all-2", "allii"],
+						"color": ["红", "黄", "绿", "蓝"],
+						"images": [{
+							"all-1//红": "../imgaes/preview.png"
+						}, {
+							"all-1//黄": "../images/smile.png"
+						}, {
+							"all-1//绿": "../images/smile.png"
+						}, {
+							"all-1//蓝": "../images/smile.png"
+						}, {
+							"all-2//红": "../images/smile.png"
+						}, {
+							"all-2//黄": "../images/smile.png"
+						}, {
+							"all-2//绿": "../images/smile.png"
+						}, {
+							"all-2//蓝": "../images/smile.png"
+						}, {
+							"allii//红": "../images/smile.png"
+						}, {
+							"allii//黄": "../images/smile.png"
+						}, {
+							"allii//绿": "../images/smile.png"
+						}, {
+							"allii//蓝": "../images/smile.png"
+						}]
+					}, {
+						"brand_name": "马可波罗",
+						"model": ["all-1", "all-2", "allii"],
+						"color": ["红", "黄", "绿", "蓝"],
+						"images": [{
+							"all-1//红": "../imgaes/preview.png"
+						}, {
+							"all-1//黄": "../images/smile.png"
+						}, {
+							"all-1//绿": "../images/smile.png"
+						}, {
+							"all-1//蓝": "../images/smile.png"
+						}, {
+							"all-2//红": "../images/smile.png"
+						}, {
+							"all-2//黄": "../images/smile.png"
+						}, {
+							"all-2//绿": "../images/smile.png"
+						}, {
+							"all-2//蓝": "../images/smile.png"
+						}, {
+							"allii//红": "../images/smile.png"
+						}, {
+							"allii//黄": "../images/smile.png"
+						}, {
+							"allii//绿": "../images/smile.png"
+						}, {
+							"allii//蓝": "../images/smile.png"
+						}]
+					}]
+				}, {
+					"name": "橱柜",
+					"cover": "../images/preview.png",
+					"brand": [{
+						"brand_name": "博洛尼",
+						"model": ["all-1", "all-2", "allii"],
+						"color": ["红", "黄", "绿", "蓝"],
+						"images": [{
+							"all-1//红": "../imgaes/preview.png"
+						}, {
+							"all-1//黄": "../images/smile.png"
+						}, {
+							"all-1//绿": "../images/smile.png"
+						}, {
+							"all-1//蓝": "../images/smile.png"
+						}, {
+							"all-2//红": "../images/smile.png"
+						}, {
+							"all-2//黄": "../images/smile.png"
+						}, {
+							"all-2//绿": "../images/smile.png"
+						}, {
+							"all-2//蓝": "../images/smile.png"
+						}, {
+							"allii//红": "../images/smile.png"
+						}, {
+							"allii//黄": "../images/smile.png"
+						}, {
+							"allii//绿": "../images/smile.png"
+						}, {
+							"allii//蓝": "../images/smile.png"
+						}]
+					}, {
+						"brand_name": "马可波罗",
+						"model": ["all-1", "all-2", "allii"],
+						"color": ["红", "黄", "绿", "蓝"],
+						"images": [{
+							"all-1//红": "../imgaes/preview.png"
+						}, {
+							"all-1//黄": "../images/smile.png"
+						}, {
+							"all-1//绿": "../images/smile.png"
+						}, {
+							"all-1//蓝": "../images/smile.png"
+						}, {
+							"all-2//红": "../images/smile.png"
+						}, {
+							"all-2//黄": "../images/smile.png"
+						}, {
+							"all-2//绿": "../images/smile.png"
+						}, {
+							"all-2//蓝": "../images/smile.png"
+						}, {
+							"allii//红": "../images/smile.png"
+						}, {
+							"allii//黄": "../images/smile.png"
+						}, {
+							"allii//绿": "../images/smile.png"
+						}, {
+							"allii//蓝": "../images/smile.png"
+						}]
+					}]
+				}, {
+					"name": "橱柜",
+					"cover": "../images/smile.png",
+					"brand": [{
+						"brand_name": "博洛尼",
+						"model": ["all-1", "all-2", "allii"],
+						"color": ["红", "黄", "绿", "蓝"],
+						"images": [{
+							"all-1//红": "../imgaes/preview.png"
+						}, {
+							"all-1//黄": "../images/smile.png"
+						}, {
+							"all-1//绿": "../images/smile.png"
+						}, {
+							"all-1//蓝": "../images/smile.png"
+						}, {
+							"all-2//红": "../images/smile.png"
+						}, {
+							"all-2//黄": "../images/smile.png"
+						}, {
+							"all-2//绿": "../images/smile.png"
+						}, {
+							"all-2//蓝": "../images/smile.png"
+						}, {
+							"allii//红": "../images/smile.png"
+						}, {
+							"allii//黄": "../images/smile.png"
+						}, {
+							"allii//绿": "../images/smile.png"
+						}, {
+							"allii//蓝": "../images/smile.png"
+						}]
+					}, {
+						"brand_name": "马可波罗",
+						"model": ["all-1", "all-2", "allii"],
+						"color": ["红", "黄", "绿", "蓝"],
+						"images": [{
+							"all-1//红": "../imgaes/preview.png"
+						}, {
+							"all-1//黄": "../images/smile.png"
+						}, {
+							"all-1//绿": "../images/smile.png"
+						}, {
+							"all-1//蓝": "../images/smile.png"
+						}, {
+							"all-2//红": "../images/smile.png"
+						}, {
+							"all-2//黄": "../images/smile.png"
+						}, {
+							"all-2//绿": "../images/smile.png"
+						}, {
+							"all-2//蓝": "../images/smile.png"
+						}, {
+							"allii//红": "../images/smile.png"
+						}, {
+							"allii//黄": "../images/smile.png"
+						}, {
+							"allii//绿": "../images/smile.png"
+						}, {
+							"allii//蓝": "../images/smile.png"
+						}]
+					}]
+				}]
+			}
+		</script>
+	</body>
+
+</html>

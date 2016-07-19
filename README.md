@@ -14,3 +14,7 @@ Powered by mui,vuejs
 *  工龄 seniority
 *  工序 process
 *  播报 broadcast
+*  套餐 package
+*  商标、品牌 brand
+*  型号 model
+*  调色板 palette

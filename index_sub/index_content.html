@@ -50,6 +50,7 @@
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="rendering block">
+					<!--图片轴模块-->
 					<span class="iteminner">
 						<span class="img-contain">
 					<span class="lineimg" >
@@ -57,6 +58,7 @@
 					</span>
 					</span>
 					</span>
+					<!--end-->
 				</div>
 				<div class="block">
 					<span>报价信息</span><br/>
@@ -180,11 +182,11 @@
 				//打开产品介绍
 				__fIntro: function(eventid) {
 					mui.openWindow({
-						url: "../intro.html",
+						url: "../step/intro.html",
 						id: "intro",
 						styles: {
 							top: 0,
-							bottom: 0,
+							bottom: 0
 						},
 						extras: {
 							eventid: eventid
