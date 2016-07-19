@@ -4,12 +4,14 @@ console.log("缓存管理模块加载............ok");
 //数据库管理
 function fCache(originalsrc) {
 	if(!originalsrc) return '';
-	if(!localStorage.getItem(originalsrc)) {
+	var srcarr = originalsrc.split("/");
+	filename = srcarr[srcarr.length -1];//读出文件名
+	if(!localStorage.getItem(filename)) {
 		DownloadToCache(originalsrc);
 		return originalsrc;
 	} else {
 		var path = plus.io.convertLocalFileSystemURL("_downloads");
-		return path + "/" + localStorage.getItem(originalsrc);
+		return path + "/" + filename;
 	}
 
 }
@@ -25,17 +27,17 @@ function fAddVueCacheFilter() {
  
 function DownloadToCache(url) {
 	var urlarr = url.split("/");
-	var downloadfilename = urlarr[urlarr.length - 1];
+	var downloadfilename = urlarr[urlarr.length - 1];//读出文件名
 	plus.io.resolveLocalFileSystemURL("_downloads/" + downloadfilename, function(fs) { //先判断目录中是否已经有这个文件了，如果有则不下载，没有则下载
 		console.log("文件已存在，无需下载");
-		localStorage.setItem(url, downloadfilename);
+		localStorage.setItem(downloadfilename, true);
 	}, function(e) {
 		console.log("Downloading '" + url + "' to cache...");
 		var dtask = plus.downloader.createDownload(url, {}, function(d, status) {
 			if(status == 200) {
-				downloadfilename = d.filename.split("/")[1];
-				console.log("下载成功=" + downloadfilename); //删除保存目录前的"_downloads/"以提高存储密度
-				localStorage.setItem(url, downloadfilename);
+				downloadfilename = d.filename.split("/")[1];//d.filename读出来为_downloads/xxxxxx.xxx形式
+				console.log("下载成功=" + downloadfilename); 
+				localStorage.setItem(downloadfilename, true);//删除路径前的"_downloads/"以提高存储密度
 			} else {
 				//下载失败
 				console.log("下载失败=" + status);
