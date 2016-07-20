@@ -27,3 +27,11 @@ function fColorPipe(colorName) {
 	}
 	return false;
 }
+
+
+function fAddVueColorFilter(){
+	Vue.filter('color', function(colorName) {
+			return fColorPipe(colorName);
+	});
+	
+}

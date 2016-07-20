@@ -58,17 +58,32 @@
 			line-height: 42px;
 			text-align: center;
 			box-shadow: 0 0 10px rgba(0, 0, 0, .2);
-			z-index: 999;
 		}
 		
 		.close-btn {
 			left: 33px;
 			font-size: 28px;
+			z-index: 100;
 		}
 		
 		.next-btn {
 			right: 33px;
 			font-size: 25px;
+			z-index: 98;
+		}
+		
+		.preview-image-init {
+			position: fixed;
+			transition: 0.3s;
+			z-index: 99;
+			height: 303px;
+			width: 470px;
+			will-change: auto;
+		}
+		
+		.preview-image-init img {
+			height: 100%;
+			width: 100%;
 		}
 	</style>
 
@@ -78,8 +93,8 @@
 
 		<div class="mui-content">
 			<div class="package-title">套餐</div>
-			<div class="package-item-container" onclick="ss()"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>
-			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">卫生间</span></div>
+			<div class="package-item-container" ontouchstart="ss(this)"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>
+			<div class="package-item-container" ontouchstart="ss(this)"><img src="../images/preview.png"><span class="package-item-title">卫生间</span></div>
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">水电</span></div>
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">涂刷</span></div>
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">地面</span></div>
@@ -95,8 +110,7 @@
 
 	</body>
 	<script>
-		function ss() {
-			plus.navigator.setFullscreen(true);
+		function ss(e) {
 			mui.openWindow({
 				url: "intro_detail.html",
 				id: "preview_image",
@@ -108,13 +122,15 @@
 					height: "100%",
 				},
 				show: {
-					aniShow: "fade-in"
+					autoShow: true,
+					aniShow: "slide-in-right"
 				},
 				waiting: {
 					autoShow: false,
 				}
 			});
 		}
+		
 	</script>
 
 </html>

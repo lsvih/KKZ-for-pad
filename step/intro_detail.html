@@ -36,6 +36,7 @@
 			height: 631px;
 			width: 100%;
 			z-index: 0;
+			background-size: 100% 100%;
 			will-change: margin;
 			/*transition: 1s;*/
 		}
@@ -59,6 +60,17 @@
 			width: 952px;
 			font-size: 18px;
 			height: auto;
+		}
+		
+		.content-text {
+			line-height: 28px;
+		}
+		
+		.content-text span {
+			display: inline-block;
+			color: #62DA73;
+			margin: 0 5px 0 -9px;
+			font-weight: bold;
 		}
 		
 		#wrapper {
@@ -86,6 +98,16 @@
 			height: 1px;
 			width: 100%;
 			background-color: #f0f0f0;
+		}
+		
+		#mask {
+			position: fixed;
+			height: 100%;
+			width: 100%;
+			z-index: 9999999;
+			background-color: #fff;
+			opacity: 1;
+			transition: 0.5s;
 		}
 		/*图片轴*/
 		
@@ -128,6 +150,10 @@
 			width: 100%;
 		}
 		
+		.product i {
+			display: none;
+		}
+		
 		.product-img {
 			width: 325px;
 			height: 190px;
@@ -137,22 +163,67 @@
 			width: 100%;
 			height: 100%;
 		}
-		.product-name{
+		
+		.product-name {
 			position: absolute;
-			top:10px;
-			left:360px;
+			top: 10px;
+			left: 360px;
 			font-size: 18px;
 		}
-		.product-brand{
+		
+		.product-brand {
 			position: absolute;
-			top:50px;
-			left:360px;
+			display: inline-block;
+			top: 50px;
+			left: 360px;
 			font-size: 18px;
-			color:#8a8d8c;
+			color: #8a8d8c;
+		}
+		
+		.product-model {
+			position: absolute;
+			top: 85px;
+			left: 360px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.product-size {
+			position: absolute;
+			top: 120px;
+			left: 360px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.product-color {
+			position: absolute;
+			top: 155px;
+			left: 360px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.selected {
+			color: #62da73!important;
+		}
+		
+		.selected-color {
+			border: 3px solid #62DA73!important;
+		}
+		
+		.color-block {
+			display: inline-block;
+			height: 28px;
+			width: 28px;
+			margin-right: 20px;
+			vertical-align: middle;
+			text-indent: -9999px;
 		}
 	</style>
 
 	<body>
+		<div id="mask"></div>
 		<div class="circle-btn close-btn mui-action-back mui-icon mui-icon-arrowleft"></div>
 		<div id="detail">
 			<div id="cover-image-mask"></div>
@@ -163,14 +234,14 @@
 					<div class="content">
 						<div class="package-title">{{detail.name}}</div>
 						<div class="line"></div>
-						<div class="content-text">{{detail.detail_text}}</div>
+						<div class="content-text"><span>|</span>{{detail.detail_text}}</div>
 						<div class="line"></div>
 
 						<!--图片轴模块-->
 						<span class="iteminner">
 						<span class="img-contain">
 					<span class="lineimg" >
-						<span class="item" v-for="img_src in detail.detail_images" track-by="$index"><img class="rendering-images" v-bind:src="img_src"   v-on:tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
+						<span class="item" v-for="img_src in detail.detail_images" track-by="$index"><img class="rendering-images" v-bind:src="img_src" v-on:tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
 						</span>
 						</span>
 						</span>
@@ -180,29 +251,44 @@
 							<!--商品选择模块-->
 
 							<div class="product">
-								<div class="product-img"><img v-bind:src="product.cover|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
+								<i>{{$index}}</i>
+								<div class="product-img"><img v-bind:src="product.showimage|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
 								<div class="product-name">{{product.name}}</div>
-								<div class="product-brand">品牌：&nbsp;&nbsp;<span v-for="brand in product.brand">{{brand.brand_name}}&nbsp;</span></div>
-								<div class="product-model"></div>
-								<div class="product-color"></div>
+								<div class="product-brand">品牌：&nbsp;
+									<span v-for="brand in product.brand" v-on:tap="Change($event)" v-bind:data-id="$index">{{brand.brand_name}}&nbsp;&nbsp;</span></div>
+								<div class="product-model">型号：&nbsp;
+									<span v-for="model in product.brand[product.selectbrand].tree" v-on:tap="Change($event)" v-bind:value="$index" v-bind:data-id="model.id">{{model.name}}&nbsp;&nbsp;</span></div>
+								<div class="product-size" v-show="product.brand[product.selectbrand].size.length">尺寸：&nbsp;
+									<span v-for="size in product.brand[product.selectbrand].tree[product.brand[product.selectbrand].selectmodel].size" v-on:tap="Change($event)" v-bind:data-id="size.id">{{size.name}}&nbsp;&nbsp;</span></div>
+								<div class="product-color" v-show="product.brand[product.selectbrand].color.length">颜色：&nbsp;
+									<div v-for="color in product.brand[product.selectbrand].tree[product.brand[product.selectbrand].selectmodel].color" class="color-block" v-on:tap="Change($event)" v-bind:data-id="color.id">{{color.name|color}}</div>
+								</div>
 							</div>
-
+							
 							<!--end-->
-							<div class="line"></div>
+							
+							<!--文字阅读折叠模块-->
+					{{product.showtext}}
+					<!--end-->
+							
+							
 						</div>
 
-						<div class="blank"></div>
 					</div>
 
+					
+
+					
+					<div class="line"></div>
 			</div>
+
 		</div>
-		</div>
+
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/jroll.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
 		<script type="text/javascript" src="../js/palette.js"></script>
-
 		<script type="text/javascript" src="../js/cache.js"></script>
 		<script>
 			var jroll;
@@ -212,13 +298,18 @@
 				}
 			});
 			mui.plusReady(function() {
+				plus.navigator.setFullscreen(true);
 				fAddVueCacheFilter();
-				new Vue({
+				fAddVueColorFilter();
+				var vueContent = new Vue({
 					el: "#detail",
 					data: {
-						detail: detail
+						detail: fDetailPipe(detail),
 					},
 					ready: function() {
+						fChangeColor();
+						document.getElementById("mask").style.opacity = 0;
+						document.getElementById("mask").style.zIndex = 0;
 						jroll = new JRoll("#wrapper", {
 							preventDefault: false
 						}); //为了能够顺利滚动图片轴因此需要获取原生事件
@@ -228,32 +319,185 @@
 									document.getElementById("cover-image").style.marginTop = this.y * 0.6 + "px";
 									document.getElementById("cover-image-mask").style.marginTop = this.y * 0.6 + "px";
 									document.body.style.backgroundColor = "rgba(0,0,0," + (0.1 - this.y * 0.0007) + ")";
-									document.getElementById("cover-image-mask").style.opacity = -this.y * 0.001;
+									document.getElementById("cover-image-mask").style.opacity = -this.y * 0.0012;
 								}
 							}
 						});
+						fSelectDefault();
 					},
 					methods: {
-						previewimage: function(thisobj) {
+						previewimage: function(thisobj) { //查看单张图片大图
 							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
 								images: thisobj.currentTarget.parentNode.innerHTML,
 								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.getElementsByTagName("img")),
 								deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
 							}), "fade-in", 200);
-
 						},
-						previewimages: function(thisobj) {
+						previewimages: function(thisobj) { //查看多张图片大图
 							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
 								images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
 								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
 								deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
 							}), "fade-in", 200);
-
+						},
+						Change: function(thisevent) {
+							var thisobj = thisevent.currentTarget;
+							if(fHasClass(thisobj, "selected") || fHasClass(thisobj, "selected-color")) return false;
+							var parent = thisobj.parentNode;
+							var productsortid = parent.parentNode.getElementsByTagName("i")[0].innerHTML;
+							var type = parent.className.split("product-")[1];
+							if(type !== "color") { //先改变对应的元素的颜色
+								var items = parent.getElementsByTagName("span");
+								for(var k = 0; k < items.length; k++) {
+									fRemoveClass(items[k], "selected");
+								}
+								fAddClass(thisobj, "selected");
+								if(type == "brand") {
+									var brandsortid = thisobj.getAttribute("data-id");
+									this.detail.products[productsortid].selectbrand = brandsortid;
+									setTimeout(function() {//在渲染完成后把颜色重新替换色块
+										fChangeColor();
+									}, 1);
+								}
+								if(type == "model") {
+									var brandsortid = this.detail.products[productsortid].selectbrand;
+									var modelsortid = thisobj.getAttribute("value");
+									this.detail.products[productsortid].brand[brandsortid].selectmodel = modelsortid;
+									setTimeout(function() {//在渲染完成后把颜色重新替换色块
+										fChangeColor();
+									}, 1);
+								}
+							} else { //点击的是颜色的情况改变选择
+								var items = parent.getElementsByClassName("color-block");
+								for(var k = 0; k < items.length; k++) {
+									fRemoveClass(items[k], "selected-color");
+								}
+								fAddClass(thisobj, "selected-color");
+							}
+							//在选择后拼接字符串去查询sku,如果查询到则将图片与文字替换，如果没有查询到则不替换
+							var modelid = fGetDataIdFormSelectedItem(parent.parentNode.getElementsByClassName("product-model")[0]);
+							var sizeid = fGetDataIdFormSelectedItem(parent.parentNode.getElementsByClassName("product-size")[0]);
+							var colorid = fGetDataIdFormSelectedItem(parent.parentNode.getElementsByClassName("product-color")[0]);
+//							console.log(modelid + '-' + sizeid + '-' + colorid);//得到的sku
+							var skusortid = fSearchSKU(this.detail.products[productsortid].brand[this.detail.products[productsortid].selectbrand].sku,modelid + '-' + sizeid + '-' + colorid)
+							if(skusortid !== false){//考虑skusortid为0的情况
+								this.detail.products[productsortid].showtext = this.detail.products[productsortid].brand[this.detail.products[productsortid].selectbrand].sku[skusortid].text;
+								this.detail.products[productsortid].showimage = this.detail.products[productsortid].brand[this.detail.products[productsortid].selectbrand].sku[skusortid].image;
+							}
 						}
-					}
+					},
 				});
 
 			});
+			/**
+			 * 运行时选择所有项的第一个
+			 */
+			function fSelectDefault() {
+				var products = document.getElementsByClassName("product");
+				for(var i = 0; i < products.length; i++) {
+					fAddClass(products[i].getElementsByClassName("product-brand")[0].getElementsByTagName("span")[0], "selected");
+					fAddClass(products[i].getElementsByClassName("product-model")[0].getElementsByTagName("span")[0], "selected");
+					fAddClass(products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "selected");
+					fAddClass(products[i].getElementsByClassName("product-color")[0].getElementsByTagName("div")[0], "selected-color");
+				}
+			}
+			/**
+			 * 详情处理中间件，将详情中的每个商品都加上属性树
+			 * @param {Object} Detail 
+			 */
+			function fDetailPipe(Detail) {
+				for(var i = 0; i < Detail.products.length; i++) {
+					for(var j = 0; j < Detail.products[i].brand.length; j++) {
+						var model = Detail.products[i].brand[j].model;
+						var size = Detail.products[i].brand[j].size;
+						var color = Detail.products[i].brand[j].color;
+						var sku = Detail.products[i].brand[j].sku;
+						Detail.products[i].brand[j].tree = fCreateProductBrandTree(model, size, color, sku);
+						Detail.products[i].showtext = Detail.products[i].brand[0].sku[0].text;
+						Detail.products[i].showimage = Detail.products[i].brand[0].sku[0].image;
+						Detail.products[i].selectbrand = 0;
+						Detail.products[i].brand[j].selectmodel = 0;
+					}
+				}
+				return Detail;
+			}
+
+			/**
+			 * 根据初始型号生成品牌的属性树
+			 * @param {Array} Model 描述型号的数组
+			 * @param {Array} Size 描述尺寸的数组
+			 * @param {Array} Color 描述颜色的数组
+			 * @param {Array} Brand 品牌下的sku信息
+			 */
+			function fCreateProductBrandTree(Model, Size, Color, Brand) {
+				var TreeArray = [];
+				for(var j = 0; j < Brand.length; j++) {
+					var modelsort = fFindObjSortById(Number(Brand[j].sku.split("-")[0]), Model); //model为必填字段，因此在Model中必定能找到相应值
+					var sizesort = fFindObjSortById(Number(Brand[j].sku.split("-")[1]), Size); //尺寸与颜色为选填，因此考虑未查找到的情况
+					var colorsort = fFindObjSortById(Number(Brand[j].sku.split("-")[2]), Color);
+					var modelsortInTree = fFindObjSortById(Model[modelsort].id, TreeArray); //在TreeArray中查找sku的model是否已经存在，如果不存在则返回false,如果存在返回排序值
+					//以下判断全部使用 === false，因为有可能存在排序id=0的情况
+					if(modelsortInTree === false) {
+						TreeArray.push({
+							"id": Model[modelsort].id,
+							"name": Model[modelsort].name,
+							"size": [],
+							"color": []
+						});
+						modelsortInTree = TreeArray.length - 1; //如果在数组中已经有对应id则不插值,并将所在的下标值传出
+					}
+					if(sizesort !== false) { //如果不存在尺寸则跳过
+						var sizesortInTree = fFindObjSortById(Size[sizesort].id, TreeArray[modelsortInTree].size);
+						if(sizesortInTree === false) {
+							TreeArray[modelsortInTree].size.push({
+								"id": Size[sizesort].id,
+								"name": Size[sizesort].name
+							})
+						}
+					}
+					if(colorsort !== false) { //如果不存在颜色则跳过
+						var colorsortInTree = fFindObjSortById(Color[colorsort].id, TreeArray[modelsortInTree].color);
+						if(colorsortInTree === false) {
+							TreeArray[modelsortInTree].color.push({
+								"id": Color[colorsort].id,
+								"name": Color[colorsort].name
+							})
+						}
+					}
+				}
+				return TreeArray;
+			}
+
+			/**
+			 * 将所有的颜色代码全部转换为颜色色块
+			 */
+			function fChangeColor() {
+				var colors = document.getElementsByClassName("color-block");
+				for(var o = 0; o < colors.length; o++) {
+					colors[o].style.backgroundColor = colors[o].innerText;
+				}
+			}
+
+			/**
+			 * 在父元素中寻找含有selected或selected-color的子元素，并获取其data-id
+			 * @param {Object} 父元素
+			 */
+			function fGetDataIdFormSelectedItem(obj){
+				var childitem = obj.getElementsByClassName("selected").length?obj.getElementsByClassName("selected")[0]:obj.getElementsByClassName("selected-color")[0];
+				if(childitem == undefined) return "";
+				return childitem.getAttribute("data-id");
+			}
+			/**
+			 * 在sku数组中寻找skuid相等的sku下标，如果找到了则返回下标，没找到则返回false
+			 * @param {Object} skuarr
+			 * @param {Object} skuid
+			 */
+			function fSearchSKU(skuarr,skuid){
+				for(var z in skuarr){
+					if(skuid == skuarr[z].sku) return z;
+				}
+				return false;
+			}
 			var detail = {
 				"name": "厨房",
 				"cover": "../images/preview.png",
@@ -261,192 +505,735 @@
 				"detail_images": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
 				"products": [{
 					"name": "橱柜",
-					"cover": "../images/smile.png",
 					"brand": [{
 						"brand_name": "博洛尼",
-						"model": ["all-1", "all-2", "allii"],
-						"color": ["红", "黄", "绿", "蓝"],
-						"images": [{
-							"all-1//红": "../imgaes/preview.png"
+						"model": [{
+							"id": 1312,
+							"name": "all-1"
 						}, {
-							"all-1//黄": "../images/smile.png"
+							"id": 23,
+							"name": "all-2"
 						}, {
-							"all-1//绿": "../images/smile.png"
+							"id": 1241,
+							"name": "allii"
+						}],
+						"size": [{
+							"id": 14112,
+							"name": "L"
 						}, {
-							"all-1//蓝": "../images/smile.png"
+							"id": 12090,
+							"name": "M"
+						}],
+						"color": [{
+							"id": 1231114,
+							"name": "红"
 						}, {
-							"all-2//红": "../images/smile.png"
+							"id": 1123,
+							"name": "黄"
 						}, {
-							"all-2//黄": "../images/smile.png"
+							"id": 178,
+							"name": "绿"
+						}],
+						"sku": [{
+							"sku": "1312-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//绿": "../images/smile.png"
+							"sku": "1312-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "1舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//蓝": "../images/smile.png"
+							"sku": "1312-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//红": "../images/smile.png"
+							"sku": "1312-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//黄": "../images/smile.png"
+							"sku": "1312-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//绿": "../images/smile.png"
+							"sku": "1312-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//蓝": "../images/smile.png"
+							"sku": "23-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}]
 					}, {
 						"brand_name": "马可波罗",
-						"model": ["all-1", "all-2", "allii"],
-						"color": ["红", "黄", "绿", "蓝"],
-						"images": [{
-							"all-1//红": "../imgaes/preview.png"
+						"model": [{
+							"id": 1312,
+							"name": "all-1"
 						}, {
-							"all-1//黄": "../images/smile.png"
+							"id": 23,
+							"name": "all-2"
 						}, {
-							"all-1//绿": "../images/smile.png"
+							"id": 1241,
+							"name": "allii"
+						}],
+						"size": [{
+							"id": 14112,
+							"name": "L"
 						}, {
-							"all-1//蓝": "../images/smile.png"
+							"id": 12090,
+							"name": "M"
+						}],
+						"color": [{
+							"id": 1231114,
+							"name": "红"
 						}, {
-							"all-2//红": "../images/smile.png"
+							"id": 1123,
+							"name": "黄"
 						}, {
-							"all-2//黄": "../images/smile.png"
+							"id": 178,
+							"name": "绿"
+						}],
+						"sku": [{
+							"sku": "1312-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//绿": "../images/smile.png"
+							"sku": "1312-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//蓝": "../images/smile.png"
+							"sku": "1312-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//红": "../images/smile.png"
+							"sku": "1312-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//黄": "../images/smile.png"
+							"sku": "1312-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//绿": "../images/smile.png"
+							"sku": "1312-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//蓝": "../images/smile.png"
+							"sku": "23-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}]
 					}]
 				}, {
 					"name": "橱柜",
-					"cover": "../images/preview.png",
 					"brand": [{
 						"brand_name": "博洛尼",
-						"model": ["all-1", "all-2", "allii"],
-						"color": ["红", "黄", "绿", "蓝"],
-						"images": [{
-							"all-1//红": "../imgaes/preview.png"
+						"model": [{
+							"id": 1312,
+							"name": "all-1"
 						}, {
-							"all-1//黄": "../images/smile.png"
+							"id": 23,
+							"name": "all-2"
 						}, {
-							"all-1//绿": "../images/smile.png"
+							"id": 1241,
+							"name": "allii"
+						}],
+						"size": [{
+							"id": 14112,
+							"name": "L"
 						}, {
-							"all-1//蓝": "../images/smile.png"
+							"id": 12090,
+							"name": "M"
+						}],
+						"color": [{
+							"id": 1231114,
+							"name": "红"
 						}, {
-							"all-2//红": "../images/smile.png"
+							"id": 1123,
+							"name": "黄"
 						}, {
-							"all-2//黄": "../images/smile.png"
+							"id": 178,
+							"name": "绿"
+						}],
+						"sku": [{
+							"sku": "1312-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//绿": "../images/smile.png"
+							"sku": "1312-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//蓝": "../images/smile.png"
+							"sku": "1312-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//红": "../images/smile.png"
+							"sku": "1312-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//黄": "../images/smile.png"
+							"sku": "1312-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//绿": "../images/smile.png"
+							"sku": "1312-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//蓝": "../images/smile.png"
+							"sku": "23-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}]
 					}, {
 						"brand_name": "马可波罗",
-						"model": ["all-1", "all-2", "allii"],
-						"color": ["红", "黄", "绿", "蓝"],
-						"images": [{
-							"all-1//红": "../imgaes/preview.png"
+						"model": [{
+							"id": 1312,
+							"name": "all-1"
 						}, {
-							"all-1//黄": "../images/smile.png"
+							"id": 23,
+							"name": "all-2"
 						}, {
-							"all-1//绿": "../images/smile.png"
+							"id": 1241,
+							"name": "allii"
+						}],
+						"size": [{
+							"id": 14112,
+							"name": "L"
 						}, {
-							"all-1//蓝": "../images/smile.png"
+							"id": 12090,
+							"name": "M"
+						}],
+						"color": [{
+							"id": 1231114,
+							"name": "红"
 						}, {
-							"all-2//红": "../images/smile.png"
+							"id": 1123,
+							"name": "黄"
 						}, {
-							"all-2//黄": "../images/smile.png"
+							"id": 178,
+							"name": "绿"
+						}],
+						"sku": [{
+							"sku": "1312-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//绿": "../images/smile.png"
+							"sku": "1312-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//蓝": "../images/smile.png"
+							"sku": "1312-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//红": "../images/smile.png"
+							"sku": "1312-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//黄": "../images/smile.png"
+							"sku": "1312-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//绿": "../images/smile.png"
+							"sku": "1312-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//蓝": "../images/smile.png"
+							"sku": "23-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}]
 					}]
 				}, {
 					"name": "橱柜",
-					"cover": "../images/smile.png",
 					"brand": [{
 						"brand_name": "博洛尼",
-						"model": ["all-1", "all-2", "allii"],
-						"color": ["红", "黄", "绿", "蓝"],
-						"images": [{
-							"all-1//红": "../imgaes/preview.png"
+						"model": [{
+							"id": 1312,
+							"name": "all-1"
 						}, {
-							"all-1//黄": "../images/smile.png"
+							"id": 23,
+							"name": "all-2"
 						}, {
-							"all-1//绿": "../images/smile.png"
+							"id": 1241,
+							"name": "allii"
+						}],
+						"size": [{
+							"id": 14112,
+							"name": "L"
 						}, {
-							"all-1//蓝": "../images/smile.png"
+							"id": 12090,
+							"name": "M"
+						}],
+						"color": [{
+							"id": 1231114,
+							"name": "红"
 						}, {
-							"all-2//红": "../images/smile.png"
+							"id": 1123,
+							"name": "黄"
 						}, {
-							"all-2//黄": "../images/smile.png"
+							"id": 178,
+							"name": "绿"
+						}],
+						"sku": [{
+							"sku": "1312-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//绿": "../images/smile.png"
+							"sku": "1312-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//蓝": "../images/smile.png"
+							"sku": "1312-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//红": "../images/smile.png"
+							"sku": "1312-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//黄": "../images/smile.png"
+							"sku": "1312-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//绿": "../images/smile.png"
+							"sku": "1312-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//蓝": "../images/smile.png"
+							"sku": "23-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}]
 					}, {
 						"brand_name": "马可波罗",
-						"model": ["all-1", "all-2", "allii"],
-						"color": ["红", "黄", "绿", "蓝"],
-						"images": [{
-							"all-1//红": "../imgaes/preview.png"
+						"model": [{
+							"id": 1312,
+							"name": "all-1"
 						}, {
-							"all-1//黄": "../images/smile.png"
+							"id": 23,
+							"name": "all-2"
 						}, {
-							"all-1//绿": "../images/smile.png"
+							"id": 1241,
+							"name": "allii"
+						}],
+						"size": [{
+							"id": 14112,
+							"name": "L"
 						}, {
-							"all-1//蓝": "../images/smile.png"
+							"id": 12090,
+							"name": "M"
+						}],
+						"color": [{
+							"id": 1231114,
+							"name": "红"
 						}, {
-							"all-2//红": "../images/smile.png"
+							"id": 1123,
+							"name": "黄"
 						}, {
-							"all-2//黄": "../images/smile.png"
+							"id": 178,
+							"name": "绿"
+						}],
+						"sku": [{
+							"sku": "1312-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//绿": "../images/smile.png"
+							"sku": "1312-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"all-2//蓝": "../images/smile.png"
+							"sku": "1312-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//红": "../images/smile.png"
+							"sku": "1312-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//黄": "../images/smile.png"
+							"sku": "1312-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//绿": "../images/smile.png"
+							"sku": "1312-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}, {
-							"allii//蓝": "../images/smile.png"
+							"sku": "23-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "23-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-14112-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1231114",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-1123",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
+						}, {
+							"sku": "1241-12090-178",
+							"price": 12312,
+							"image": "../images/preview.png",
+							"text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。"
 						}]
 					}]
 				}]
-			}
+			};
 		</script>
 	</body>
 

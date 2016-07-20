@@ -20,7 +20,6 @@ function fCache(originalsrc) {
 function fAddVueCacheFilter() {
 	console.log("Vue缓存路径管理过滤器加载........ok")
 	Vue.filter('cache', function(originalsrc) {
-		//		console.log(fCache(originalsrc))
 		return fCache(originalsrc)
 	});
 }
