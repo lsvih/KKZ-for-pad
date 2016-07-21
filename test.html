@@ -1,36 +1,52 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-		<meta name="apple-mobile-web-app-capable" content="yes">
-		<meta name="apple-mobile-web-app-status-bar-style" content="black">
-		<title>WebSql Demo</title>
-		<script src="js/mui.js"></script>
-		<link href="css/mui.css" rel="stylesheet" />
-		<script type="text/javascript" charset="utf-8">
-			mui.init();
-		</script>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>层收缩</title>
+		<link rel="stylesheet" href="css/mui.css" />
+		<script type="text/javascript" src="js/mui.js"></script>
 	</head>
+	<style>
+				
+		.mui-numbox .mui-btn {
+			height: 28px;
+			width: 28px;
+			border-radius: 12px;
+			border: none;
+			font-size: 28px;
+			line-height: 28px;
+			font-weight: bold;
+			background-color: transparent!important;
+		}
+		
+		
+		.mui-numbox {
+			position: absolute;
+			bottom: 6px;
+			right:13px;
+			border: none;
+			height: 28px;
+			width: 90px;
+			padding: 0 37px;
+			background-color: transparent!important;
+		}
+		
+		.mui-numbox .mui-input-numbox {
+			border-right: none!important;
+			border-left: none!important;
+			background-color: transparent!important;
+			width: 16px!important;
+		}
+	</style>
 
 	<body>
-		<header class="mui-bar mui-bar-nav">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">WebSql Demo</h1>
-		</header>
-		<div class="mui-content">
-
+		<div class="mui-numbox" data-numbox-min='1' data-numbox-max='9'>
+			<button class="mui-btn mui-btn-numbox-minus mui-icon mui-icon-minus" type="button"></button>
+			<input id="test" class="mui-input-numbox" type="number" value="0" />
+			<button class="mui-btn mui-btn-numbox-plus mui-icon mui-icon-plus" type="button"></button>
 		</div>
-
-		<script src="js/cache.js"></script>
-		<script>
-			//		ExeSql("INSERT INTO CacheMapping (originalsrc,cachesrc) VALUES ('123456','123')")
-
-			fCache("444", function(e) {
-				alert(e);
-			})
-		</script>
 	</body>
 
 </html>

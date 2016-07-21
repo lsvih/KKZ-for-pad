@@ -236,7 +236,35 @@ function fGetSortIdByDate(date, JSON) {
 	return false;
 }
 
+/**
+ * 获取url后带的参数值，使用方法:GetRequest()['id']
+ */
+function GetRequest() {
+	var url = location.search;
+	var theRequest = new Object();
+	if(url.indexOf("?") != -1) {
+		var str = url.substr(1);
+		strs = str.split("&");
+		for(var i = 0; i < strs.length; i++) {
+			theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+		}
+	}
+	return theRequest;
+}
 
-
-
-
+/**
+ * 从数组中移除指定下标的元素
+ * @param {Array} arr
+ * @param {Number} num 待删除元素的下标
+ */
+function fRemoveObecjtFormArray(arr, num) {
+	if(isNaN(num) || num >= arr.length) {
+		return false;
+	}
+	for(var i = 0, n = 0; i < arr.length; i++) {
+		if(arr[i] != arr[num]) {
+			arr[n++] = arr[i];
+		}
+	}
+	arr.length -= 1;
+}

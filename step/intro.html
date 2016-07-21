@@ -40,11 +40,12 @@
 			position: absolute;
 			bottom: 0;
 			display: block;
-			height: 37px;
+			height: 38px;
 			width: 100%;
-			background-color: rgba(255, 255, 255, 0.8);
-			padding-left: 22px;
-			line-height: 37px;
+			background-image: url(../images/picture-mask.png);
+			color: #fff;
+			padding-left: 18px;
+			line-height: 38px;
 		}
 		
 		.circle-btn {
@@ -85,20 +86,29 @@
 			height: 100%;
 			width: 100%;
 		}
+		
+		#mask {
+			position: fixed;
+			top:0;
+			height: 100%;
+			width: 100%;
+			z-index: 9999999;
+			background-color: #fff;
+			opacity: 1;
+			transition: 0.5s;
+		}
 	</style>
 
 	<body>
+		<div id="mask"></div>
 		<div class="circle-btn close-btn mui-action-back mui-icon mui-icon-closeempty"></div>
 		<div class="circle-btn next-btn mui-icon mui-icon-arrowright"></div>
 
 		<div class="mui-content">
-			<div class="package-title">套餐</div>
-			<div class="package-item-container" ontouchstart="ss(this)"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>
-			<div class="package-item-container" ontouchstart="ss(this)"><img src="../images/preview.png"><span class="package-item-title">卫生间</span></div>
-			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">水电</span></div>
-			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">涂刷</span></div>
-			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">地面</span></div>
-			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">门</span></div>
+			<div id="package">
+				<div class="package-title">套餐</div>
+				<div class="package-item-container" v-for="package in packageinfo" v-on:tap="__fdetail($index)"><img v-bind:src="package.cover|cache"><span class="package-item-title">{{package.name}}</span></div>
+			</div>
 			<div class="package-title" style="margin-top: 30px;">单品</div>
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>
@@ -106,31 +116,54 @@
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>
 		</div>
 		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript" src="../js/vue.js"></script>
 		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/cache.js"></script>
 
 	</body>
 	<script>
-		function ss(e) {
-			mui.openWindow({
-				url: "intro_detail.html",
-				id: "preview_image",
-				styles: {
-					top: 0,
-					bottom: 0,
-					right: 0,
-					width: "100%",
-					height: "100%",
+		var vueContent;
+		var eventid;
+		mui.plusReady(function() {
+			eventid = plus.webview.currentWebview().eventid;
+			fAddVueCacheFilter();
+			vueContent = new Vue({
+				el: '#package',
+				data: JSON.parse(localStorage.packageinfo),
+				ready: function() {
+					document.getElementById("mask").style.opacity = 0;
+					document.getElementById("mask").style.zIndex = 0;
 				},
-				show: {
-					autoShow: true,
-					aniShow: "slide-in-right"
-				},
-				waiting: {
-					autoShow: false,
+				methods: {
+					__fdetail: function(e) {
+						mui.openWindow({
+							url: "intro_detail.html",
+							id: "preview_image",
+							styles: {
+								top: 0,
+								bottom: 0,
+								right: 0,
+								width: "100%",
+								height: "100%",
+							},
+							extras: {
+								detail: JSON.stringify(vueContent.packageinfo[e])
+							},
+							show: {
+								autoShow: true,
+								aniShow: "slide-in-right"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+					}
 				}
 			});
-		}
-		
+		});
+		mui("body").on("tap",".mui-icon-arrowright",function(){
+			location.href = "pick_products.html?eventid=" + eventid;
+		})
 	</script>
 
 </html>

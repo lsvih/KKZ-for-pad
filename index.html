@@ -62,12 +62,12 @@
 		<span id="flow"><span class="mui-icon mui-icon-{{flow.icon}} flow-icon flow" v-for="flow in flow" id="flow-{{flow.id}}"><span class="mui-badge mui-badge-danger" v-if="flow.num > 0">{{flow.num}}</span><span class="flow-name">{{flow.name}}</span></span>
 		<span class="mui-icon mui-icon-weixin flow-icon"><span class="flow-name">微信</span></span>
 		</span>
-<span class="mui-pull-right" onclick="fInstallTestData();">安装测试数据</span>
+<span class="mui-pull-right" style="height: 50px;background-color: #eee;z-index: 99999999999999999;" ontouchstart="fInstallTestData();">安装测试数据</span>
 	</header>
 	<div class="cutoff-line"></div>
 
 	<body>
-		<script type="text/javascript" src="js/initdata.js" ></script>>
+		<script type="text/javascript" src="js/initdata.js" ></script>
 		<script src="js/common.js"></script>
 
 		<!--加载测试数据-->

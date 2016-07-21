@@ -1,0 +1,114 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+	<style>
+		body {
+			background-color: #f0f0f0;
+		}
+		
+		.mui-content {
+			text-align: center;
+			margin-top: 62px;
+		}
+		
+		.package-title {
+			font-size: 24px;
+		}
+		
+		.package-item-container {
+			position: relative;
+			display: inline-block;
+			margin: 17px 7px 0;
+			height: 303px;
+			width: 470px;
+			background-color: #fff;
+			text-align: left;
+		}
+		
+		.package-item-container img {
+			height: 303px;
+			width: 470px;
+		}
+		
+		.package-item-title {
+			position: absolute;
+			bottom: 0;
+			display: block;
+			height: 38px;
+			width: 100%;
+			background-image: url(../images/picture-mask.png);
+			color: #fff;
+			padding-left: 18px;
+			line-height: 38px;
+		}
+		
+		.circle-btn {
+			position: fixed;
+			top: 43px;
+			height: 40px;
+			width: 40px;
+			background-color: #FFF;
+			border-radius: 20px;
+			color: #00b06c;
+			line-height: 42px;
+			text-align: center;
+			box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+		}
+		
+		.close-btn {
+			left: 33px;
+			font-size: 28px;
+			z-index: 100;
+		}
+		
+		.next-btn {
+			right: 33px;
+			font-size: 28px;
+			z-index: 98;
+		}
+		
+		
+		
+		#mask {
+			position: fixed;
+			top: 0;
+			height: 100%;
+			width: 100%;
+			z-index: 9999999;
+			background-color: #fff;
+			opacity: 1;
+			transition: 0.5s;
+		}
+		
+		
+	</style>
+
+	<body>
+		<!--<div id="mask"></div>-->
+		<div class="circle-btn close-btn mui-action-back mui-icon mui-icon-arrowleft"></div>
+		<div class="circle-btn next-btn mui-icon mui-icon-arrowright"></div>
+
+		<div class="mui-content">
+			<div id="package">
+				
+		</div>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript" src="../js/vue.js"></script>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/cache.js"></script>
+
+	</body>
+	<script>
+		var vueContent;
+		var eventid = GetRequest()["eventid"]; //获得eventid
+		mui.plusReady(function() {
+		
+	</script>
+
+</html>
