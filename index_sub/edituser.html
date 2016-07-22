@@ -113,7 +113,7 @@
 		<script type="text/javascript" src="../js/vue.js"></script>
 		<script type="text/javascript">
 			mui.plusReady(function() {
-				var tempobj = JSON.parse(localStorage.data).event;
+				var tempobj = JSON.parse(myStorage.getItem("data")).event;
 				var objevent = fFindObjById(plus.webview.currentWebview().eventid, tempobj);
 				new Vue({
 					el: '#userinfo',

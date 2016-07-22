@@ -68,12 +68,13 @@
 
 	<body>
 		<script type="text/javascript" src="js/initdata.js" ></script>
-		<script src="js/common.js"></script>
+		
 
 		<!--加载测试数据-->
 		<script src="js/data.js"></script>
 		<script src="js/vue.js"></script>
 		<script src="js/mui.js"></script>
+		<script src="js/common.js"></script>
 		<script src="js/sync.js"></script>
 		<script type="text/javascript">
 			"use strick"
@@ -81,7 +82,7 @@
 				main = null;
 			var bShowMenu = false;
 			var nActiveMenu = 1;
-			localStorage.thisflow = 1;
+			myStorage.setItem("thisflow",1);
 			mui.init({
 				gestureConfig: {
 					doubletap: false,
@@ -202,7 +203,7 @@
 //							fCloseSubPage();
 							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", nActiveMenu); //点击图标时传值到list并刷新视图
 							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", nActiveMenu + ",0"); //传值到index_content
-							localStorage.thisflow = nActiveMenu;
+							myStorage.setItem("thisflow",nActiveMenu);
 						}
 
 					});

@@ -115,9 +115,10 @@
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>
 		</div>
+		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
-		<script src="../js/mui.js"></script>
+		
 		<script type="text/javascript" src="../js/cache.js"></script>
 
 	</body>
@@ -129,7 +130,7 @@
 			fAddVueCacheFilter();
 			vueContent = new Vue({
 				el: '#package',
-				data: JSON.parse(localStorage.packageinfo),
+				data: JSON.parse(myStorage.getItem("packageinfo")),
 				ready: function() {
 					document.getElementById("mask").style.opacity = 0;
 					document.getElementById("mask").style.zIndex = 0;

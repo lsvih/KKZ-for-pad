@@ -2233,9 +2233,9 @@ var packageinfo = {
 };
 
 function fInstallTestData() {
-	localStorage.clear("data");
-	localStorage.data = JSON.stringify(data);
-	localStorage.packageinfo = JSON.stringify(packageinfo);
+	myStorage.clear();
+	myStorage.setItem("data",JSON.stringify(data));
+	myStorage.setItem("packageinfo",JSON.stringify(packageinfo))
 	plus.runtime.restart();
 }
 

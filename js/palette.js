@@ -33,5 +33,4 @@ function fAddVueColorFilter(){
 	Vue.filter('color', function(colorName) {
 			return fColorPipe(colorName);
 	});
-	
 }

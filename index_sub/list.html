@@ -72,10 +72,11 @@
 		</ul>
 
 	</body>
+	<script src="../js/mui.js"></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/data.js"></script>
 	<script src="../js/vue.js"></script>
-	<script src="../js/mui.js"></script>
+	
 	<script>
 		"use strick"
 		mui.init({
@@ -87,7 +88,7 @@
 			}
 		});
 		var nFlowID = 1;
-		localStorage.thiseventsort = 0;
+		myStorage.setItem("thiseventsort",0)
 		var index_content = null;
 		var list = fListAllFlowEvent(1);
 
@@ -114,7 +115,7 @@
 						if(status) { //判断列表为空的情况
 							if(!fHasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
 								this.nSelectSort = sortId;
-								localStorage.thiseventsort = sortId;
+								myStorage.setItem("thiseventsort",sortId)
 								if(status == 6 || status == 8) {
 									mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", nFlowID + "," + sortId);
 									plus.webview.hide("plg_work", "fade-out");

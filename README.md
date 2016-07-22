@@ -18,3 +18,4 @@ Powered by mui,vuejs
 *  商标、品牌 brand
 *  型号 model
 *  调色板 palette
+*  示意图 diagram

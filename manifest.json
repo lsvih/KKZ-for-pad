@@ -4,7 +4,7 @@
 		"iPhone",
 		"iPad"
 	],
-	"id": "H5A5ABF46",
+	"id": "com.773W7L878N.kkz",
 	"name": "块块装 for Pad",
 	"version": {
 		"name": "1.0",
@@ -105,7 +105,7 @@
 		},
 		"NativeObj": {
 			"description": "原生对象"
-		}
+		},"Push":{}
 	},
 	"plus": {
 		"splashscreen": {
@@ -115,7 +115,7 @@
 		"popGesture": "none",
 		"runmode": "liberate",
 		"signature": "Sk9JTiBVUyBtYWlsdG86aHIyMDEzQGRjbG91ZC5pbw==",
-		"distribute": {
+		"distribute": {"google":{"permissions":["<uses-permission android:name=\"android.permission.RECEIVE_USER_PRESENT\"/>","<uses-permission android:name=\"android.permission.GET_TASKS\"/>","<uses-permission android:name=\"android.permission.CHANGE_WIFI_STATE\"/>","<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>","<uses-permission android:name=\"android.permission.VIBRATE\"/>","<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\"/>","<uses-permission android:name=\"android.permission.READ_LOGS\"/>","<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>","<uses-permission android:name=\"android.permission.RECEIVE_BOOT_COMPLETED\"/>","<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\"/>"]},
 			"apple": {
 				"appid": "",
 				"mobileprovision": "",

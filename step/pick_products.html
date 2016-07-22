@@ -168,9 +168,10 @@
 			</div>
 			<div class="package-title" style="margin-top: 30px;">单品</div>
 		</div>
+		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
-		<script src="../js/mui.js"></script>
+		
 		<script type="text/javascript" src="../js/cache.js"></script>
 
 	</body>
@@ -179,8 +180,8 @@
 		//TODO 全部使用MVVM
 		var vueContent;
 		var eventid = GetRequest()["eventid"]; //获得eventid
-		var tempdata = JSON.parse(localStorage.data);
-		var temppackage = JSON.parse(localStorage.packageinfo);
+		var tempdata = JSON.parse(myStorage.getItem("data"));
+		var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
 		var temptimeout;
 		var packagenum = temppackage.packageinfo.length;
 		var numboxarr = new Array(packagenum);
@@ -212,10 +213,10 @@
 						}, 400)
 					},
 					__fSelectThisPackage: function(packageId, thisItem, SortId) {
-						thisItem.parentNode.getElementsByClassName("mui-input-numbox")[0].setAttribute("data-id", 1);
 						clearTimeout("temptimeout");
 						numboxarr[SortId].checkValue();
 						thisItem.parentNode.getElementsByClassName("mui-input-numbox")[0].value = 1;
+						thisItem.parentNode.getElementsByClassName("mui-input-numbox")[0].setAttribute("data-id", 1);
 						thisItem.parentNode.getElementsByClassName("check-mask")[0].style.display = "block";
 						thisItem.parentNode.getElementsByClassName("package-item-title")[0].style.display = "none";
 						fAddClass(thisItem.parentNode.getElementsByClassName("edit-num")[0], "edit-num-active")
@@ -235,7 +236,7 @@
 		 * @param {Object} eventid
 		 */
 		function fGetpackageNum(id, eventid) {
-			var tempdata = JSON.parse(localStorage.data);
+			var tempdata = JSON.parse(myStorage.getItem("data"));
 			var thiseventpackage = fFindObjById(eventid, tempdata.event).content.package;
 			if(thiseventpackage == null || thiseventpackage == undefined) return 0;
 			var num = 0;
@@ -266,7 +267,7 @@
 		 */
 		function fDeleteAllIdInPackage(packageId, eventid) {
 			var tlength = tempdata.event[eventsortid].content.package.length
-			for(var k = tlength-1; k > 0; --k) {
+			for(var k = tlength-1; k > -1; k--) {
 				if(tempdata.event[eventsortid].content.package[k].id == packageId) {
 					fRemoveObecjtFormArray(tempdata.event[eventsortid].content.package, k);
 				}
@@ -277,21 +278,19 @@
 			var values = document.getElementsByClassName("mui-input-numbox");
 			for(var j = 0; j < values.length; j++) {
 				if(values[j].getAttribute("data-id") != 0) {
-					if(values[j].getAttribute("data-id") != fGetpackageNum(temppackage.packageinfo[j].package_id, eventid)) {
-						fDeleteAllIdInPackage(tempdata.event[eventsortid].content.package, eventid);
-						for(var i = 0; i < values[j].getAttribute("data-id"); i++) {
+					if(values[j].getAttribute("data-id") != fGetpackageNum(temppackage.packageinfo[j].package_id, eventid)) {//如果发现data-id和存储的数量不同，则删除所有对应的package
+						fDeleteAllIdInPackage(temppackage.packageinfo[j].package_id, eventid);//删除所有对应的package
+						for(var i = 0; i < values[j].getAttribute("data-id"); i++) {//删除对应的package后遍历写入新的package
 							fAddAItemToPackage(temppackage.packageinfo[j].package_id, eventid);
 						}
 					}
 				} else {
-					fDeleteAllIdInPackage(tempdata.event[eventsortid].content.package, eventid);
+					fDeleteAllIdInPackage(temppackage.packageinfo[j].package_id, eventid);//如果没有被选择则删除所有对应的package
 				}
 
 			}
-			localStorage.setItem("data", JSON.stringify(tempdata));
-
-			location.href = "gauge.html?eventid" + eventid;
-
+			myStorage.setItem("data", JSON.stringify(tempdata));
+			location.href = "gauge.html?eventid=" + eventid;
 		})
 	</script>
 

@@ -101,7 +101,7 @@
 					<br /><span>请修改开工日期<input type="date" id="select-start-date" value="2016-01-01" onblur="fSubmitStartTime(this)"><span class="to-check" onclick="document.getElementById('select-start-date').focus()">修改</span></span>
 				</div>
 			</template>
-			
+
 			<!--待评价-->
 			<template v-if="event.status==10">
 				<button class="mui-btn mui-btn-block mui-btn-green remind-user-evaluate">提醒用户评价</button>
@@ -109,12 +109,12 @@
 		</article>
 
 	</body>
+	<script src="../js/mui.js"></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/data.js"></script>
 
 	<script src="../js/vue.js"></script>
 
-	<script src="../js/mui.js"></script>
 	<script type="text/javascript" src="../js/LCalendar.js"></script>
 	<script>
 		"use strick";
@@ -134,9 +134,20 @@
 			document.addEventListener("plusready", plusReady, false);
 		}
 		var index_content = null;
-		var thisevent = fListAllFlowEvent(1)[0]; //从LocalStorage里获取信息
+		var thisevent = fListAllFlowEvent(1)[0]; //从myStorage里获取信息
 		var MAXIMAGECOUNT = 10;
 		mui.plusReady(function() {
+
+//			var url =  'type=tran&appid=' + encodeURIComponent(plus.runtime.appid);
+//			url += ('&cid=' + encodeURIComponent(plus.push.getClientInfo().clientid));
+//			if(plus.os.name == 'iOS') {
+//				url += ('&token=' + encodeURIComponent(plus.push.getClientInfo().token));
+//			}
+//			url += ('&title=' + encodeURIComponent('Hello H5+'));
+//			url += ('&content=' + encodeURIComponent('带透传数据推送通知，可通过plus.push API获取数据并进行业务逻辑处理！'));
+//			url += ('&payload=' + encodeURIComponent('{title:"Hello H5+ Test",content:"test content",payload:{id:"1234567890"}}'));
+//			url += ('&version=' + encodeURIComponent(plus.runtime.version));
+//			console.log(url);
 			window.addEventListener('refreshvue', function(event) {
 				var aShow = event.detail.split(",");
 				vueContent.refresh(aShow[0], aShow[1]);
@@ -157,7 +168,7 @@
 					document.getElementById("back-drop").style.display = "none";
 					var nextevent = fListAllFlowEvent(a)[b];
 					if(nextevent) { //判断内容为空的情况
-						localStorage.thisstatus = nextevent.status;
+						myStorage.setItem("thisstatus", nextevent.status);
 						switch(nextevent.status) {
 							case 6:
 							case 7:
@@ -323,16 +334,11 @@
 				var newdate = (e.value.split("T")[0] + ' ' + e.value.split("T")[1]).split(":33")[0];
 				mui.confirm('是否将预约上门时间从' + olddate + '修改为' + newdate + '？', gAppName, ['否', '是'], function(f) {
 					if(f.index == 1) {
-						var tempobj = JSON.parse(localStorage.data);
+						var tempobj = JSON.parse(myStorage.getItem("data"));
 						tempobj.event[fFindObjSortById(thisevent.id, tempobj.event)].content.ordertime = e.value;
 						vueContent.event.content.ordertime = e.value;
-						localStorage.data = JSON.stringify(tempobj); //在本地存储修改时间
-						var FIFO = JSON.parse(localStorage.FIFO);
-						FIFO.push({
-							"type": "PUT",
-							"object": "edit-order-time",
-							"data": e.value
-						}); //将修改时间存入队列等待同步
+						myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改时间
+						//TODO：放入同步队列
 					} else {
 						e.value = e.getAttribute("init-time");
 					}
@@ -342,7 +348,7 @@
 		}
 
 		function fSubmitStartTime(e) {
-			if(e.value == ""||e.value == "2016-01-01"){
+			if(e.value == "" || e.value == "2016-01-01") {
 				e.value = "2016-01-01";
 				return false;
 			}
@@ -350,16 +356,7 @@
 			mui.confirm('是否将开工日期修改为' + newdate + '？', gAppName, ['否', '是'], function(f) {
 				if(f.index == 1) {
 					alert("此时运行修改开工日期函数")
-						//						var tempobj = JSON.parse(localStorage.data);
-						//						tempobj.event[fFindObjSortById(thisevent.id, tempobj.event)].content.ordertime = e.value;
-						//						vueContent.event.content.ordertime = e.value;
-						//						localStorage.data = JSON.stringify(tempobj); //在本地存储修改时间
-						//						var FIFO = JSON.parse(localStorage.FIFO);
-						//						FIFO.push({
-						//							"type": "PUT",
-						//							"object": "edit-order-time",
-						//							"data": e.value
-						//						}); //将修改时间存入队列等待同步
+						//TODO
 				} else {
 					e.value = "2016-01-01";
 				}

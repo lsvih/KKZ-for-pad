@@ -21,8 +21,8 @@
 			</div>
 		</div>
 	</body>
-	<script type="text/javascript" src="../../js/common.js"></script>
 	<script type="text/javascript" src="../../js/mui.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
 	<script type="text/javascript" src="../../js/vue.js"></script>
 	<script type="text/javascript" src="../../js/cache.js"></script>
 	<script>
@@ -34,8 +34,8 @@
 		})
 		mui.plusReady(function() {
 			var self = plus.webview.currentWebview();
-			tempdata = JSON.parse(localStorage.data);
-			var thisevent = fFindObjById(self.eventid, JSON.parse(localStorage.data).event);
+			tempdata = JSON.parse(myStorage.getItem("data"));
+			var thisevent = fFindObjById(self.eventid, JSON.parse(myStorage.getItem("data")).event);
 			var todaydetail = thisevent.content.timeline[fGetSortIdByDate(self.option.date, thisevent)];
 			fAddVueCacheFilter();
 			new Vue({

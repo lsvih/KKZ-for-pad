@@ -116,10 +116,11 @@
 				</ul>
 			</div>
 		</article>
+		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/data.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
-		<script src="../js/mui.js"></script>
+
 		<script type="text/javascript">
 			"use strick"
 			mui.init({
@@ -143,7 +144,7 @@
 				vueContent = new Vue({
 					el: "#event",
 					data: {
-						"event": fListAllFlowEvent(localStorage.thisflow)[localStorage.thiseventsort]
+						"event": fListAllFlowEvent(myStorage.getItem("thisflow"))[myStorage.getItem("thiseventsort")]
 					},
 					methods: {
 						__fTodayIsChecked: function(a) {
@@ -156,11 +157,11 @@
 							return fGetSortIdByDate(a, b);
 						},
 						refresh: function(a, b) {
-							var tempobj = JSON.parse(localStorage.data);
-							tempobj.event[fFindObjSortById(this.event.id, tempobj.event)] = this.event;
-							localStorage.data = JSON.stringify(tempobj); //在本地存储修改
-							this.event = fListAllFlowEvent(a)[b];
-							localStorage.thisstatus = this.event.status;
+							var tempobj = JSON.parse(myStorage.getItem("data"));
+							tempobj.event[fFindObjSortById(vueContent.event.id, tempobj.event)] = vueContent.event;
+							myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改
+							vueContent.event = fListAllFlowEvent(a)[b];
+							myStorage.setItem("thisstatus", vueContent.event.status);
 							fCloseSubOpenPage();
 						},
 						//判断时光轴事件是不是今天
@@ -293,8 +294,6 @@
 					sliderApi.destroy();
 				}
 			});
-
-			
 
 			/**
 			 * 判断当天验收是否全部完成
