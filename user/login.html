@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/common.css" />
+	</head>
+	<style>
+		.login {
+			text-align: center;
+			font-size: 30px;
+			font-weight: bold;
+			margin-top: 50px;
+		}
+		
+		#mask {
+			position: fixed;
+			top: 0;
+			height: 100%;
+			width: 100%;
+			z-index: -1;
+			background-color: #000;
+			opacity: 0;
+			transition: 0.5s;
+		}
+		
+		.mui-progressbar span {
+			background: #4cd964!important;
+			z-index: 111!important;
+		}
+	</style>
+
+	<body>
+		<div id="mask"></div>
+		<div class="login">看什么看，赶紧登录啊！(ﾉ･ω･)ﾉﾞ</div>
+		<div class="mui-content-padded" style="margin: 55px 250px;">
+
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>输用户名啊魂淡</label>
+					<input id="username" type="text" class="mui-input-clear" placeholder="在这输啊？！">
+				</div>
+				<div class="mui-input-row mui-password">
+					<label>输密码啊魂淡</label>
+					<input id="password" type="password" class="mui-input-password" placeholder="忘记密码了？不给你找回╭(╯^╰)╮">
+				</div>
+				<div class="mui-button-row">
+					<button type="button" class="mui-btn mui-btn-primary" id="login">登录</button>&nbsp;&nbsp;
+					<button type="button" class="mui-btn mui-btn-danger" disabled>取消不给你点，打我啊？</button>
+				</div>
+			</form>
+		</div>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var successfilecount = 0;
+			mui.plusReady(function() {
+				if(!localStorage.getItem("firstrun")) {
+					mui.alert("即将下载资源包，请确认当前网络环境为WiFi。", gAppName, "确认", function() {
+						if(plus.networkinfo.getCurrentType() != 3) { //判断当前环境是否为wifi环境
+							mui.alert("请确认您的网络环境为WiFi环境", gAppName, "确认", function() {
+								plus.runtime.restart();
+							});
+
+						} else { //如果为wifi环境则开始下载资源包
+							document.getElementById("mask").style.zIndex = 110;
+							mui('body').progressbar({
+								progress: 0,
+								color: 'success'
+							}).show();
+							mui.toast("开始下载资源包，请耐心等待...")
+							document.getElementById("mask").style.opacity = 0.2;
+							//显示进度条与遮罩,提示开始下载
+							mui.ajax(gServer + 'uploads/assets/commonFiles.txt', {
+								dataType: 'text',
+								type: 'get',
+								timeout: 6000,
+								success: function(data) {
+									var arr = eval(data); //将资源包列表转换为数组对象进行遍历
+									for(var i = 0; i < arr.length; i++) {
+										var filenamearr = arr[i].split("/");
+										var filename = filenamearr[filenamearr.length - 1];
+										if(!myStorage.getItem("filename")) {
+											DownloadResource(gServer + 'uploads/' + arr[i]);
+										}
+									}
+									var processController = setInterval(function() {
+										if(successfilecount < arr.length) {
+											mui("body").progressbar().setProgress(successfilecount / arr.length);
+										}
+										if(successfilecount == arr.length) {
+											mui("body").progressbar().setProgress(100);
+											mui.toast("资源包下载完成！");
+											document.getElementById("mask").style.opacity = 0;
+											document.getElementById("mask").style.zIndex = -1;
+											localStorage.setItem("firstrun", fGetDate());
+										}
+									}, 2); //定时检查是否完成下载，同时更新进度条
+
+								},
+								error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
+									mui.alert("请确认网络连接后重试", gAppName, "确认", function() {
+										plus.runtime.restart();
+									});
+								}
+							});
+						}
+
+					});
+				}
+				mui("body").on("tap", "#login", function() {
+					var username = document.getElementById("username").value;
+					var password = document.getElementById("password").value;
+					if(!username) {
+						mui.alert("滚回去输用户名", gAppName);
+						return false;
+					}
+					if(!password) {
+						mui.alert("滚回去输密码", gAppName);
+						return false;
+					}
+					mui.ajax(gAPIServer + 'users/login?expand=houses', {
+						data: {
+							'LoginForm[username]': username,
+							'LoginForm[password]': password
+						},
+						dataType: 'json',
+						type: 'post',
+						timeout: 6000,
+						success: function(data) {
+							if(data.success == true) {
+								localStorage.user = JSON.stringify({
+									"id": data.data.id,
+									"username": data.data.username,
+									"sex": data.data.sex,
+									"head_img-url": data.data["head_img-url"],
+									"access_token": data.data.access_token
+								});
+								console.log(JSON.stringify(data.data));
+								mui.toast("登陆成功");
+								plus.webview.close(plus.webview.currentWebview());
+							} else {
+								mui.alert(data.message, gAppName);
+								console.log(JSON.stringify(data));
+							}
+						},
+						error: function(xhr, textStatus, errorThrown) {
+							alert("网络连接失败，请稍候再试");
+						}
+					});
+
+				});
+			});
+
+			function DownloadResource(url) {
+				var urlarr = url.split("/");
+				var downloadfilename = urlarr[urlarr.length - 1]; //读出文件名
+				console.log("Downloading '" + url + "' to cache...");
+				var dtask = plus.downloader.createDownload(url, {}, function(d, status) {
+					switch(status) {
+						case 404:
+							//如果文件不存在，也当其下载成功数+1
+							console.log("下载失败,文件不存在");
+							successfilecount++;
+							break;
+						case 200:
+							successfilecount++;
+							downloadfilename = d.filename.split("/")[1]; //d.filename读出来为_downloads/xxxxxx.xxx形式
+							console.log("下载成功=" + downloadfilename);
+							myStorage.setItem(downloadfilename, true); //删除路径前的"_downloads/"以提高存储密度
+							break;
+						default:
+							console.log("下载失败=" + status);
+							mui.alert("网络异常，下载任务已暂停，请检查网络环境后重试。", gAppName, "确定", function() {
+								plus.runtime.restart();
+							})
+					}
+				});
+				//启动下载任务
+				dtask.start();
+
+			}
+		</script>
+	</body>
+
+</html>

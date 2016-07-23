@@ -1,13 +1,20 @@
-a{
-	color:#000;
+a {
+	color: #000;
 }
-a:active{
+
+a:active {
 	color: #FF9800;
 }
-.mui-active{
+
+.mui-active {
 	color: #FF9800!important;
 }
-.mui-bar .mui-icon:active
-{
-    opacity: 1;
+
+.mui-bar .mui-icon:active {
+	opacity: 1;
+}
+
+.mui-progressbar-success:before {
+	background: #4cd964!important;
+	z-index: 99999;
 }

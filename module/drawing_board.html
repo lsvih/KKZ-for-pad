@@ -208,7 +208,7 @@
 			eventid = plus.webview.currentWebview().eventid;
 			packagesort = plus.webview.currentWebview().packagesort;
 			edit = plus.webview.currentWebview().edit;
-			if(edit) {//如果为编辑模式则将数据加载到画布中
+			if(edit) { //如果为编辑模式则将数据加载到画布中
 				var img = new Image();
 				img.src = edit;
 				img.onload = function() {
@@ -242,13 +242,13 @@
 			})
 		});
 		//图片保存功能，将从 data 协议中获取的图像信息送到后台处理，提供下载功能
-		document.getElementById('savePic').onclick = function() {
-				var b64 = canvas.toDataURL();
-				//利用 data 协议获取图片信息，一般文件比较大，用 post 传到后台
-				mui.fire(plus.webview.currentWebview().opener(), "diagram", eventid + "///" + packagesort + "///" + b64);
-				plus.webview.close(plus.webview.currentWebview())
-			}
-			//获取 工具按钮
+		document.getElementById('savePic').addEventListener('tap', function() {
+			var b64 = canvas.toDataURL();
+			//利用 data 协议获取图片信息，一般文件比较大，用 post 传到后台
+			mui.fire(plus.webview.currentWebview().opener(), "diagram", eventid + "///" + packagesort + "///" + b64);
+			plus.webview.close(plus.webview.currentWebview())
+		});
+		//获取 工具按钮
 		var Brush = document.getElementById('Brush'); //画笔
 		var Eraser = document.getElementById('Eraser'); //橡皮擦
 		var Text = document.getElementById('Text'); //文字

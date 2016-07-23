@@ -6,6 +6,7 @@
 		<title></title>
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<link href="../css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../css/common.css" />
 	</head>
 	<style>
 		body {
@@ -63,10 +64,12 @@
 			height: 100%;
 			width: 100%;
 			z-index: 9999999;
-			background-color: #fff;
+			background-color: #000; 
 			opacity: 1;
 			transition: 0.5s;
 		}
+		
+		
 		/*图文模块*/
 		
 		.add-picture {
@@ -154,19 +157,21 @@
 		
 		.add-diagram {
 			height: 100%;
-			width:100%;
+			width: 100%;
 			text-align: center;
 		}
 		
 		.add-diagram img {
 			margin-top: 100px;
 		}
-		.diagram{
+		
+		.diagram {
 			height: 100%;
-			width:100%;
+			width: 100%;
 			text-align: center;
 		}
-		.diagram img{
+		
+		.diagram img {
 			height: 100%;
 			width: 100%;
 		}
@@ -221,7 +226,6 @@
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
-		
 
 	</body>
 	<script>
@@ -239,13 +243,16 @@
 				vueContent.event.content.package[packagesortid].images.$remove(deleteitem);
 			});
 			window.addEventListener('diagram', function(event) {
-				var tempdiagramarr =event.detail.split("///");
+				var tempdiagramarr = event.detail.split("///");
 				vueContent.event.content.package[tempdiagramarr[1]].diagram = tempdiagramarr[2];
 			});
 		});
 		Vue.filter('GetPackageName', function(value) {
 			var packagesid = tempdata.event[eventsortid].content.package[value].id;
-			var packagenamemapping = {"卫生间":"卫生间","厨房":"厨房"}
+			var packagenamemapping = {
+				"卫生间": "卫生间",
+				"厨房": "厨房"
+			}
 			return packagenamemapping[temppackage.packageinfo[__fFindObjSortByPackageId(packagesid, temppackage.packageinfo)].name];
 		});
 		vueContent = new Vue({
@@ -294,7 +301,7 @@
 						}
 					});
 				},
-				__fAddDiagram: function(packagesortid,edit){//调用画板画示意图,edit为空则为创建模式，否则为编辑模式。edit中内容为base64内容
+				__fAddDiagram: function(packagesortid, edit) { //调用画板画示意图,edit为空则为创建模式，否则为编辑模式。edit中内容为base64内容
 					mui.openWindow({
 						url: "../module/drawing_board.html",
 						id: "drawing_board",
@@ -349,35 +356,37 @@
 			}
 			return false;
 		}
-		
+
 		/**
 		 * 判断数组中每一项的size images diagram是否为空，为空返回false，全部不为空返回true
 		 * @param {Array} arr
 		 */
-		function __fIsSizeImagesDiagramEmpty(arr){
-			for(var i=0;i<arr.length;i++){
-				if(!arr[i].size||!arr[i].diagram||!arr[i].images.length) return false;
+		function __fIsSizeImagesDiagramEmpty(arr) {
+			for(var i = 0; i < arr.length; i++) {
+				if(!arr[i].size || !arr[i].diagram || !arr[i].images.length) return false;
 			}
 			return true;
 		}
-		
-		
+
 		mui("body").on("tap", ".mui-icon-arrowright", function() {
 			tempdata.event[eventsortid] = vueContent.event;
 			myStorage.setItem("data", JSON.stringify(tempdata));
-			if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)){
-				alert(1);
-			}else{
-				mui.alert("您尚未填写完成所有信息，请仔细填写");
+			if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)) {
+				document.getElementById("mask").style.zIndex = 110;
+				mui('body').progressbar({
+					progress: undefined,
+					color: 'success'
+				}).show();
+
+				document.getElementById("mask").style.opacity = 0.2;
+
+				mui.toast("正在上传，请耐心等待...")
+			} else {
+				mui.toast("您尚未填写完成所有信息，请仔细填写");
 			}
-			
-			
-			
-			
-//			location.href = "gauge.html?eventid=" + eventid;
+
+			//			location.href = "gauge.html?eventid=" + eventid;
 		})
-		
-		
 	</script>
 
 </html>
