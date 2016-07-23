@@ -98,6 +98,7 @@
 											document.getElementById("mask").style.opacity = 0;
 											document.getElementById("mask").style.zIndex = -1;
 											localStorage.setItem("firstrun", fGetDate());
+											clearInterval("processController");
 										}
 									}, 2); //定时检查是否完成下载，同时更新进度条
 
