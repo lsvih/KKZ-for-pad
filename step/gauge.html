@@ -64,12 +64,10 @@
 			height: 100%;
 			width: 100%;
 			z-index: 9999999;
-			background-color: #000; 
+			background-color: #000;
 			opacity: 1;
 			transition: 0.5s;
 		}
-		
-		
 		/*图文模块*/
 		
 		.add-picture {
@@ -95,6 +93,12 @@
 			margin: 0 20px 5px 0;
 			text-align: center;
 			overflow: hidden
+		}
+		
+		.mui-progressbar span {
+			background: #4cd964!important;
+			z-index: 111!important;
+			height: 20px;
 		}
 		
 		.picture img {
@@ -194,7 +198,7 @@
 							</div>
 							<div class="picture-area">
 								<div class="packagesort" v-bind:data-id="$index">
-									<div class="picture" v-for="image in packageitem.images"><img v-bind:src="image" class="adds" data-preview-src data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
+									<div class="picture" v-for="image in packageitem.images" track-by="$index"><img v-bind:src="image" class="adds" data-preview-src data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
 								</div>
 								<div class="add-picture" v-show="(packageitem.images.length < 10)" v-on:tap="__fAddPic($index)">+</div>
 							</div>
@@ -224,6 +228,7 @@
 			</ul>
 		</div>
 		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
 
@@ -233,6 +238,7 @@
 		var MAXIMAGECOUNT = 10;
 		var eventid = GetRequest()["eventid"]; //获得eventid
 		var tempdata = JSON.parse(myStorage.getItem("data"));
+		var uploading;
 		var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
 		var eventsortid = fFindObjSortById(eventid, tempdata.event);
 		var packagesortid;
@@ -244,136 +250,242 @@
 			});
 			window.addEventListener('diagram', function(event) {
 				var tempdiagramarr = event.detail.split("///");
-				vueContent.event.content.package[tempdiagramarr[1]].diagram = tempdiagramarr[2];
+				var imgkey = tempdiagramarr[2];
+				vueContent.event.content.package[tempdiagramarr[1]].diagram = myStorage.getItem(imgkey);
+				myStorage.removeItem(imgkey);
 			});
-		});
-		Vue.filter('GetPackageName', function(value) {
-			var packagesid = tempdata.event[eventsortid].content.package[value].id;
-			var packagenamemapping = {
-				"卫生间": "卫生间",
-				"厨房": "厨房"
+			Vue.filter('GetPackageName', function(value) {
+				var packagesid = tempdata.event[eventsortid].content.package[value].id;
+				var packagenamemapping = {
+					"厨房工程": "厨房",
+					"卫生间工程": "卫生间",
+					"涂装工程（不铲除）": "涂装不铲",
+					"涂装工程（铲除）": "涂装铲",
+					"内门工程": "内门",
+					"水电工程": "水电",
+					"地面工程": "地面"
+				}
+				return packagenamemapping[temppackage.packageinfo[fFindObjSortById(packagesid, temppackage.packageinfo)].name];
+			});
+			vueContent = new Vue({
+				el: "#package",
+				data: {
+					"event": tempdata.event[eventsortid],
+				},
+				ready: function() {
+					document.getElementById("mask").style.opacity = 0;
+					document.getElementById("mask").style.zIndex = -1;
+				},
+				compute: {
+					__fGetPackageName: function(e) {
+						var packagesid = vueContent.event.content.package[e].id;
+						return temppackage[fFindObjSortById(packagesid, temppackage)].name;
+					}
+				},
+				methods: {
+					__fAddPic: function(e) {
+						packagesortid = e;
+						document.activeElement.blur();
+						mui("#picture").popover('toggle');
+					},
+					__fEditPictures: function(thisobj) { //编辑图片
+						packagesortid = thisobj.currentTarget.parentNode.parentNode.getAttribute("data-id");
+						mui.openWindow({
+							url: "../module/preview_image.html",
+							id: "preview_image",
+							styles: {
+								top: 0,
+								bottom: 0,
+								right: 0,
+								width: "100%",
+								height: "100%"
+							},
+							extras: {
+								images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
+								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
+								deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+							},
+							show: {
+								aniShow: "fade-in"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+					},
+					__fAddDiagram: function(packagesortid, edit) { //调用画板画示意图,edit为空则为创建模式，否则为编辑模式。edit中内容为base64内容
+						mui.openWindow({
+							url: "../module/drawing_board.html",
+							id: "drawing_board",
+							styles: {
+								top: 0,
+								bottom: 0,
+								right: 0,
+								width: "100%",
+								height: "100%"
+							},
+							extras: {
+								eventid: eventid,
+								packagesort: packagesortid,
+								edit: edit
+							},
+							show: {
+								aniShow: "fade-in"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+					}
+				}
+			});
+
+			mui('#picture').on('tap', '.mui-popover-action li>a', function() {
+				var statustarget = "package[" + packagesortid + "].images";
+				switch(this.getAttribute("data")) {
+					case "1": //拍照
+						mui("#picture").popover('toggle');
+						getImage(statustarget);
+						break;
+					case "2": //从相册选择
+						mui("#picture").popover('toggle');
+						galleryImg(statustarget);
+						break;
+					default:
+						break;
+				}
+			});
+
+			/**
+			 * 判断数组中每一项的size images diagram是否为空，为空返回false，全部不为空返回true
+			 * @param {Array} arr
+			 */
+			function __fIsSizeImagesDiagramEmpty(arr) {
+				for(var i = 0; i < arr.length; i++) {
+					if(!arr[i].size || !arr[i].diagram || !arr[i].images.length) return false;
+				}
+				return true;
 			}
-			return packagenamemapping[temppackage.packageinfo[__fFindObjSortByPackageId(packagesid, temppackage.packageinfo)].name];
-		});
-		vueContent = new Vue({
-			el: "#package",
-			data: {
-				"event": tempdata.event[eventsortid],
-			},
-			ready: function() {
-				document.getElementById("mask").style.opacity = 0;
-				document.getElementById("mask").style.zIndex = -1;
-			},
-			compute: {
-				__fGetPackageName: function(e) {
-					var packagesid = vueContent.event.content.package[e].id;
-					return temppackage[fFindObjSortById(packagesid, temppackage)].name;
+			mui("body").on("tap", ".mui-icon-arrowright", function() {
+				tempdata.event[eventsortid] = vueContent.event;
+				myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
+//				if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)) {
+	if(true){ //TODO
+					document.getElementById("mask").style.zIndex = 110;
+					mui('body').progressbar({
+						progress: 0
+					}).show();
+					uploading = plus.nativeUI.showWaiting("正在上传量房信息，请耐心等待...");
+					fUploadInfo(); //上传图片
+				} else {
+					mui.toast("您尚未填写完成所有信息，请仔细填写");
 				}
-			},
-			methods: {
-				__fAddPic: function(e) {
-					packagesortid = e;
-					document.activeElement.blur();
-					mui("#picture").popover('toggle');
-				},
-				__fEditPictures: function(thisobj) { //编辑图片
-					packagesortid = thisobj.currentTarget.parentNode.parentNode.getAttribute("data-id");
-					mui.openWindow({
-						url: "../module/preview_image.html",
-						id: "preview_image",
-						styles: {
-							top: 0,
-							bottom: 0,
-							right: 0,
-							width: "100%",
-							height: "100%"
-						},
-						extras: {
-							images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
-							indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
-							deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
-						},
-						show: {
-							aniShow: "fade-in"
-						},
-						waiting: {
-							autoShow: false,
+
+				//			location.href = "gauge.html?eventid=" + eventid;
+			})
+
+			function fUploadInfo() {
+				var packages = tempdata.event[eventsortid].content.package;
+				var packagelength = packages.length;
+				var successcount = 0;
+				var imagesarr = [];
+				var reader = [];
+				var s = 0;
+				var z = 0;
+				for(s = 0; s < packagelength; s++) {
+					imagesarr[s] = [];
+					reader[s] = [];
+					for(z = 0; z < packages[s].images.length; z++) {
+						plus.io.resolveLocalFileSystemURL(packages[s].images[z], function(entry) {
+							entry.file(function(file) {
+								reader = new plus.io.FileReader();
+								reader.onloadend = function(e) {
+									imagesarr[s - 1].push(e.target.result);
+								}
+								reader.readAsDataURL(entry);
+							});
+						}, function(e) {
+							console.log("Resolve file URL failed: " + e.message);
+						});
+					}
+					setTimeout(function() {
+						data = {
+							"house_id": eventid,
+							"package_id": packages[s - 1].id,
+							"area": packages[s - 1].size,
+							"num": 1,
+//							"plan_t_img": packages[s - 1].diagram,//TODO
+							//							"measure_t_imgs": imagesarr[s - 1],
 						}
-					});
-				},
-				__fAddDiagram: function(packagesortid, edit) { //调用画板画示意图,edit为空则为创建模式，否则为编辑模式。edit中内容为base64内容
-					mui.openWindow({
-						url: "../module/drawing_board.html",
-						id: "drawing_board",
-						styles: {
-							top: 0,
-							bottom: 0,
-							right: 0,
-							width: "100%",
-							height: "100%"
-						},
-						extras: {
-							eventid: eventid,
-							packagesort: packagesortid,
-							edit: edit
-						},
-						show: {
-							aniShow: "fade-in"
-						},
-						waiting: {
-							autoShow: false,
-						}
-					});
+						mui.ajax(gAPIServer + 'house-packages?access-token=' + User("access_token"), {
+							data: data,
+							dataType: 'json',
+							type: 'POST',
+							timeout: 6000,
+							success: function(data) {
+								if(data.success == true) {
+									successcount++;
+								} else {
+									mui.alert(data.message, gAppName);
+									uploading.close();
+								}
+							},
+							error: function(xhr, textStatus, errorThrown) {
+								console.log(JSON.stringify(xhr))
+								mui.alert("上传量房信息失败，请稍候再试", gAppName);
+								uploading.close();
+							}
+						});
+					}, 500);
+
 				}
+				var uploadingController = setInterval(function() { //判断是否所有套餐任务全部上传完成
+					if(successcount < packagelength) {
+						mui("body").progressbar().setProgress(successcount / packagelength * 100);
+					}
+					if(successcount == packagelength) {
+						clearInterval(uploadingController);
+						mui("body").progressbar().setProgress(100);
+						mui.toast("数据上传完成！");
+						uploading.setTitle("正在生成排期单，请稍后...");
+						fChangeState();
+					}
+				}, 50); //定时检查是否完成上传，同时更新进度条
 			}
 		});
 
-		mui('#picture').on('tap', '.mui-popover-action li>a', function() {
-			var statustarget = "package[" + packagesortid + "].images";
-			switch(this.getAttribute("data")) {
-				case "1": //拍照
-					mui("#picture").popover('toggle');
-					getImage(statustarget);
-					break;
-				case "2": //从相册选择
-					mui("#picture").popover('toggle');
-					galleryImg(statustarget);
-					break;
-				default:
-					break;
-			}
-		});
-		
-		/**
-		 * 判断数组中每一项的size images diagram是否为空，为空返回false，全部不为空返回true
-		 * @param {Array} arr
-		 */
-		function __fIsSizeImagesDiagramEmpty(arr) {
-			for(var i = 0; i < arr.length; i++) {
-				if(!arr[i].size || !arr[i].diagram || !arr[i].images.length) return false;
-			}
-			return true;
+		function fChangeState() {
+			mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
+				data: {
+					'status': 1,
+					'distance_rate': 0
+				},
+				dataType: 'json',
+				type: 'PUT',
+				timeout: 6000,
+				success: function(data) {
+					if(data.success == true) {
+						console.log(JSON.stringify(data.data));
+						var temp = JSON.parse(myStorage.getItem("data"));
+						temp.event[eventsortid].content.house_quotation = data.data.house_quotation;
+						temp.event[eventsortid].content.package_amount = data.data.package_amount;
+						temp.event[eventsortid].content.clear_amount = data.data.clear_amount;
+						temp.event[eventsortid].content.taxes_amount = data.data.taxes_amount;
+						myStorage.setItem("data",JSON.stringify(temp));
+						uploading.close();
+						location.href = "../step/house_quotation.html?eventid=" + eventid;
+					} else {
+						mui.alert(data.message, gAppName);
+						uploading.close();
+					}
+				},
+				error: function(xhr, textStatus, errorThrown) {
+					console.log(JSON.stringify(xhr))
+					mui.alert("获取排期信息失败，请稍候再试", gAppName);
+					uploading.close();
+				}
+			});
 		}
-
-		mui("body").on("tap", ".mui-icon-arrowright", function() {
-			tempdata.event[eventsortid] = vueContent.event;
-			myStorage.setItem("data", JSON.stringify(tempdata));
-			if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)) {
-				document.getElementById("mask").style.zIndex = 110;
-				mui('body').progressbar({
-					progress: undefined,
-					color: 'success'
-				}).show();
-
-				document.getElementById("mask").style.opacity = 0.2;
-
-				mui.toast("正在上传，请耐心等待...")
-			} else {
-				mui.toast("您尚未填写完成所有信息，请仔细填写");
-			}
-
-			//			location.href = "gauge.html?eventid=" + eventid;
-		})
 	</script>
 
 </html>

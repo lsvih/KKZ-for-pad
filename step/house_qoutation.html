@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+	<header class="mui-bar mui-bar-tab">
+		<span class="mui-action-back mui-icon-arrowleft mui-icon mui-pull-left">查看量房报价信息</span>
+	</header>
+
+	<body>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/storage.js"></script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript">
+			var eventid = GetRequest()["eventid"]; //获得eventid
+			var tempdata = JSON.parse(myStorage.getItem("data"));
+			var uploading;
+			var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
+			var eventsortid = fFindObjSortById(eventid, tempdata.event);
+			var _doc = tempdata.event[eventsortid].content.house_quotation;
+			alert(gServer + "uploads/files/" + _doc)
+			mui.openWindow({
+				url: gServer + "uploads/files/" + _doc,
+				id: "sub_doc",
+				styles: {
+					top: "80px",
+					bottom: 0,
+					right: 0,
+					width: "100%",
+					height: "100%"
+				},
+				show: {
+					aniShow: "fade-in"
+				},
+				waiting: {
+					autoShow: false,
+				}
+			});
+
+			mui.init({
+				
+			})
+		</script>
+	</body>
+
+</html>

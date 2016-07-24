@@ -14,17 +14,18 @@
 		<link rel="stylesheet" href="../css/index_content.css" />
 		<link rel="stylesheet" href="../css/LCalendar.css" />
 	</head>
-<style>
-	#mask{
-		position:fixed;
-		top: 0;
-		left: 0;
-		height: 100%;
-		width: 100%;
-		background-color: #FFF;
-		z-index: -1;
-	}
-</style>
+	<style>
+		#mask {
+			position: fixed;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: 100%;
+			background-color: #FFF;
+			z-index: -1;
+		}
+	</style>
+
 	<body>
 		<div id="mask"></div>
 		<div id="back-drop"></div>
@@ -121,7 +122,7 @@
 
 	</body>
 	<script src="../js/mui.js"></script>
-	<script type="text/javascript" src="../js/storage.js" ></script>
+	<script type="text/javascript" src="../js/storage.js"></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/data.js"></script>
 	<script src="../js/vue.js"></script>
@@ -147,18 +148,17 @@
 		var MAXIMAGECOUNT = 10;
 		mui.plusReady(function() {
 
-//			var url =  'type=tran&appid=' + encodeURIComponent(plus.runtime.appid);
-//			url += ('&cid=' + encodeURIComponent(plus.push.getClientInfo().clientid));
-//			if(plus.os.name == 'iOS') {
-//				url += ('&token=' + encodeURIComponent(plus.push.getClientInfo().token));
-//			}
-//			url += ('&title=' + encodeURIComponent('Hello H5+'));
-//			url += ('&content=' + encodeURIComponent('带透传数据推送通知，可通过plus.push API获取数据并进行业务逻辑处理！'));
-//			url += ('&payload=' + encodeURIComponent('{title:"Hello H5+ Test",content:"test content",payload:{id:"1234567890"}}'));
-//			url += ('&version=' + encodeURIComponent(plus.runtime.version));
-//			console.log(url);
+			//			var url =  'type=tran&appid=' + encodeURIComponent(plus.runtime.appid);
+			//			url += ('&cid=' + encodeURIComponent(plus.push.getClientInfo().clientid));
+			//			if(plus.os.name == 'iOS') {
+			//				url += ('&token=' + encodeURIComponent(plus.push.getClientInfo().token));
+			//			}
+			//			url += ('&title=' + encodeURIComponent('Hello H5+'));
+			//			url += ('&content=' + encodeURIComponent('带透传数据推送通知，可通过plus.push API获取数据并进行业务逻辑处理！'));
+			//			url += ('&payload=' + encodeURIComponent('{title:"Hello H5+ Test",content:"test content",payload:{id:"1234567890"}}'));
+			//			url += ('&version=' + encodeURIComponent(plus.runtime.version));
+			//			console.log(url);
 			window.addEventListener('refreshvue', function(event) {
-				
 				var aShow = event.detail.split(",");
 				vueContent.refresh(aShow[0], aShow[1]);
 			});
@@ -169,8 +169,8 @@
 		});
 		Vue.filter('statusNumtoString', function(value) {
 			return fFindObjById(value, gStatus.status).name;
-		})
-
+		});
+		console.log(JSON.stringify(thisevent))
 		var vueContent = new Vue({
 			el: '#event',
 			data: {
@@ -228,8 +228,8 @@
 				//打开量房页面
 				__fGauge: function(eventid) {
 					mui.openWindow({
-						url: "../test.html",
-						id: "drawing_board",
+						url: "../step/pick_products.html?eventid=" + eventid,
+						id: "intro",
 						styles: {
 							top: 0,
 							bottom: 0
@@ -349,11 +349,38 @@
 				var newdate = (e.value.split("T")[0] + ' ' + e.value.split("T")[1]).split(":33")[0];
 				mui.confirm('是否将预约上门时间从' + olddate + '修改为' + newdate + '？', gAppName, ['否', '是'], function(f) {
 					if(f.index == 1) {
-						var tempobj = JSON.parse(myStorage.getItem("data"));
-						tempobj.event[fFindObjSortById(thisevent.id, tempobj.event)].content.ordertime = e.value;
-						vueContent.event.content.ordertime = e.value;
-						myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改时间
+						//						var tempobj = JSON.parse(myStorage.getItem("data"));
+						//						tempobj.event[fFindObjSortById(thisevent.id, tempobj.event)].content.ordertime = e.value;
+						//						vueContent.event.content.ordertime = e.value;
+						//						myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改时间
 						//TODO：放入同步队列
+						mui.ajax(gAPIServer + 'houses/' + vueContent.event.id + '?access-token=' + User("access_token"), {
+							data: {
+								"appointment_at" : fDateToTimeStamp(e.value)
+							},
+							dataType: 'json',
+							type: 'PUT',
+							timeout: 6000,
+							success: function(data) {
+								if(data.success == true) {
+									mui.toast("预约时间修改成功")
+									var tempobj = JSON.parse(myStorage.getItem("data"));
+									tempobj.event[fFindObjSortById(thisevent.id, tempobj.event)].content.ordertime = e.value;
+									vueContent.event.content.ordertime = e.value;
+									myStorage.setItem("data", JSON.stringify(tempobj)); //初版在远程修改时间成功后再在本地存储修改时间
+								} else {
+									mui.alert(data.message, gAppName);
+									console.log(JSON.stringify(data));
+									e.value = e.getAttribute("init-time");
+								}
+							},
+							error: function(xhr, textStatus, errorThrown) {
+								console.log(JSON.stringify(xhr))
+								mui.alert("修改时间失败，请稍候再试", gAppName);
+								e.value = e.getAttribute("init-time");
+							}
+						});
+
 					} else {
 						e.value = e.getAttribute("init-time");
 					}

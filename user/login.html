@@ -15,35 +15,34 @@
 			font-weight: bold;
 			margin-top: 50px;
 		}
-
 		
 		.mui-progressbar span {
 			background: #4cd964!important;
 			z-index: 111!important;
+			height: 20px;
 		}
 	</style>
 
 	<body>
-		<div class="login">看什么看，赶紧登录啊！(ﾉ･ω･)ﾉﾞ</div>
+		<div class="login">欢迎使用块块装</div>
 		<div class="mui-content-padded" style="margin: 55px 250px;">
-
 			<form class="mui-input-group">
 				<div class="mui-input-row">
-					<label>输用户名啊魂淡</label>
-					<input id="username" type="text" class="mui-input-clear" placeholder="在这输啊？！">
+					<label>用户名</label>
+					<input id="username" type="text" class="mui-input-clear" placeholder="请输入您的用户名">
 				</div>
 				<div class="mui-input-row mui-password">
-					<label>输密码啊魂淡</label>
-					<input id="password" type="password" class="mui-input-password" placeholder="忘记密码了？不给你找回╭(╯^╰)╮">
+					<label>密码</label>
+					<input id="password" type="password" class="mui-input-password" placeholder="请输入您的密码">
 				</div>
 				<div class="mui-button-row">
 					<button type="button" class="mui-btn mui-btn-primary" id="login">登录</button>&nbsp;&nbsp;
-					<button type="button" class="mui-btn mui-btn-danger" disabled>取消不给你点，打我啊？</button>
+					<button type="button" class="mui-btn mui-btn-danger" disabled>忘记密码</button>
 				</div>
 			</form>
 		</div>
 		<script src="../js/mui.js"></script>
-		<script type="text/javascript" src="../js/storage.js" ></script> 
+		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript">
 			mui.init()
@@ -60,54 +59,106 @@
 							});
 						} else { //如果为wifi环境则开始下载资源包
 							loading = plus.nativeUI.showWaiting("正在下载资源包列表，请耐心等待...");
-							mui.ajax(gServer + 'house-packages', {//下载套餐包数据
+							mui.ajax(gAPIServer + 'packages/package-detail', { //下载套餐包数据
 								dataType: 'json',
 								type: 'get',
 								timeout: 6000,
 								success: function(data) {
-									
-									
-
-								},
-								error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
-									mui.alert("请确认网络连接后重试", gAppName, "确认", function() {
-										plus.runtime.restart();
-									});
-								}
-							});
-							
-							
-							mui('body').progressbar({
-								progress: 0,
-								color: 'success'
-							}).show();
-							//显示进度条与遮罩,提示开始下载
-							mui.ajax(gServer + 'uploads/assets/commonFiles.txt', {
-								dataType: 'text',
-								type: 'get',
-								timeout: 6000,
-								success: function(data) {
-									loading.setTitle("正在下载资源包，请耐心等待...")
-									var arr = eval(data); //将资源包列表转换为数组对象进行遍历
-									for(var i = 0; i < arr.length; i++) {
-										var filenamearr = arr[i].split("/");
-										var filename = filenamearr[filenamearr.length - 1];
-										if(!myStorage.getItem("filename")) {
-											DownloadResource(gServer + 'uploads/' + arr[i]);
+									console.log(JSON.stringify(data.data))
+									var packageinfo = [];
+									for(var w = 0; w < data.data.length; w++) {
+										var tempproduct = [];
+										if(data.data[w].products !== undefined && data.data[w].products !== null) {
+											for(var e = 0; e < data.data[w].products.length; e++) {
+												var tempbrand = [];
+												if(data.data[w].products[e].brands !== undefined && data.data[w].products[e].brands !== null) {
+													for(var t = 0; t < data.data[w].products[e].brands.length; t++) {
+														var tempsku = [];
+														if(data.data[w].products[e].brands[t].skus !== undefined && data.data[w].products[e].brands[t].skus !== null) {
+															for(var y = 0; y < data.data[w].products[e].brands[t].skus.length; y++) {
+																tempsku.push({
+																	"id": data.data[w].products[e].brands[t].skus[y].id,
+																	"product_id": data.data[w].products[e].brands[t].skus[y].product_id,
+																	"stock_num": data.data[w].products[e].brands[t].skus[y].stock_num,
+																	"image": data.data[w].products[e].brands[t].skus[y].show_t_imgs ? data.data[w].products[e].brands[t].skus[y].show_t_imgs[0] : null,
+																	"text": data.data[w].products[e].brands[t].skus[y].description,
+																	"sku": fCreateSKU(data.data[w].products[e].brands[t].skus[y].attr_value_ids, data.data[w].products[e].brands[t].attrs)
+																});
+															}
+														}
+														tempbrand.push({
+															"id": data.data[w].products[e].brands[t].id,
+															"name": data.data[w].products[e].brands[t].name,
+															"sku": tempsku,
+															"model": fGetAttrs("model", data.data[w].products[e].brands[t].attrs),
+															"size": fGetAttrs("size", data.data[w].products[e].brands[t].attrs),
+															"color": fGetAttrs("color", data.data[w].products[e].brands[t].attrs)
+														});
+													}
+												}
+												tempproduct.push({
+													"id": data.data[w].products[e].id,
+													"name": data.data[w].products[e].name,
+													"cover": data.data[w].products[e].description_t_imgs,
+													"description": data.data[w].products[e].description,
+													"brand": tempbrand
+												});
+											}
 										}
+										packageinfo.push({
+											"name": data.data[w].name,
+											"id": data.data[w].id,
+											"cover": data.data[w].cover_t_img,
+											"price": data.data[w].unit_price,
+											"detail_text": data.data[w].description,
+											"detail_images": data.data[w].show_t_imgs,
+											"product": tempproduct
+										});
 									}
-									var processController = setInterval(function() {
-										if(successfilecount < arr.length) {
-											mui("body").progressbar().setProgress(successfilecount / arr.length);
-										}
-										if(successfilecount == arr.length) {
-											clearInterval(processController);
-											mui("body").progressbar().setProgress(100);
-											localStorage.setItem("firstrun", fGetDate());
-											mui.toast("资源包下载完成！");
-										}
-									}, 50); //定时检查是否完成下载，同时更新进度条
+									myStorage.setItem("packageinfo", JSON.stringify({
+										"packageinfo": packageinfo
+									}));
 
+									mui('body').progressbar({
+										progress: 0,
+										color: 'success'
+									}).show();
+									//显示进度条与遮罩,提示开始下载
+									mui.ajax(gServer + 'uploads/assets/commonFiles.txt', {
+										dataType: 'text',
+										type: 'get',
+										timeout: 6000,
+										success: function(data) {
+											loading.setTitle("正在下载资源包，请耐心等待...")
+											var arr = eval(data); //将资源包列表转换为数组对象进行遍历
+											for(var i = 0; i < arr.length; i++) {
+												var filenamearr = arr[i].split("/");
+												var filename = filenamearr[filenamearr.length - 1];
+												if(!myStorage.getItem("filename")) {
+													DownloadResource(gServer + 'uploads/' + arr[i]);
+												}
+											}
+											var processController = setInterval(function() {
+												if(successfilecount < arr.length) {
+													mui("body").progressbar().setProgress(successfilecount / arr.length * 100);
+												}
+												if(successfilecount == arr.length) {
+													clearInterval(processController);
+													mui("body").progressbar().setProgress(100);
+													localStorage.setItem("firstrun", fGetDate());
+													mui.toast("资源包下载完成！");
+													loading.close();
+												}
+											}, 50); //定时检查是否完成下载，同时更新进度条
+
+										},
+										error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
+											console.log(JSON.stringify(xhr))
+											mui.alert("请确认网络连接后重试", gAppName, "确认", function() {
+												plus.runtime.restart();
+											});
+										}
+									});
 								},
 								error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
 									mui.alert("请确认网络连接后重试", gAppName, "确认", function() {
@@ -115,6 +166,7 @@
 									});
 								}
 							});
+
 						}
 
 					});
@@ -155,7 +207,7 @@
 									timeout: 6000,
 									success: function(data) {
 										if(data.success == true) {
-//											console.log(JSON.stringify(data));
+											//											console.log(JSON.stringify(data));
 											if(!data.data.houses0) {
 												myStorage.setItem("data", JSON.stringify({
 														"event": []
@@ -167,7 +219,7 @@
 												var Tempdata = {
 													"event": []
 												};
-												console.log(JSON.stringify(ToInsertData)) 
+												console.log(JSON.stringify(ToInsertData))
 												for(var i = 0; i < ToInsertData.length; i++) {
 													Tempdata.event[i] = {
 														"id": ToInsertData[i].id,
@@ -186,8 +238,8 @@
 															"package": __fMapPackage(ToInsertData[i].housePackages),
 															"price": ToInsertData[i].package_amount,
 															"clear_amount": ToInsertData[i].clear_amount,
-															"distance_rate":ToInsertData[i].distance_rate,
-															"taxes_amount":ToInsertData[i].taxes_amount
+															"distance_rate": ToInsertData[i].distance_rate,
+															"taxes_amount": ToInsertData[i].taxes_amount
 														}
 													}
 													insertSuccessCount++; //成功计数增加
@@ -216,7 +268,7 @@
 											var LoadingUserinfo = setInterval(function() {
 												if(insertSuccessCount == datalength) {
 													clearInterval(LoadingUserinfo);
-													myStorage.setItem("data",JSON.stringify(Tempdata));
+													myStorage.setItem("data", JSON.stringify(Tempdata));
 													loading.close();
 													mui.alert("登陆成功，" + gAppName + "即将重新启动以加载数据！", gAppName, "确认", function() {
 														plus.runtime.restart();
@@ -275,7 +327,66 @@
 				});
 				//启动下载任务
 				dtask.start();
+			}
+			/**
+			 * 输入属性值，读出所需属性
+			 * @param {String} type
+			 * @param {Array} 属性数组
+			 */
+			function fGetAttrs(type, attr) {
+				var mapping = {
+					"model": "型号",
+					"size": "尺寸",
+					"color": "颜色"
+				}
+				var toRead = mapping[type];
+				if(attr == undefined || attr == null || !attr.length) return {};
+				for(var i = 0; i < attr.legnth; i++) {
+					if(attr[i].name == toRead) {
+						var typeArray = [];
+						if(attr[i].attr_values !== undefined && attr[i].attr_values !== null) {
+							for(var o = 0; o < attr[i].attr_values.length; o++) {
+								typeArray.push({
+									"id": attr[i].attr_values[o].attr_id,
+									"name": attr[i].attr_values[o].value
+								});
+							}
+						}
+						return typeArray;
+					}
+				}
+				return [];
+			}
 
+			/**
+			 * 根据attr_value_ids与attrs生成sku字符串
+			 * @param {String} attr_value_ids
+			 * @param {Array} attrs
+			 */
+			function fCreateSKU(attr_value_ids, attrs) {
+				var model = "";
+				var size = "";
+				var color = "";
+				var temparr = attr_value_ids.split("|");
+				for(var p = 0; p < temparr.length; p++) {
+					var attrid = temparr[p];
+					for(var _i = 0; _i < attrs.length; _i++) {
+						if(attrs[_i].name == "型号") {
+							if(fFindObjSortById(attrid, attrs[_i].attr_values)) model = attrid;
+						}
+					}
+					for(var _j = 0; _j < attrs.length; _j++) {
+						if(attrs[_j].name == "尺寸") {
+							if(fFindObjSortById(attrid, attrs[_i].attr_values)) size = attrid;
+						}
+					}
+					for(var _k = 0; _k < attrs.length; _k++) {
+						if(attrs[_k].name == "颜色") {
+							if(fFindObjSortById(attrid, attrs[_i].attr_values)) color = attrid;
+						}
+					}
+				}
+				return model + "-" + size + "-" + color;
 			}
 		</script>
 	</body>

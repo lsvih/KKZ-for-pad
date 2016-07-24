@@ -837,7 +837,7 @@ data = {
 
 var packagearr = [{
 	"name": "厨房",
-	"id": "1056",
+	"id": "1",
 	"cover": "../images/preview.png",
 	"detail_text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。",
 	"detail_images": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
@@ -2234,8 +2234,8 @@ var packageinfo = {
 
 function fInstallTestData() {
 	myStorage.clear();
-	myStorage.setItem("data",JSON.stringify(data));
-	myStorage.setItem("packageinfo",JSON.stringify(packageinfo))
+//	myStorage.setItem("data",JSON.stringify(data));
+//	myStorage.setItem("packageinfo",JSON.stringify(packageinfo))
 	plus.runtime.restart();
 }
 

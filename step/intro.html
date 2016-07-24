@@ -128,6 +128,7 @@
 		mui.plusReady(function() {
 			eventid = plus.webview.currentWebview().eventid;
 			fAddVueCacheFilter();
+			console.log(myStorage.getItem("packageinfo"))
 			vueContent = new Vue({
 				el: '#package',
 				data: JSON.parse(myStorage.getItem("packageinfo")),

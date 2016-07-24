@@ -191,8 +191,9 @@
 
 		</section>
 	</body>
-	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../js/mui.js"></script>
+	<script type="text/javascript" src="../js/storage.js" ></script>
+	<script type="text/javascript" src="../js/common.js"></script>
 	<script>
 		mui.init({
 			gestureConfig: {
@@ -244,8 +245,9 @@
 		//图片保存功能，将从 data 协议中获取的图像信息送到后台处理，提供下载功能
 		document.getElementById('savePic').addEventListener('tap', function() {
 			var b64 = canvas.toDataURL();
-			//利用 data 协议获取图片信息，一般文件比较大，用 post 传到后台
-			mui.fire(plus.webview.currentWebview().opener(), "diagram", eventid + "///" + packagesort + "///" + b64);
+			var imgkey = "image-" + Math.random();
+			myStorage.setItem(imgkey,b64);
+			mui.fire(plus.webview.currentWebview().opener(), "diagram", eventid + "///" + packagesort + "///" + imgkey);
 			plus.webview.close(plus.webview.currentWebview())
 		});
 		//获取 工具按钮

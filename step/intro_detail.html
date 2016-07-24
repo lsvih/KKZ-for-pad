@@ -463,6 +463,7 @@
 			 * @param {Object} Detail 
 			 */
 			function fDetailPipe(Detail) {
+				if(Detail.products == undefined||Detail.products == null) return []
 				for(var i = 0; i < Detail.products.length; i++) {
 					for(var j = 0; j < Detail.products[i].brand.length; j++) {
 						var model = Detail.products[i].brand[j].model;
@@ -470,8 +471,8 @@
 						var color = Detail.products[i].brand[j].color;
 						var sku = Detail.products[i].brand[j].sku;
 						Detail.products[i].brand[j].tree = fCreateProductBrandTree(model, size, color, sku);
-						Detail.products[i].showtext = Detail.products[i].brand[0].sku[0].text;
-						Detail.products[i].showimage = Detail.products[i].brand[0].sku[0].image;
+						Detail.products[i].showtext = Detail.products[i].brand[0].description;
+						Detail.products[i].showimage = Detail.products[i].brand[0].cover;
 						Detail.products[i].selectbrand = 0;
 						Detail.products[i].brand[j].selectmodel = 0;
 					}
