@@ -17,7 +17,7 @@
 		<div id="back-drop"></div>
 		<article id="event">
 			<!--安装施工中-->
-			<template v-if="event.status==9">
+			<template v-if="event.status==8">
 				<div class="user-info block">
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span>
 					<span class="more-info" v-on:tap="__fDetail(event.id,'userdetail')">详情 ></span>
@@ -117,6 +117,7 @@
 			</div>
 		</article>
 		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/storage.js" ></script>
 		<script type="text/javascript" src="../js/data.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>

@@ -32,7 +32,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -59,7 +59,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -89,7 +89,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -121,7 +121,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -159,7 +159,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -192,7 +192,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -228,7 +228,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -264,7 +264,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -313,7 +313,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -548,7 +548,7 @@ data = {
 				"package": [{
 					"id": 1,
 					"name": "厨房",
-					"package_id": "1056",
+					"id": "1056",
 					"num": 10,
 					"unit": "米²"
 				}, {
@@ -837,7 +837,7 @@ data = {
 
 var packagearr = [{
 	"name": "厨房",
-	"package_id": "1056",
+	"id": "1056",
 	"cover": "../images/preview.png",
 	"detail_text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。",
 	"detail_images": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],
@@ -1533,7 +1533,7 @@ var packagearr = [{
 	}]
 },{
 	"name": "卫生间",
-	"package_id": "1078",
+	"id": "1078",
 	"cover": "../images/preview.png",
 	"detail_text": "舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。舒适的床为您带来一整夜的好睡眠。卧室家具为您打造更多储物空间（让您轻松找到物品）。有温暖的灯光营造氛围，还有柔软的纺织品相伴，而这一切的价格都让可您大放宽心，酣然入梦。",
 	"detail_images": ["../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png", "../images/preview.png"],

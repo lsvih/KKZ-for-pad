@@ -73,6 +73,7 @@
 
 	</body>
 	<script src="../js/mui.js"></script>
+	<script type="text/javascript" src="../js/storage.js" ></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/data.js"></script>
 	<script src="../js/vue.js"></script>
@@ -116,11 +117,11 @@
 							if(!fHasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
 								this.nSelectSort = sortId;
 								myStorage.setItem("thiseventsort",sortId)
-								if(status == 6 || status == 8) {
+								if(status == 5 || status == 7) {
 									mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", nFlowID + "," + sortId);
 									plus.webview.hide("plg_work", "fade-out");
 									plus.webview.show("plg_input", "fade-in");
-								} else if(status == 9) {
+								} else if(status == 8) {
 									mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", nFlowID + "," + sortId);
 //									plus.webveiw.hide("plg_input", "fade-out");
 									plus.webview.show("plg_work", "fade-in");
@@ -136,7 +137,6 @@
 							plus.webview.hide("plg_work", "fade-out");
 							fCloseSubPage();
 						}
-
 					}
 				}
 

@@ -15,17 +15,7 @@
 			font-weight: bold;
 			margin-top: 50px;
 		}
-		
-		#mask {
-			position: fixed;
-			top: 0;
-			height: 100%;
-			width: 100%;
-			z-index: -1;
-			background-color: #000;
-			opacity: 0;
-			transition: 0.5s;
-		}
+
 		
 		.mui-progressbar span {
 			background: #4cd964!important;
@@ -34,7 +24,6 @@
 	</style>
 
 	<body>
-		<div id="mask"></div>
 		<div class="login">看什么看，赶紧登录啊！(ﾉ･ω･)ﾉﾞ</div>
 		<div class="mui-content-padded" style="margin: 55px 250px;">
 
@@ -54,10 +43,14 @@
 			</form>
 		</div>
 		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/storage.js" ></script> 
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript">
 			mui.init()
 			var successfilecount = 0;
+			var loading;
+			var datalength;
+			var insertSuccessCount;
 			mui.plusReady(function() {
 				if(!localStorage.getItem("firstrun")) {
 					mui.alert("即将下载资源包，请确认当前网络环境为WiFi。", gAppName, "确认", function() {
@@ -65,21 +58,36 @@
 							mui.alert("请确认您的网络环境为WiFi环境", gAppName, "确认", function() {
 								plus.runtime.restart();
 							});
-
 						} else { //如果为wifi环境则开始下载资源包
-							document.getElementById("mask").style.zIndex = 110;
+							loading = plus.nativeUI.showWaiting("正在下载资源包列表，请耐心等待...");
+							mui.ajax(gServer + 'house-packages', {//下载套餐包数据
+								dataType: 'json',
+								type: 'get',
+								timeout: 6000,
+								success: function(data) {
+									
+									
+
+								},
+								error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
+									mui.alert("请确认网络连接后重试", gAppName, "确认", function() {
+										plus.runtime.restart();
+									});
+								}
+							});
+							
+							
 							mui('body').progressbar({
 								progress: 0,
 								color: 'success'
 							}).show();
-							mui.toast("开始下载资源包，请耐心等待...")
-							document.getElementById("mask").style.opacity = 0.2;
 							//显示进度条与遮罩,提示开始下载
 							mui.ajax(gServer + 'uploads/assets/commonFiles.txt', {
 								dataType: 'text',
 								type: 'get',
 								timeout: 6000,
 								success: function(data) {
+									loading.setTitle("正在下载资源包，请耐心等待...")
 									var arr = eval(data); //将资源包列表转换为数组对象进行遍历
 									for(var i = 0; i < arr.length; i++) {
 										var filenamearr = arr[i].split("/");
@@ -93,14 +101,12 @@
 											mui("body").progressbar().setProgress(successfilecount / arr.length);
 										}
 										if(successfilecount == arr.length) {
+											clearInterval(processController);
 											mui("body").progressbar().setProgress(100);
-											mui.toast("资源包下载完成！");
-											document.getElementById("mask").style.opacity = 0;
-											document.getElementById("mask").style.zIndex = -1;
 											localStorage.setItem("firstrun", fGetDate());
-											clearInterval("processController");
+											mui.toast("资源包下载完成！");
 										}
-									}, 2); //定时检查是否完成下载，同时更新进度条
+									}, 50); //定时检查是否完成下载，同时更新进度条
 
 								},
 								error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
@@ -124,7 +130,8 @@
 						mui.alert("滚回去输密码", gAppName);
 						return false;
 					}
-					mui.ajax(gAPIServer + 'users/login?expand=houses', {
+					loading = plus.nativeUI.showWaiting("正在登录，请稍后...");
+					mui.ajax(gAPIServer + 'users/login', {
 						data: {
 							'LoginForm[username]': username,
 							'LoginForm[password]': password
@@ -141,16 +148,101 @@
 									"head_img-url": data.data["head_img-url"],
 									"access_token": data.data.access_token
 								});
-								console.log(JSON.stringify(data.data));
-								mui.toast("登陆成功");
-								plus.webview.close(plus.webview.currentWebview());
+								loading.setTitle("正在加载用户数据，请稍后");
+								mui.ajax(gAPIServer + 'users/' + User("id") + '?expand=houses0.user,houses0.housePackages.package&access-token=' + User("access_token"), {
+									dataType: 'json',
+									type: 'get',
+									timeout: 6000,
+									success: function(data) {
+										if(data.success == true) {
+//											console.log(JSON.stringify(data));
+											if(!data.data.houses0) {
+												myStorage.setItem("data", JSON.stringify({
+														"event": []
+													})) //如果房屋信息不存在，则直接让event为空数组
+											} else { //如果信息存在，则将后台数据格式转化为前端数据格式存入myStorage.data中
+												var ToInsertData = data.data.houses0;
+												datalength = ToInsertData.length;
+												insertSuccessCount = 0; //成功计数
+												var Tempdata = {
+													"event": []
+												};
+												console.log(JSON.stringify(ToInsertData)) 
+												for(var i = 0; i < ToInsertData.length; i++) {
+													Tempdata.event[i] = {
+														"id": ToInsertData[i].id,
+														"name": ToInsertData[i].user.fullname,
+														"sex": Number(ToInsertData[i].user.sex),
+														"contractid": ToInsertData[i].house_contract.split(".")[0],
+														"status": ToInsertData[i].status,
+														"province": ToInsertData[i].province,
+														"city": ToInsertData[i].city,
+														"district": ToInsertData[i].county,
+														"street": ToInsertData[i].street,
+														"address": ToInsertData[i].address,
+														"phone": ToInsertData[i].user.phone,
+														"content": {
+															"ordertime": fTimeStampToDate(ToInsertData[i].appointment_at),
+															"package": __fMapPackage(ToInsertData[i].housePackages),
+															"price": ToInsertData[i].package_amount,
+															"clear_amount": ToInsertData[i].clear_amount,
+															"distance_rate":ToInsertData[i].distance_rate,
+															"taxes_amount":ToInsertData[i].taxes_amount
+														}
+													}
+													insertSuccessCount++; //成功计数增加
+												}
+											}
+											/**
+											 * 子函数
+											 * 解析package数组信息，返回符合格式的package数组
+											 * @param {Array} 待解析package数组
+											 */
+											function __fMapPackage(packagearr) {
+												if(!packagearr || !packagearr.legnth) return [];
+												var __temparr = [];
+												for(var __i = 0; __i < packagearr; __i++) {
+													__temparr.push({
+														"id": packagearr[__i].id,
+														"name": packagearr[__i].package.name,
+														"size": packagearr[__i].area,
+														"images": packagearr[__i].measure_t_imgs,
+														"diagram": packagearr[__i].plan_t_img
+													})
+												}
+												return __temparr;
+											}
+
+											var LoadingUserinfo = setInterval(function() {
+												if(insertSuccessCount == datalength) {
+													clearInterval(LoadingUserinfo);
+													myStorage.setItem("data",JSON.stringify(Tempdata));
+													loading.close();
+													mui.alert("登陆成功，" + gAppName + "即将重新启动以加载数据！", gAppName, "确认", function() {
+														plus.runtime.restart();
+													});
+												}
+											}, 50); //定时检查是否完成下载，同时更新进度条
+
+										} else {
+											mui.alert(data.message, gAppName);
+											console.log(JSON.stringify(data));
+										}
+									},
+									error: function(xhr, textStatus, errorThrown) {
+										mui.alert("获取用户信息时网络连接失败，请稍候再试", gAppName);
+										loading.close();
+									}
+								});
 							} else {
 								mui.alert(data.message, gAppName);
+								loading.close();
 								console.log(JSON.stringify(data));
 							}
 						},
 						error: function(xhr, textStatus, errorThrown) {
-							alert("网络连接失败，请稍候再试");
+							mui.alert("登录时网络连接失败，请稍后重试", gAppName);
+							loading.close();
 						}
 					});
 

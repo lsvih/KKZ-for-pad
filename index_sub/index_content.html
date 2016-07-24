@@ -14,12 +14,23 @@
 		<link rel="stylesheet" href="../css/index_content.css" />
 		<link rel="stylesheet" href="../css/LCalendar.css" />
 	</head>
-
+<style>
+	#mask{
+		position:fixed;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background-color: #FFF;
+		z-index: -1;
+	}
+</style>
 	<body>
+		<div id="mask"></div>
 		<div id="back-drop"></div>
 		<article id="event">
 			<!--待量房-->
-			<template v-if="event.status==1">
+			<template v-if="event.status==0">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -31,7 +42,7 @@
 
 			</template>
 			<!--待排期-->
-			<template v-if="event.status==2">
+			<template v-if="event.status==1">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -45,7 +56,7 @@
 			</template>
 
 			<!--待签约-->
-			<template v-if="event.status==3">
+			<template v-if="event.status==2">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -79,7 +90,7 @@
 			</template>
 
 			<!--待支付-->
-			<template v-if="event.status==4">
+			<template v-if="event.status==3">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -91,7 +102,7 @@
 			</template>
 
 			<!--待改期-->
-			<template v-if="event.status==5">
+			<template v-if="event.status==4">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
@@ -103,19 +114,17 @@
 			</template>
 
 			<!--待评价-->
-			<template v-if="event.status==10">
+			<template v-if="event.status==9">
 				<button class="mui-btn mui-btn-block mui-btn-green remind-user-evaluate">提醒用户评价</button>
 			</template>
 		</article>
 
 	</body>
 	<script src="../js/mui.js"></script>
+	<script type="text/javascript" src="../js/storage.js" ></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/data.js"></script>
-
 	<script src="../js/vue.js"></script>
-
-	<script type="text/javascript" src="../js/LCalendar.js"></script>
 	<script>
 		"use strick";
 
@@ -149,8 +158,12 @@
 //			url += ('&version=' + encodeURIComponent(plus.runtime.version));
 //			console.log(url);
 			window.addEventListener('refreshvue', function(event) {
+				
 				var aShow = event.detail.split(",");
 				vueContent.refresh(aShow[0], aShow[1]);
+			});
+			window.addEventListener('nocontent', function(event) {
+				document.getElementById("mask").style.zIndex = 9999;
 			});
 
 		});
@@ -168,15 +181,16 @@
 					document.getElementById("back-drop").style.display = "none";
 					var nextevent = fListAllFlowEvent(a)[b];
 					if(nextevent) { //判断内容为空的情况
+						document.getElementById("mask").style.zIndex = -1;
 						myStorage.setItem("thisstatus", nextevent.status);
 						switch(nextevent.status) {
+							case 5:
 							case 6:
 							case 7:
-							case 8:
 								mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", a + "," + b);
 								plus.webview.show("plg_input", "fade-in", 200);
 								break;
-							case 9:
+							case 8:
 								mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", a + "," + b);
 								plus.webview.show("plg_work", "fade-in", 200);
 								break;
@@ -186,6 +200,7 @@
 								break;
 						}
 					} else {
+						document.getElementById("mask").style.zIndex = 9999;
 						fCloseSubPage();
 					}
 

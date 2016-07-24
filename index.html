@@ -73,6 +73,7 @@
 		<script src="js/data.js"></script>
 		<script src="js/vue.js"></script>
 		<script src="js/mui.js"></script>
+		<script type="text/javascript" src="js/storage.js" ></script>
 		<script src="js/common.js"></script>
 		<script src="js/sync.js"></script>
 		<script type="text/javascript">
@@ -288,6 +289,16 @@
 						bIsInTransition = false;
 						menu.hide();
 					}, 300);
+				}
+			}
+
+			/**
+			 * 计算并更新工作流数量
+			 * fCaculateNumOfFlow()
+			 */
+			function fCaculateNumOfFlow() {
+				for(var o = 0; o < gFlow.flow.length; o++) {
+					gFlow.flow[o].num = fListAllFlowEvent(gFlow.flow[o].id).length;
 				}
 			}
 			//点击左上角侧滑图标，打开侧滑菜单；

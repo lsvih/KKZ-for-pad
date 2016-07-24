@@ -155,16 +155,16 @@
 			<div id="package">
 				<div class="package-title">选择套餐</div>
 				<div class="package-item-container" v-for="package in packageinfo">
-					<div class="edit-num" v-bind:class="{'edit-num-active' : __fGetpackageNum(package.package_id)}">
+					<div class="edit-num" v-bind:class="{'edit-num-active' : __fGetpackageNum(package.id)}">
 						<div class="mui-numbox" data-numbox-min='0' data-numbox-max='9'>
 							<button class="mui-btn mui-btn-numbox-minus mui-icon mui-icon-minus" type="button"></button>
-							<input class="mui-input-numbox" type="number" v-bind:value="__fGetpackageNum(package.package_id)" v-bind:data-id="__fGetpackageNum(package.package_id)" v-on:change="__fEditNum($event.currentTarget)" disabled/>
+							<input class="mui-input-numbox" type="number" v-bind:value="__fGetpackageNum(package.id)" v-bind:data-id="__fGetpackageNum(package.id)" v-on:change="__fEditNum($event.currentTarget)" disabled/>
 							<button class="mui-btn mui-btn-numbox-plus mui-icon mui-icon-plus" type="button"></button>
 						</div>
 					</div>
-					<div class="check-mask" v-show="__fGetpackageNum(package.package_id)" v-on:tap="__fCancelSelect(package.package_id,$event.currentTarget)"></div>
-					<img v-bind:src="package.cover|cache" v-on:tap="__fSelectThisPackage(package.package_id,$event.currentTarget,$index)">
-					<span class="package-item-title" v-show="!__fGetpackageNum(package.package_id)">{{package.name}}</span></div>
+					<div class="check-mask" v-show="__fGetpackageNum(package.id)" v-on:tap="__fCancelSelect(package.id,$event.currentTarget)"></div>
+					<img v-bind:src="package.cover|cache" v-on:tap="__fSelectThisPackage(package.id,$event.currentTarget,$index)">
+					<span class="package-item-title" v-show="!__fGetpackageNum(package.id)">{{package.name}}</span></div>
 			</div>
 			<div class="package-title" style="margin-top: 30px;">单品</div>
 		</div>
@@ -278,14 +278,14 @@
 			var values = document.getElementsByClassName("mui-input-numbox");
 			for(var j = 0; j < values.length; j++) {
 				if(values[j].getAttribute("data-id") != 0) {
-					if(values[j].getAttribute("data-id") != fGetpackageNum(temppackage.packageinfo[j].package_id, eventid)) {//如果发现data-id和存储的数量不同，则删除所有对应的package
-						fDeleteAllIdInPackage(temppackage.packageinfo[j].package_id, eventid);//删除所有对应的package
+					if(values[j].getAttribute("data-id") != fGetpackageNum(temppackage.packageinfo[j].id, eventid)) {//如果发现data-id和存储的数量不同，则删除所有对应的package
+						fDeleteAllIdInPackage(temppackage.packageinfo[j].id, eventid);//删除所有对应的package
 						for(var i = 0; i < values[j].getAttribute("data-id"); i++) {//删除对应的package后遍历写入新的package
-							fAddAItemToPackage(temppackage.packageinfo[j].package_id, eventid);
+							fAddAItemToPackage(temppackage.packageinfo[j].id, eventid);
 						}
 					}
 				} else {
-					fDeleteAllIdInPackage(temppackage.packageinfo[j].package_id, eventid);//如果没有被选择则删除所有对应的package
+					fDeleteAllIdInPackage(temppackage.packageinfo[j].id, eventid);//如果没有被选择则删除所有对应的package
 				}
 
 			}
