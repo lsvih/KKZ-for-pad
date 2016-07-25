@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<style>
+			.circle-btn {
+				position: fixed;
+				top: 43px;
+				height: 40px;
+				width: 40px;
+				background-color: #FFF;
+				border-radius: 20px;
+				color: #00b06c;
+				line-height: 42px;
+				text-align: center;
+				box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+			}
+			
+			.close-btn {
+				left: 33px;
+				font-size: 28px;
+				z-index: 100;
+			}
+			
+			.next-btn {
+				right: 33px;
+				font-size: 14px;
+				z-index: 98;
+			}
+			
+			.pick-again {
+				position: fixed;
+				top: 53px;
+				right: 80px;
+				height: 30px;
+				width: 120px;
+				font-size: 20px;
+				z-index: 98;
+				color: #00B06C;
+			}
+			
+			.header {
+				position: fixed;
+				top: 0;
+				left: 0;
+				height: 83px;
+				width: 100%;
+				background-color: #fff;
+				z-index: 0;
+			}
+		</style>
+
+	</head>
+	<div class="circle-btn close-btn mui-icon mui-icon-closeempty"></div>
+	<div class="pick-again">再选一次</div>
+	<div class="circle-btn next-btn">选材</div>
+	<div class="header"></div>
+
+	<body>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/storage.js"></script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function() {
+				var eventid = GetRequest()["eventid"]; //获得eventid
+				var tempdata = JSON.parse(myStorage.getItem("data"));
+				var uploading;
+				var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
+				var eventsortid = fFindObjSortById(eventid, tempdata.event);
+				var _doc = tempdata.event[eventsortid].content.house_quotation;
+				mui.openWindow({
+					url: gServer + "uploads/files/" + _doc,
+					id: "sub_doc",
+					styles: {
+						top: "80px",
+						bottom: 0,
+						right: 0,
+						width: "100%",
+						height: "100%"
+					},
+					show: {
+						aniShow: "fade-in"
+					},
+					waiting: {
+						autoShow: false,
+					}
+				});
+				mui("body").on("tap", ".close-btn", function() {
+					plus.webview.close("sub_doc");
+					plus.webview.close(plus.webview.currentWebview());
+				});
+				mui("body").on("tap",".next-btn", function(){
+					console.log(JSON.stringify(tempdata.event[eventsortid]))
+					console.log((myStorage.getItem("packageinfo")))
+				})
+				mui("body").on("tap", ".pick-again", function() {
+					var watiting = plus.nativeUI.showWaiting("正在返回量房状态，请稍后...")
+					mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
+						data: {
+							'status': 0,
+						},
+						dataType: 'json',
+						type: 'PUT',
+						timeout: 6000,
+						success: function(data) {
+							if(data.success == true) {
+								watiting.close();
+								var tempdata = JSON.parse(myStorage.getItem("data"));
+								tempdata.event[eventsortid].status = 0;
+								myStorage.setItem("data",JSON.stringify(tempdata))
+								plus.webview.close("sub_doc");
+								mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+								plus.webview.currentWebview().loadURL("../step/pick_products.html?eventid=" + eventid);
+							} else {
+								mui.alert(data.message, gAppName);
+								watiting.close();
+							}
+						},
+						error: function(xhr, textStatus, errorThrown) {
+							console.log(JSON.stringify(xhr))
+							mui.alert("状态修改失败，请稍候再试", gAppName,"确认",function(){
+								watiting.close();
+								plus.webview.currentWebview().reload();
+							});
+							
+						}
+					});
+				})
+			})
+		</script>
+	</body>
+
+</html>

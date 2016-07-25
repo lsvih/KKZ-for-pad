@@ -117,7 +117,7 @@
 			</div>
 		</article>
 		<script src="../js/mui.js"></script>
-		<script type="text/javascript" src="../js/storage.js" ></script>
+		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/data.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
@@ -158,9 +158,11 @@
 							return fGetSortIdByDate(a, b);
 						},
 						refresh: function(a, b) {
-							var tempobj = JSON.parse(myStorage.getItem("data"));
-							tempobj.event[fFindObjSortById(vueContent.event.id, tempobj.event)] = vueContent.event;
-							myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改
+							if(vueContent.event !== undefined && vueContent.event !== null) {
+								var tempobj = JSON.parse(myStorage.getItem("data"));
+								tempobj.event[fFindObjSortById(vueContent.event.id, tempobj.event)] = vueContent.event;
+								myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改
+							}
 							vueContent.event = fListAllFlowEvent(a)[b];
 							myStorage.setItem("thisstatus", vueContent.event.status);
 							fCloseSubOpenPage();

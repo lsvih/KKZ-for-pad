@@ -263,7 +263,7 @@
 		<div class="circle-btn close-btn mui-action-back mui-icon mui-icon-arrowleft"></div>
 		<div id="detail">
 			<div id="cover-image-mask"></div>
-			<div id="cover-image" v-bind:style="{backgroundImage: 'url(' + detail.cover + ')'}"></div>
+			<div id="cover-image" v-bind:style="{backgroundImage: 'url(' + cache(detail.cover) + ')'}"></div>
 			<div id="wrapper">
 				<ul id="scroller">
 					<div class="blank"></div>
@@ -277,7 +277,7 @@
 						<span class="iteminner">
 						<span class="img-contain">
 					<span class="lineimg" >
-						<span class="item" v-for="img_src in detail.detail_images" track-by="$index"><img class="rendering-images" v-bind:src="img_src" v-on:tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
+						<span class="item" v-for="img_src in detail.detail_images" track-by="$index"><img class="rendering-images" v-bind:src="img_src|cache" v-on:tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
 						</span>
 						</span>
 						</span>
@@ -365,6 +365,9 @@
 						fSelectDefault();
 					},
 					methods: {
+						cache: function(value){
+							return fCache(value);
+						},
 						previewimage: function(thisobj) { //查看单张图片大图
 							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
 								images: thisobj.currentTarget.parentNode.innerHTML,
@@ -472,7 +475,7 @@
 						var sku = Detail.products[i].brand[j].sku;
 						Detail.products[i].brand[j].tree = fCreateProductBrandTree(model, size, color, sku);
 						Detail.products[i].showtext = Detail.products[i].brand[0].description;
-						Detail.products[i].showimage = Detail.products[i].brand[0].cover;
+						Detail.products[i].showimage = fCache(Detail.products[i].brand[0].cover);
 						Detail.products[i].selectbrand = 0;
 						Detail.products[i].brand[j].selectmodel = 0;
 					}

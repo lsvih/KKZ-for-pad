@@ -101,7 +101,7 @@
 
 	<body>
 		<div id="mask"></div>
-		<div class="circle-btn close-btn mui-action-back mui-icon mui-icon-closeempty"></div>
+		<div class="circle-btn close-btn mui-icon mui-icon-closeempty"></div>
 		<div class="circle-btn next-btn mui-icon mui-icon-arrowright"></div>
 
 		<div class="mui-content">
@@ -124,9 +124,8 @@
 	</body>
 	<script>
 		var vueContent;
-		var eventid;
+		var eventid = GetRequest()["eventid"];
 		mui.plusReady(function() {
-			eventid = plus.webview.currentWebview().eventid;
 			fAddVueCacheFilter();
 			console.log(myStorage.getItem("packageinfo"))
 			vueContent = new Vue({
@@ -163,6 +162,9 @@
 				}
 			});
 		});
+		mui("body").on("tap",".close-btn",function(){
+			plus.webview.close(plus.webview.currentWebview())
+		})
 		mui("body").on("tap",".mui-icon-arrowright",function(){
 			location.href = "pick_products.html?eventid=" + eventid;
 		})

@@ -17,9 +17,12 @@
 		}
 		
 		.mui-progressbar span {
-			background: #4cd964!important;
+			background: #00b06c!important;
 			z-index: 111!important;
-			height: 20px;
+		}
+		
+		.mui-progressbar {
+			height: 5px!important;
 		}
 	</style>
 
@@ -64,6 +67,7 @@
 								type: 'get',
 								timeout: 6000,
 								success: function(data) {
+
 									console.log(JSON.stringify(data.data))
 									var packageinfo = [];
 									for(var w = 0; w < data.data.length; w++) {
@@ -115,9 +119,9 @@
 											"product": tempproduct
 										});
 									}
-									myStorage.setItem("packageinfo", JSON.stringify({
-										"packageinfo": packageinfo
-									}));
+//									myStorage.setItem("packageinfo", JSON.stringify({
+//										"packageinfo": packageinfo
+//									}));
 
 									mui('body').progressbar({
 										progress: 0,
@@ -175,13 +179,14 @@
 					var username = document.getElementById("username").value;
 					var password = document.getElementById("password").value;
 					if(!username) {
-						mui.alert("滚回去输用户名", gAppName);
+						mui.alert("请输入用户名", gAppName);
 						return false;
 					}
 					if(!password) {
-						mui.alert("滚回去输密码", gAppName);
+						mui.alert("请输入密码", gAppName);
 						return false;
 					}
+					document.activeElement.blur();
 					loading = plus.nativeUI.showWaiting("正在登录，请稍后...");
 					mui.ajax(gAPIServer + 'users/login', {
 						data: {
@@ -268,7 +273,7 @@
 											var LoadingUserinfo = setInterval(function() {
 												if(insertSuccessCount == datalength) {
 													clearInterval(LoadingUserinfo);
-													myStorage.setItem("data", JSON.stringify(Tempdata));
+//													myStorage.setItem("data", JSON.stringify(Tempdata));//TODO 为了展示因此载入本地数据
 													loading.close();
 													mui.alert("登陆成功，" + gAppName + "即将重新启动以加载数据！", gAppName, "确认", function() {
 														plus.runtime.restart();
@@ -304,29 +309,36 @@
 			function DownloadResource(url) {
 				var urlarr = url.split("/");
 				var downloadfilename = urlarr[urlarr.length - 1]; //读出文件名
-				console.log("Downloading '" + url + "' to cache...");
-				var dtask = plus.downloader.createDownload(url, {}, function(d, status) {
-					switch(status) {
-						case 404:
-							//如果文件不存在，也当其下载成功数+1
-							console.log("下载失败,文件不存在");
-							successfilecount++;
-							break;
-						case 200:
-							successfilecount++;
-							downloadfilename = d.filename.split("/")[1]; //d.filename读出来为_downloads/xxxxxx.xxx形式
-							console.log("下载成功=" + downloadfilename);
-							myStorage.setItem(downloadfilename, true); //删除路径前的"_downloads/"以提高存储密度
-							break;
-						default:
-							console.log("下载失败=" + status);
-							mui.alert("网络异常，下载任务已暂停，请检查网络环境后重试。", gAppName, "确定", function() {
-								plus.runtime.restart();
-							})
-					}
+				plus.io.resolveLocalFileSystemURL("_downloads/" + downloadfilename, function(fs) { //先判断目录中是否已经有这个文件了，如果有则不下载，没有则下载
+					console.log("文件已存在，无需下载");
+					myStorage.setItem(downloadfilename, true);
+					successfilecount++;
+				}, function(e) {
+					console.log("Downloading '" + url + "' to cache...");
+					var dtask = plus.downloader.createDownload(url, {}, function(d, status) {
+						switch(status) {
+							case 404:
+								//如果文件不存在，也当其下载成功数+1
+								console.log("下载失败,文件不存在");
+								successfilecount++;
+								break;
+							case 200:
+								successfilecount++;
+								downloadfilename = d.filename.split("/")[1]; //d.filename读出来为_downloads/xxxxxx.xxx形式
+								console.log("下载成功=" + downloadfilename);
+								myStorage.setItem(downloadfilename, true); //删除路径前的"_downloads/"以提高存储密度
+								break;
+							default:
+								console.log("下载失败=" + status);
+								mui.alert("网络异常，下载任务已暂停，请检查网络环境后重试。", gAppName, "确定", function() {
+									plus.runtime.restart();
+								})
+						}
+					});
+					//启动下载任务
+					dtask.start();
 				});
-				//启动下载任务
-				dtask.start();
+
 			}
 			/**
 			 * 输入属性值，读出所需属性
@@ -364,6 +376,7 @@
 			 * @param {Array} attrs
 			 */
 			function fCreateSKU(attr_value_ids, attrs) {
+
 				var model = "";
 				var size = "";
 				var color = "";
@@ -372,17 +385,17 @@
 					var attrid = temparr[p];
 					for(var _i = 0; _i < attrs.length; _i++) {
 						if(attrs[_i].name == "型号") {
-							if(fFindObjSortById(attrid, attrs[_i].attr_values)) model = attrid;
+							if(fFindObjSortById(attrid, attrs[_i].attr_values) !== false) model = attrid;
 						}
 					}
 					for(var _j = 0; _j < attrs.length; _j++) {
 						if(attrs[_j].name == "尺寸") {
-							if(fFindObjSortById(attrid, attrs[_i].attr_values)) size = attrid;
+							if(fFindObjSortById(attrid, attrs[_j].attr_values) !== false) size = attrid;
 						}
 					}
 					for(var _k = 0; _k < attrs.length; _k++) {
 						if(attrs[_k].name == "颜色") {
-							if(fFindObjSortById(attrid, attrs[_i].attr_values)) color = attrid;
+							if(fFindObjSortById(attrid, attrs[_k].attr_values) !== false) color = attrid;
 						}
 					}
 				}

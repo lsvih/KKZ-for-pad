@@ -90,7 +90,7 @@
 			</div>
 		</article>
 		<script src="../js/mui.js"></script>
-		<script type="text/javascript" src="../js/storage.js" ></script>
+		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/data.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
@@ -111,7 +111,7 @@
 					vueContent.refresh(aShow[0], aShow[1]);
 				});
 				window.addEventListener('delete', function(event) {
-					var statustarget = vueContent.event.status == "7" ? "property" : "pending_construction";
+					var statustarget = vueContent.event.status == "5" ? "property" : "pending_construction";
 					var deleteitem = vueContent.event.content[statustarget].img[event.detail - 1];
 					vueContent.event.content[statustarget].img.$remove(deleteitem);
 				});
@@ -124,11 +124,14 @@
 						refresh: function(a, b) {
 							document.getElementById("back-drop").style.display = "none";
 							plus.webview.close("sub_edituser"); //再切换时将阴影去掉，同时关闭打开的子页面（为了下一次打开子页面动画正常播放）
-							var tempobj = JSON.parse(myStorage.getItem("data"));
-							tempobj.event[fFindObjSortById(vueContent.event.id, tempobj.event)] = vueContent.event;
-							myStorage.setItem("data",JSON.stringify(tempobj)); //在本地存储修改
+							if(vueContent.event !== undefined && vueContent.event !== null) {
+								var tempobj = JSON.parse(myStorage.getItem("data"));
+								tempobj.event[fFindObjSortById(vueContent.event.id, tempobj.event)] = vueContent.event;
+								myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改
+							}
+
 							vueContent.event = fListAllFlowEvent(a)[b];
-							myStorage.setItem("thisstatus",vueContent.event.status);
+							myStorage.setItem("thisstatus", vueContent.event.status);
 						},
 						//编辑用户信息
 						__fEditUser: function(eventid) {
@@ -188,7 +191,7 @@
 									if(f.index == 1) {
 										vueContent.event.content.selection.check = true;
 									} else {
-										
+
 									}
 								});
 							} else {
@@ -196,7 +199,7 @@
 									if(f.index == 1) {
 										vueContent.event.content.schedule.check = true;
 									} else {
-										
+
 									}
 								});
 							}
@@ -209,7 +212,7 @@
 				plus.webview.close("sub_edituser");
 			})
 			mui('#picture').on('tap', '.mui-popover-action li>a', function() {
-				var statustarget = vueContent.event.status == "7" ? "property.img" : "pending_construction.img";
+				var statustarget = vueContent.event.status == "5" ? "property.img" : "pending_construction.img";
 				switch(this.getAttribute("data")) {
 					case "1": //拍照
 						mui("#picture").popover('toggle');
@@ -241,7 +244,7 @@
 							var tempobj1 = JSON.parse(myStorage.getItem("data"));
 							tempobj1.event[fFindObjSortById(vueContent.event.id, tempobj1.event)].content.expected_start_date = e.value;
 							vueContent.event.content.expected_start_date = e.value;
-							myStorage.setItem("data",JSON.stringify(tempobj1)); //在本地存储修改时间
+							myStorage.setItem("data", JSON.stringify(tempobj1)); //在本地存储修改时间
 							//TODO:将修改时间存入队列等待同步
 						} else {
 							e.value = e.getAttribute("init-time");

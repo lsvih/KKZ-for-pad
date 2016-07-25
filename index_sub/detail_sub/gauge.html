@@ -1,10 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
 	</head>
+	<style>
+.mui-input-row{
+	width: 246px;
+}
+</style>
 	<body>
-		this is the page for gauge detail;
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../../js/storage.js" ></script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript" src="../js/vue.js"></script>
 	</body>
+	<script>
+	mui.plusReady(function(){
+		var eventid = plus.webview.currentWebview().eventid;
+		var tempdata = JSON.parse(myStorage.getItem("data"));
+		var eventsortid = fFindObjSortById(eventid, tempdata.event);
+		location.href = gServer + "uploads/files/" + tempdata.event[eventsortid].content.house_quotation
+	})
+	</script>
+
 </html>

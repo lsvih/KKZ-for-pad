@@ -148,7 +148,7 @@
 
 	<body>
 		<div id="mask"></div>
-		<div class="circle-btn close-btn mui-action-back mui-icon mui-icon-arrowleft"></div>
+		<div class="circle-btn close-btn mui-icon mui-icon-arrowleft"></div>
 		<div class="circle-btn next-btn">测量</div>
 
 		<div class="mui-content">
@@ -274,7 +274,11 @@
 				}
 			}
 		}
-
+		
+		mui("body").on("tap",".close-btn",function(){
+			plus.webview.currentWebview().loadURL("intro.html?eventid=" + eventid);
+		})
+		
 		mui("body").on("tap", ".next-btn", function() {
 			var values = document.getElementsByClassName("mui-input-numbox");
 			for(var j = 0; j < values.length; j++) {

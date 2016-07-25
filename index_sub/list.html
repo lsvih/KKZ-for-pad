@@ -113,7 +113,7 @@
 						this.nSelectSort = 0;
 					},
 					changecontent: function(sortId, thisObject, status) {
-						if(status) { //判断列表为空的情况
+						if(status !== null && status !== undefined) { //判断列表为空的情况
 							if(!fHasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
 								this.nSelectSort = sortId;
 								myStorage.setItem("thiseventsort",sortId)

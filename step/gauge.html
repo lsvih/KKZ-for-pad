@@ -96,9 +96,11 @@
 		}
 		
 		.mui-progressbar span {
-			background: #4cd964!important;
+			background: #00b06c!important;
 			z-index: 111!important;
-			height: 20px;
+		}
+		.mui-progressbar{
+			height: 5px!important;
 		}
 		
 		.picture img {
@@ -263,8 +265,11 @@
 					"涂装工程（铲除）": "涂装铲",
 					"内门工程": "内门",
 					"水电工程": "水电",
-					"地面工程": "地面"
+					"地面工程": "地面",
+					"卫生间":"卫生间",
+					"厨房":"厨房"
 				}
+				console.log(packagesid)
 				return packagenamemapping[temppackage.packageinfo[fFindObjSortById(packagesid, temppackage.packageinfo)].name];
 			});
 			vueContent = new Vue({
@@ -471,9 +476,11 @@
 						temp.event[eventsortid].content.package_amount = data.data.package_amount;
 						temp.event[eventsortid].content.clear_amount = data.data.clear_amount;
 						temp.event[eventsortid].content.taxes_amount = data.data.taxes_amount;
+						temp.event[eventsortid].status = 1;
 						myStorage.setItem("data",JSON.stringify(temp));
 						uploading.close();
-						location.href = "../step/house_quotation.html?eventid=" + eventid;
+						mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+						plus.webview.currentWebview().loadURL("../step/house_quotation.html?eventid=" + eventid);
 					} else {
 						mui.alert(data.message, gAppName);
 						uploading.close();
@@ -481,8 +488,11 @@
 				},
 				error: function(xhr, textStatus, errorThrown) {
 					console.log(JSON.stringify(xhr))
-					mui.alert("获取排期信息失败，请稍候再试", gAppName);
-					uploading.close();
+					mui.alert("获取排期信息失败，请稍候再试", gAppName,"确认",function(){
+						uploading.close();
+						plus.webview.currentWebview().reload();
+					});
+					
 				}
 			});
 		}
