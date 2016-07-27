@@ -32,24 +32,32 @@
 			<!--待量房-->
 			<template v-if="event.status==0">
 				<div class="user-info block">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit edit-icon"></span>
+					<div class="click-area user-info-edit" v-on:tap="__fEditUser(event.id)"></div><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br />
 				</div>
 				<div class="block">
-					<span>待量房</span><br/><span class="check-time">预约上门时间：<span><input type="datetime-local" id="select-time"  v-bind:value="event.content.ordertime" init-time="{{event.content.ordertime}}" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)"></span>
-					<span class="user-info-edit edit-time"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
+					<span>待量房</span><br/>
+					<span class="check-time">预约上门时间：<span>
+						<input type="datetime-local" id="select-time"  v-bind:value="event.content.ordertime" init-time="{{event.content.ordertime}}" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)">
+					</span>
+					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
 				</div>
-				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>产品介绍</span><span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="mui-icon mui-icon-compose"></i>直接量房</span></div>
+				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span><span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
 
 			</template>
 			<!--待排期-->
 			<template v-if="event.status==1">
 				<div class="user-info block">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span>量房报价信息</span><br/>
-					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.num}}{{item.unit}}</span></span><br />
-					<span>总价:{{event.content.price}}元</span>
+					<span v-for="item in event.content.package"><span class="package-item">{{__fGetPackageInfo(item.id).name}}：{{item.size}}米²</span></span><br />
+					<span>总价:{{event.content.package_amount}}元</span>
 					<span class="more-info" v-on:tap="__fDetail(event.id,'gauge')">详情 ></span>
 				</div>
 				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去排期</span></div>
@@ -58,9 +66,11 @@
 			<!--待签约-->
 			<template v-if="event.status==2">
 				<div class="user-info block">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
-				<div class="rendering block">
+				<div class="rendering block" v-if="event.content.renderings&&event.content.renderings.length">
 					<!--图片轴模块-->
 					<span class="iteminner">
 						<span class="img-contain">
@@ -92,7 +102,8 @@
 			<!--待支付-->
 			<template v-if="event.status==3">
 				<div class="user-info block">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span>已交定金</span><br/><span class="check-time">预约开工日期：{{event.content.expected_start_date}}</span>
@@ -104,7 +115,10 @@
 			<!--待改期-->
 			<template v-if="event.status==4">
 				<div class="user-info block">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span>
+					<span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span class="check-time">原定开工日期：{{event.content.expected_start_date}}</span>
@@ -137,6 +151,7 @@
 			swipeBack: false
 		});
 		var vueContent;
+
 		function plusReady() {}
 		if(window.plus) {
 			plusReady();
@@ -168,176 +183,182 @@
 			window.addEventListener('sb', function(event) { //纯展示用
 				document.getElementById("back-drop").style.display = "none";
 			});
-
-		});
-		fAddVueCacheFilter()
-		Vue.filter('statusNumtoString', function(value) {
-			return fFindObjById(value, gStatus.status).name;
-		});
-		console.log(JSON.stringify(thisevent))
-		vueContent = new Vue({
-			el: '#event',
-			data: {
-				"event": thisevent
-			},
-			methods: {
-				refresh: function(a, b) {
-					document.getElementById("back-drop").style.display = "none";
-					var nextevent = fListAllFlowEvent(a)[b];
-					if(nextevent) { //判断内容为空的情况
-						document.getElementById("mask").style.zIndex = -1;
-						myStorage.setItem("thisstatus", nextevent.status);
-						switch(nextevent.status) {
-							case 5:
-							case 6:
-							case 7:
-								mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", a + "," + b);
-								plus.webview.show("plg_input", "fade-in", 200);
-								break;
-							case 8:
-								mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", a + "," + b);
-								plus.webview.show("plg_work", "fade-in", 200);
-								break;
-							default:
-								fCloseSubPage();
-								this.event = nextevent;
-								break;
+			fAddVueCacheFilter()
+			Vue.filter('statusNumtoString', function(value) {
+				return fFindObjById(value, gStatus.status).name;
+			});
+			console.log(JSON.stringify(thisevent))
+			vueContent = new Vue({
+				el: '#event',
+				data: {
+					"event": thisevent
+				},
+				methods: {
+					refresh: function(a, b) {
+						document.getElementById("back-drop").style.display = "none";
+						var nextevent = fListAllFlowEvent(a)[b];
+						if(nextevent !== null && nextevent !== undefined) { //判断内容为空的情况
+							document.getElementById("mask").style.zIndex = -1;
+							myStorage.setItem("thisstatus", nextevent.status);
+							switch(nextevent.status) {
+								case 5:
+								case 6:
+								case 7:
+									mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", a + "," + b);
+									plus.webview.show("plg_input", "fade-in", 200);
+									break;
+								case 8:
+									mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", a + "," + b);
+									plus.webview.show("plg_work", "fade-in", 200);
+									break;
+								default:
+									fCloseSubPage();
+									this.event = nextevent;
+									break;
+							}
+						} else {
+							document.getElementById("mask").style.zIndex = 9999;
+							fCloseSubPage();
 						}
-					} else {
-						document.getElementById("mask").style.zIndex = 9999;
-						fCloseSubPage();
+
+					},
+					//打开产品介绍
+					__fIntro: function(eventid) {
+						mui.openWindow({
+							url: "../step/intro.html?eventid=" + eventid,
+							id: "intro",
+							styles: {
+								top: 0,
+								bottom: 0
+							},
+							show: {
+								aniShow: false
+							},
+							waiting: {
+								autoShow: false,
+							}
+						})
+					},
+					//打开量房页面
+					__fGauge: function(eventid) {
+						mui.openWindow({
+							url: "../step/pick_products.html?eventid=" + eventid,
+							id: "intro",
+							styles: {
+								top: 0,
+								bottom: 0
+							},
+							extras: {
+								eventid: eventid
+							},
+							show: {
+								aniShow: "none"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						})
+					},
+					//通过id获取package的信息
+					__fGetPackageInfo:function(id){
+						var temppackage = JSON.parse(myStorage.getItem("packageinfo")).packageinfo;
+						return fFindObjById(id,temppackage);
+					},
+					__fDetail: function(eventid, type, option) {
+						var extras = option ? {
+							type: type,
+							eventid: eventid
+						} : {
+							type: type,
+							eventid: eventid,
+							option: JSON.stringify(option)
+						};
+						mui.openWindow({
+							url: "index_frame.html",
+							id: "sub_detail",
+							styles: {
+								top: 60 + gTopbarHeight + 'px',
+								bottom: 0,
+								left: "38.4%",
+								height: "100%",
+								width: '61.6%',
+								bounce: 'none',
+								bounceBackground: '#ffffff',
+							},
+							extras: extras,
+							show: {
+								aniShow: "slide-in-right"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+					},
+					//编辑用户信息
+					__fEditUser: function(eventid) {
+						thispage = plus.webview.currentWebview();
+						document.getElementById("back-drop").style.display = "block";
+						mui.openWindow({
+							url: "edituser.html",
+							id: "sub_edituser",
+							styles: {
+								top: "15%",
+								bottom: 0,
+								right: "6.8%",
+								width: "48%",
+								height: "244px",
+							},
+							extras: {
+								eventid: eventid
+							},
+							show: {
+								aniShow: "fade-in"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+					},
+					//点击图片放大预览
+					previewimages: function(thisevent, indexId) {
+						var arrObjects = thisevent.target.parentNode.parentNode.innerHTML;
+						mui.openWindow({
+							url: "../module/preview_image.html",
+							id: "preview_image",
+							styles: {
+								top: 0,
+								bottom: 0,
+								right: 0,
+								width: "100%",
+								height: "100%",
+							},
+							extras: {
+								images: arrObjects,
+								indexid: indexId
+							},
+							show: {
+								aniShow: "fade-in"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
 					}
-
 				},
-				//打开产品介绍
-				__fIntro: function(eventid) {
-					mui.openWindow({
-						url: "../step/intro.html?eventid=" + eventid,
-						id: "intro",
-						styles: {
-							top: 0,
-							bottom: 0
-						},
-						show: {
-							aniShow: false
-						},
-						waiting: {
-							autoShow: false,
-						}
-					})
-				},
-				//打开量房页面
-				__fGauge: function(eventid) {
-					mui.openWindow({
-						url: "../step/pick_products.html?eventid=" + eventid,
-						id: "intro",
-						styles: {
-							top: 0,
-							bottom: 0
-						},
-						extras: {
-							eventid: eventid
-						},
-						show: {
-							aniShow: "none"
-						},
-						waiting: {
-							autoShow: false,
-						}
-					})
-				},
-				__fDetail: function(eventid, type, option) {
-					var extras = option ? {
-						type: type,
-						eventid: eventid
-					} : {
-						type: type,
-						eventid: eventid,
-						option: JSON.stringify(option)
-					};
-					mui.openWindow({
-						url: "index_frame.html",
-						id: "sub_detail",
-						styles: {
-							top: 60 + gTopbarHeight + 'px',
-							bottom: 0,
-							left: "38.4%",
-							height: "100%",
-							width: '61.6%',
-							bounce: 'none',
-							bounceBackground: '#ffffff',
-						},
-						extras: extras,
-						show: {
-							aniShow: "slide-in-right"
-						},
-						waiting: {
-							autoShow: false,
-						}
-					});
-				},
-				//编辑用户信息
-				__fEditUser: function(eventid) {
-					thispage = plus.webview.currentWebview();
-					document.getElementById("back-drop").style.display = "block";
-					mui.openWindow({
-						url: "edituser.html",
-						id: "sub_edituser",
-						styles: {
-							top: "15%",
-							bottom: 0,
-							right: "6.8%",
-							width: "48%",
-							height: "244px",
-						},
-						extras: {
-							eventid: eventid
-						},
-						show: {
-							aniShow: "fade-in"
-						},
-						waiting: {
-							autoShow: false,
-						}
-					});
-				},
-				//点击图片放大预览
-				previewimages: function(thisevent, indexId) {
-					var arrObjects = thisevent.target.parentNode.parentNode.innerHTML;
-					mui.openWindow({
-						url: "../module/preview_image.html",
-						id: "preview_image",
-						styles: {
-							top: 0,
-							bottom: 0,
-							right: 0,
-							width: "100%",
-							height: "100%",
-						},
-						extras: {
-							images: arrObjects,
-							indexid: indexId
-						},
-						show: {
-							aniShow: "fade-in"
-						},
-						waiting: {
-							autoShow: false,
-						}
-					});
+				ready: function() {
+					console.log(this.event)
+					plus.navigator.closeSplashscreen();
 				}
-			},
-			ready: function() {
-				plus.navigator.closeSplashscreen();
-			}
-		});
-		document.getElementById("back-drop").addEventListener("tap", function() {
-			document.getElementById("back-drop").style.display = "none";
-			plus.webview.close("sub_edituser");
-		});
+			});
+			document.getElementById("back-drop").addEventListener("tap", function() {
+				document.getElementById("back-drop").style.display = "none";
+				plus.webview.close("sub_edituser");
+			});
 
-		mui("#event").on("tap", ".edit-time", function() {
-			document.getElementById("select-time").focus();
+			mui("#event").on("tap", ".edit-time", function() {
+				document.getElementById("select-time").focus();
+			});
+
 		});
 
 		function fSelecetTimeChange(e) {
@@ -383,12 +404,10 @@
 								e.value = e.getAttribute("init-time");
 							}
 						});
-
 					} else {
 						e.value = e.getAttribute("init-time");
 					}
 				});
-
 			}
 		}
 
@@ -407,6 +426,7 @@
 				}
 			});
 		}
+		
 	</script>
 
 </html>

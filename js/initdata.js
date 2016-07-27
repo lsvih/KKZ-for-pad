@@ -3645,8 +3645,8 @@ function fInstallTestData() {
 	//			alert(e.message);
 	//		});
 	//	});
-	myStorage.setItem("data", JSON.stringify(data));
-	myStorage.setItem("packageinfo", JSON.stringify(packageinfo))
+//	myStorage.setItem("data", JSON.stringify(data));
+//	myStorage.setItem("packageinfo", JSON.stringify(packageinfo))
 	plus.runtime.restart();
 }
 

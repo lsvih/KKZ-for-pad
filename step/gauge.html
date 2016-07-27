@@ -237,6 +237,7 @@
 
 	</body>
 	<script>
+
 		var vueContent;
 		var MAXIMAGECOUNT = 10;
 		var eventid = GetRequest()["eventid"]; //获得eventid
@@ -368,136 +369,137 @@
 			 */
 			function __fIsSizeImagesDiagramEmpty(arr) {
 				for(var i = 0; i < arr.length; i++) {
-					if(!arr[i].size || !arr[i].diagram || !arr[i].images.length) return false;
+					//					if(!arr[i].size || !arr[i].diagram || !arr[i].images.length) return false;
+					if(!arr[i].size) return false; //根据需求，只需要填好面积即可
 				}
 				return true;
 			}
 			mui("body").on("tap", ".mui-icon-arrowright", function() {
 				tempdata.event[eventsortid] = vueContent.event;
 				myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
-				//				if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)) {
-				//	if(true){ //TODO
-				//					document.getElementById("mask").style.zIndex = 110;
-				//					mui('body').progressbar({
-				//						progress: 0
-				//					}).show();
-				//					uploading = plus.nativeUI.showWaiting("正在上传量房信息，请耐心等待...");
-				//					fUploadInfo(); //上传图片
-				//				} else {
-				//					mui.toast("您尚未填写完成所有信息，请仔细填写");
-				//				}
+				if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)) {
+					document.getElementById("mask").style.zIndex = 110;
+					mui('body').progressbar({
+						progress: 0
+					}).show();
+					uploading = plus.nativeUI.showWaiting("正在上传量房信息，请耐心等待...");
+					fUploadInfo(); //上传图片
+				} else {
+					mui.toast("您尚未填写完成所有信息，请仔细填写");
+				}
 				//
 				//				//			location.href = "gauge.html?eventid=" + eventid;
-				plus.webview.currentWebview().loadURL("../step/house_quotation.html?eventid=" + eventid);
-			})
 
-			function fUploadInfo() {
-				var packages = tempdata.event[eventsortid].content.package;
-				var packagelength = packages.length;
-				var successcount = 0;
-				var imagesarr = [];
-				var reader = [];
-				var s = 0;
-				var z = 0;
-				for(s = 0; s < packagelength; s++) {
-					imagesarr[s] = [];
-					reader[s] = [];
-					for(z = 0; z < packages[s].images.length; z++) {
-						plus.io.resolveLocalFileSystemURL(packages[s].images[z], function(entry) {
-							entry.file(function(file) {
-								reader = new plus.io.FileReader();
-								reader.onloadend = function(e) {
-									imagesarr[s - 1].push(e.target.result);
-								}
-								reader.readAsDataURL(entry);
+				function fUploadInfo() {
+					var packages = tempdata.event[eventsortid].content.package;
+					var packagelength = packages.length;
+					var successcount = 0;
+					var imagesarr = [];
+					var reader = [];
+					var s = 0;
+					var z = 0;
+					for(s = 0; s < packagelength; s++) {
+						imagesarr[s] = [];
+						reader[s] = [];
+						for(z = 0; z < packages[s].images.length; z++) {
+							plus.io.resolveLocalFileSystemURL(packages[s].images[z], function(entry) {
+								entry.file(function(file) {
+									reader = new plus.io.FileReader();
+									reader.onloadend = function(e) {
+										imagesarr[s - 1].push(e.target.result);
+									}
+									reader.readAsDataURL(entry);
+								});
+							}, function(e) {
+								console.log("Resolve file URL failed: " + e.message);
 							});
-						}, function(e) {
-							console.log("Resolve file URL failed: " + e.message);
-						});
-					}
-					setTimeout(function() {
-						data = {
-							"house_id": eventid,
-							"package_id": packages[s - 1].id,
-							"area": packages[s - 1].size,
-							"num": 1,
-							//							"plan_t_img": packages[s - 1].diagram,//TODO
-							//							"measure_t_imgs": imagesarr[s - 1],
 						}
-						mui.ajax(gAPIServer + 'house-packages?access-token=' + User("access_token"), {
-							data: data,
-							dataType: 'json',
-							type: 'POST',
-							timeout: 6000,
-							success: function(data) {
-								if(data.success == true) {
-									successcount++;
-								} else {
-									mui.alert(data.message, gAppName);
+						setTimeout(function() {
+							data = {
+								"house_id": eventid,
+								"package_id": packages[s - 1].id,
+								"area": packages[s - 1].size,
+								"num": 1,
+//								"plan_t_img": packages[s - 1].diagram, //TODO
+								"measure_t_imgs": imagesarr[s - 1],
+							}
+							mui.ajax(gAPIServer + 'house-packages?access-token=' + User("access_token"), {
+								data: data,
+								dataType: 'json',
+								type: 'POST',
+								timeout: 6000,
+								success: function(data) {
+									if(data.success == true) {
+										successcount++;
+									} else {
+										mui.alert(data.message, gAppName);
+										uploading.close();
+									}
+								},
+								error: function(xhr, textStatus, errorThrown) {
+									console.log(JSON.stringify(xhr))
+									mui.alert("上传量房信息失败，请稍候再试", gAppName);
 									uploading.close();
 								}
-							},
-							error: function(xhr, textStatus, errorThrown) {
-								console.log(JSON.stringify(xhr))
-								mui.alert("上传量房信息失败，请稍候再试", gAppName);
-								uploading.close();
-							}
-						});
-					}, 500);
+							});
+						}, 500);
 
-				}
-				var uploadingController = setInterval(function() { //判断是否所有套餐任务全部上传完成
-					if(successcount < packagelength) {
-						mui("body").progressbar().setProgress(successcount / packagelength * 100);
 					}
-					if(successcount == packagelength) {
-						clearInterval(uploadingController);
-						mui("body").progressbar().setProgress(100);
-						mui.toast("数据上传完成！");
-						uploading.setTitle("正在生成排期单，请稍后...");
-						fChangeState();
-					}
-				}, 50); //定时检查是否完成上传，同时更新进度条
-			}
-		});
-
-		function fChangeState() {
-			mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
-				data: {
-					'status': 1,
-					'distance_rate': 0
-				},
-				dataType: 'json',
-				type: 'PUT',
-				timeout: 6000,
-				success: function(data) {
-					if(data.success == true) {
-						console.log(JSON.stringify(data.data));
-						var temp = JSON.parse(myStorage.getItem("data"));
-						temp.event[eventsortid].content.house_quotation = data.data.house_quotation;
-						temp.event[eventsortid].content.package_amount = data.data.package_amount;
-						temp.event[eventsortid].content.clear_amount = data.data.clear_amount;
-						temp.event[eventsortid].content.taxes_amount = data.data.taxes_amount;
-						temp.event[eventsortid].status = 1;
-						myStorage.setItem("data", JSON.stringify(temp));
-						uploading.close();
-						mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-						plus.webview.currentWebview().loadURL("../step/house_quotation.html?eventid=" + eventid);
-					} else {
-						mui.alert(data.message, gAppName);
-						uploading.close();
-					}
-				},
-				error: function(xhr, textStatus, errorThrown) {
-					console.log(JSON.stringify(xhr))
-					mui.alert("获取排期信息失败，请稍候再试", gAppName, "确认", function() {
-						uploading.close();
-						plus.webview.currentWebview().reload();
-					});
-
+					var uploadingController = setInterval(function() { //判断是否所有套餐任务全部上传完成
+						if(successcount < packagelength) {
+							mui("body").progressbar().setProgress(successcount / packagelength * 100);
+						}
+						if(successcount == packagelength) {
+							clearInterval(uploadingController);
+							mui("body").progressbar().setProgress(100);
+							mui.toast("数据上传完成！");
+							uploading.setTitle("正在生成排期单，请稍后...");
+							fChangeState();
+						}
+					}, 50); //定时检查是否完成上传，同时更新进度条
 				}
 			});
-		}
+			/**
+			 * 将状态从0更改成1时，服务器会同步传回生成的报价文件。在更改状态的时候需要同时更新list与content
+			 */
+			function fChangeState() {
+				mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
+					data: {
+						'status': 1,
+						'distance_rate': 0
+					},
+					dataType: 'json',
+					type: 'PUT',
+					timeout: 6000,
+					success: function(data) {
+						if(data.success == true) {
+							var temp = JSON.parse(myStorage.getItem("data"));
+							temp.event[eventsortid].content.house_quotation = data.data.house_quotation;
+							temp.event[eventsortid].content.package_amount = data.data.package_amount;
+							temp.event[eventsortid].content.clear_amount = data.data.clear_amount;
+							temp.event[eventsortid].content.taxes_amount = data.data.taxes_amount;
+							temp.event[eventsortid].status = 1;
+							myStorage.setItem("data", JSON.stringify(temp));
+							uploading.close();
+							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+							plus.webview.currentWebview().loadURL("../step/house_quotation.html?eventid=" + eventid);
+						} else {
+							mui.alert(data.message, gAppName);
+							uploading.close();
+						}
+					},
+					error: function(xhr, textStatus, errorThrown) {
+						console.log(JSON.stringify(xhr))
+						mui.alert("获取排期信息失败，请稍候再试", gAppName, "确认", function() {
+							uploading.close();
+							plus.webview.currentWebview().reload();
+						});
+
+					}
+				});
+			}
+		});
 	</script>
 
 </html>

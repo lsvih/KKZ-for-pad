@@ -7,7 +7,7 @@ body {
 	padding: 20px 50px 10px 30px;
 	margin-left: 10px;
 	border-bottom: 1px solid #c8c7cc;
-	line-height: 35px;
+	line-height: 35px!important;
 }
 
 .user-name {
@@ -24,18 +24,10 @@ body {
 
 .user-info-edit {
 	position: absolute;
-	top: 20px;
-	right: 30px;
-	width: 80px;
-	color: #259B2A;
-	text-align: center;
-	line-height: 0;
-	font-size: 13px;
-}
-
-.user-info-edit i {
 	display: block;
-	font-size: 45px;
+	top: 53px;
+	right: 37px;
+	text-align: center;
 }
 
 #select-time {
@@ -44,6 +36,7 @@ body {
 	border: none;
 	width: auto;
 }
+
 #select-start-date {
 	display: inline-block;
 	z-index: -100;
@@ -51,6 +44,7 @@ body {
 	width: auto;
 	color: #fff;
 }
+
 .btns {
 	text-align: center;
 	border: none;
@@ -59,14 +53,7 @@ body {
 .event-btn {
 	margin: 0 40px;
 	display: inline-block;
-	width: 60px;
-	height: 60px;
-	border-radius: 40px;
-	color: #fff;
-	text-align: center;
-	line-height: 0;
-	font-size: 10px;
-	background-color: #06b26f;
+	font-size: 15px;
 }
 
 .event-btn i {
@@ -172,7 +159,7 @@ body {
 	background-color: #fff;
 	margin: 0 20px 10px 0;
 	text-align: center;
-	overflow:hidden
+	overflow: hidden
 }
 
 .picture img {
@@ -205,54 +192,105 @@ body {
 	width: 50%;
 	margin: 0 auto;
 }
-.today-is-nothing-to-do{
+
+.today-is-nothing-to-do {
 	margin-top: 100px;
 	text-align: center;
 }
 
-.today-is-nothing-to-do img{
+.today-is-nothing-to-do img {
 	height: 100px;
 	width: 100px!important;
 }
-.check-ok{
+
+.check-ok {
 	font-size: 18px;
-	color:#06b26f;
+	color: #06b26f;
 }
-.to-check{
+
+.to-check {
 	display: block;
 	height: 30px;
 	width: 60px;
-	border-radius:5px;
+	border-radius: 5px;
 	text-align: center;
 	font-size: 18px;
 	line-height: 30px;
 	color: #fff;
 	background-color: #06b26f;
 }
-.status-7-pal{
+
+.status-7-pal {
 	width: 100%;
 	clear: both;
 	height: 40px;
 }
-.status-7-pal span{
+
+.status-7-pal span {
 	height: 40px;
 	width: 200px;
-	border-radius:8px;
+	border-radius: 8px;
 	line-height: 40px;
 	text-align: center;
 	color: #fff;
 }
-.status-7-modify{
+
+.status-7-modify {
 	float: left;
 	background-color: red;
 }
-.status-7-check{
+
+.status-7-check {
 	float: right;
 	background-color: green;
 }
-.status-7-checked{
+
+.status-7-checked {
 	display: block;
 	width: 100%;
 	text-align: center;
 	color: green;
+}
+
+.edit-icon-fill {
+	display: block;
+	height: 24px;
+	width: 24px;
+	background-image: url(../images/edit-fill.png);
+	background-size: 100% 100%;
+}
+
+.edit-icon {
+	display: block;
+	height: 24px;
+	width: 24px;
+	background-image: url(../images/edit.png);
+	background-size: 100% 100%;
+}
+/*扩大点击范围*/
+.click-area{
+	margin: -18px;
+	height: 60px;
+	width: 60px;
+	/*background-color: rgba(0,0,0,.5);*/
+}
+
+.intro-icon {
+	margin-left: 6px;
+	/*为了保证图片居中设置的margin值*/
+	display: block;
+	height: 52px;
+	width: 52px;
+	background-image: url(../images/intro.png);
+	background-size: 100% 100%;
+}
+
+.gauge-icon {
+	margin-left: 4px;
+	/*为了保证图片居中设置的margin值*/
+	display: block;
+	height: 52px;
+	width: 52px;
+	background-image: url(../images/guage.png);
+	background-size: 100% 100%;
 }

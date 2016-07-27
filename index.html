@@ -17,7 +17,7 @@
 			
 			.flow .mui-badge {
 				position: absolute;
-				background: #eb0505;
+				background: #f39800;
 				top: -5px;
 				left: -5px;
 			}
@@ -49,10 +49,9 @@
 				left: 0;
 				width: 40px;
 				margin-left: -5px;
-				height: 4px;
+				height: 1px;
 				text-align: center;
 			}
-			
 			/*.cutoff-line {
 				position: fixed;
 				top: 60px;
@@ -66,7 +65,8 @@
 				background-image: url(images/flow-icon/flow-1.png);
 			}
 			
-			.flow-1.mui-active {
+			.flow-1.mui-active,
+			#preload-01 {
 				background-image: url(images/flow-icon/flow-1-active.png);
 			}
 			
@@ -74,7 +74,8 @@
 				background-image: url(images/flow-icon/flow-2.png);
 			}
 			
-			.flow-2.mui-active {
+			.flow-2.mui-active,
+			#preload-02 {
 				background-image: url(images/flow-icon/flow-2-active.png);
 			}
 			
@@ -82,7 +83,8 @@
 				background-image: url(images/flow-icon/flow-3.png);
 			}
 			
-			.flow-3.mui-active {
+			.flow-3.mui-active,
+			#preload-03 {
 				background-image: url(images/flow-icon/flow-3-active.png);
 			}
 			
@@ -90,7 +92,8 @@
 				background-image: url(images/flow-icon/flow-4.png);
 			}
 			
-			.flow-4.mui-active {
+			.flow-4.mui-active,
+			#preload-04 {
 				background-image: url(images/flow-icon/flow-4-active.png);
 			}
 			
@@ -98,21 +101,51 @@
 				background-image: url(images/flow-icon/flow-5.png);
 			}
 			
-			.flow-5.mui-active {
+			.flow-5.mui-active,
+			#preload-05 {
 				background-image: url(images/flow-icon/flow-5-active.png);
 			}
 			
 			.flow-weixin {
 				background-image: url(images/flow-icon/flow-6.png);
 			}
+			
+			#preload-01,
+			#preload-02,
+			#preload-03,
+			#preload-04,
+			#preload-05 {
+				height: 0;
+				width: 0;
+			}
+			/*扩大点击范围*/
+			
+			.click-area {
+				margin: -19px;
+				height: 70px;
+				width: 70px;
+				/*background-color: rgba(0,0,0,.5);*/
+			}
 		</style>
 	</head>
+	<!--对激活状态的图片进行预加载，避免第一次点击时加载导致的图片消失片刻-->
+	<div class="preload-area">
+		<div id="preload-01"></div>
+		<div id="preload-02"></div>
+		<div id="preload-03"></div>
+		<div id="preload-04"></div>
+		<div id="preload-05"></div>
+	</div>
 	<header class="mui-bar mui-bar-nav">
 		<span class="mui-icon mui-icon-bars mui-pull-left"></span>
-		<span id="flow"><span class="flow-{{flow.icon}} flow-icon flow" v-for="flow in flow" id="flow-{{flow.id}}"><span class="mui-badge mui-badge-danger" v-if="flow.num > 0">{{flow.num}}</span><span class="flow-name">{{flow.name}}</span></span>
+		<span id="flow"><span class="flow-{{flow.icon}} flow-icon flow" v-for="flow in flow" id="flow-{{flow.id}}">
+			<span class="mui-badge mui-badge-danger" v-if="flow.num > 0">{{flow.num}}</span>
+		<span class="flow-name">{{flow.name}}</span>
+		<div class="click-area"></div>
+		</span>
 		<span class="flow-weixin flow-icon"><span class="flow-name">微信</span></span>
 		</span>
-		<span class="mui-pull-right" style="height: 50px;background-color: #06b26f;color:#06b26f;z-index: 99999999999999999;" ontouchstart="fInstallTestData();">安装测试数据</span>
+		<span class="mui-pull-right" style="height: 50px;background-color: #06b26f;color:#06b26f;z-index: 99999;" ontouchstart="fInstallTestData();">安装测试数据</span>
 	</header>
 	<!--<div class="cutoff-line"></div>-->
 

@@ -34,13 +34,10 @@ function fTimeStampToDate(timestamp) { //服务器php时间戳后加3个0才是j
  * 将传入的标准日期时间数据YYYY-MM-DD hh-mm-ss转换为时间戳
  * @param {Date} YYYY-MM-DD hh-mm-ss
  */
-function fDateToTimeStamp(date){
+function fDateToTimeStamp(date) {
 	var tempdate = new Date(date);
-	return Math.floor(tempdate.getTime()/1000)
+	return Math.floor(tempdate.getTime() / 1000)
 }
-
-
-
 
 //判断是否存在队列对象，如果不存在则创建
 if(!localStorage.FIFO) localStorage.FIFO = JSON.stringify([]);
@@ -52,17 +49,18 @@ if(!localStorage.FIFO) localStorage.FIFO = JSON.stringify([]);
  * @return true=找到
  */
 function fHasClass(elements, cName) {
+	if(elements == undefined || elements == null || elements.length == 0) return "error";
 	return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)")); // ( \\s|^ ) 判断前面是否有空格 （\\s | $ ）判断后面是否有空格 两个感叹号为转换为布尔值 以方便做判断 
 }
 
 /**
  * 为指定元素增加ClassName
- * fAddClass(elements, cName)
+ * fAddClass(elements, cName) 
  * @param {Object} 添加ClassName的对象
  * @param {String} ClassName
  */
 function fAddClass(elements, cName) {
-	if(!fHasClass(elements, cName)) {
+	if(!fHasClass(elements, cName) && fHasClass(elements, cName) !== "error") {
 		elements.className += " " + cName;
 	}
 }

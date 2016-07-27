@@ -291,7 +291,7 @@
 								<div class="product-img"><img v-bind:src="product.showimage|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
 								<div class="product-name">{{product.name}}</div>
 								<div class="product-brand">品牌：&nbsp;
-									<span v-for="brand in product.brand" v-on:tap="Change($event)" v-bind:data-id="$index">{{brand.brand_name}}&nbsp;&nbsp;</span></div>
+									<span v-for="brand in product.brand" v-on:tap="Change($event)" v-bind:data-id="$index">{{brand.name}}&nbsp;&nbsp;</span></div>
 								<div class="product-model">型号：&nbsp;
 									<span v-for="model in product.brand[product.selectbrand].tree" v-on:tap="Change($event)" v-bind:value="$index" v-bind:data-id="model.id">{{model.name}}&nbsp;&nbsp;</span></div>
 								<div class="product-size" v-show="product.brand[product.selectbrand].size.length">尺寸：&nbsp;
@@ -330,6 +330,7 @@
 		<script type="text/javascript" src="../js/cache.js"></script>
 		<script>
 			var jroll;
+		
 			mui.init({
 				beforeback: function() {
 					plus.navigator.setFullscreen(false);
@@ -457,8 +458,9 @@
 				for(var i = 0; i < products.length; i++) {
 					fAddClass(products[i].getElementsByClassName("product-brand")[0].getElementsByTagName("span")[0], "selected");
 					fAddClass(products[i].getElementsByClassName("product-model")[0].getElementsByTagName("span")[0], "selected");
-					fAddClass(products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "selected");
-					fAddClass(products[i].getElementsByClassName("product-color")[0].getElementsByTagName("div")[0], "selected-color");
+					//图片与尺寸为可选选项因此需要考虑不存在的情况
+					if(products[i].getElementsByClassName("product-size")[0]!==null&&products[i].getElementsByClassName("product-size")[0]!==undefined) fAddClass(products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "selected");
+					if(products[i].getElementsByClassName("product-color")[0]!==null&&products[i].getElementsByClassName("product-color")[0]!==undefined) fAddClass(products[i].getElementsByClassName("product-color")[0].getElementsByTagName("div")[0], "selected-color");
 				}
 			}
 			/**
@@ -466,7 +468,8 @@
 			 * @param {Object} Detail 
 			 */
 			function fDetailPipe(Detail) {
-				if(Detail.products == undefined||Detail.products == null) return []
+				if(Detail.products == undefined||Detail.products == null) return [];
+//				console.log(JSON.stringify(Detail))
 				for(var i = 0; i < Detail.products.length; i++) {
 					for(var j = 0; j < Detail.products[i].brand.length; j++) {
 						var model = Detail.products[i].brand[j].model;
@@ -474,8 +477,8 @@
 						var color = Detail.products[i].brand[j].color;
 						var sku = Detail.products[i].brand[j].sku;
 						Detail.products[i].brand[j].tree = fCreateProductBrandTree(model, size, color, sku);
-						Detail.products[i].showtext = Detail.products[i].brand[0].description;
-						Detail.products[i].showimage = fCache(Detail.products[i].brand[0].cover);
+						Detail.products[i].showtext = Detail.products[i].brand[0].description||Detail.products[i].brand[0].sku[0].text;
+						Detail.products[i].showimage = Detail.products[i].brand[0].cover||Detail.products[i].brand[0].sku[0].image;
 						Detail.products[i].selectbrand = 0;
 						Detail.products[i].brand[j].selectmodel = 0;
 					}
@@ -493,9 +496,9 @@
 			function fCreateProductBrandTree(Model, Size, Color, Brand) {
 				var TreeArray = [];
 				for(var j = 0; j < Brand.length; j++) {
-					var modelsort = fFindObjSortById(Number(Brand[j].sku.split("-")[0]), Model); //model为必填字段，因此在Model中必定能找到相应值
-					var sizesort = fFindObjSortById(Number(Brand[j].sku.split("-")[1]), Size); //尺寸与颜色为选填，因此考虑未查找到的情况
-					var colorsort = fFindObjSortById(Number(Brand[j].sku.split("-")[2]), Color);
+					var modelsort = fFindObjSortById(Brand[j].sku.split("-")[0], Model); //model为必填字段，因此在Model中必定能找到相应值
+					var sizesort = fFindObjSortById(Brand[j].sku.split("-")[1], Size); //尺寸与颜色为选填，因此考虑未查找到的情况
+					var colorsort = fFindObjSortById(Brand[j].sku.split("-")[2], Color);
 					var modelsortInTree = fFindObjSortById(Model[modelsort].id, TreeArray); //在TreeArray中查找sku的model是否已经存在，如果不存在则返回false,如果存在返回排序值
 					//以下判断全部使用 === false，因为有可能存在排序id=0的情况
 					if(modelsortInTree === false) {

@@ -34,20 +34,24 @@
 				line-height: 21px;
 				font-weight: normal;
 				font-size: 20px;
-				white-space:nowrap;
+				white-space: nowrap;
 			}
-			.mui-h5{
+			
+			.mui-h5 {
 				font-size: 16px;
 			}
+			
 			.event-status {
 				color: #06b26f;
 			}
-			.mui-table-view{
+			
+			.mui-table-view {
 				background-color: #f2f2f2;
-				color:#9a9999;
+				color: #9a9999;
 			}
+			
 			.mui-table-view-cell {
-				padding:18px 0 0 10px;
+				padding: 18px 0 0 10px;
 				height: 110px;
 			}
 			
@@ -81,11 +85,11 @@
 
 	</body>
 	<script src="../js/mui.js"></script>
-	<script type="text/javascript" src="../js/storage.js" ></script>
+	<script type="text/javascript" src="../js/storage.js"></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/data.js"></script>
 	<script src="../js/vue.js"></script>
-	
+
 	<script>
 		"use strick"
 		mui.init({
@@ -97,11 +101,12 @@
 			}
 		});
 		var nFlowID = 1;
-		myStorage.setItem("thiseventsort",0)
+
 		var index_content = null;
 		var list = fListAllFlowEvent(1);
 
 		mui.plusReady(function() {
+			localStorage.setItem("thiseventsort", 0)
 			index_content = plus.webview.getWebviewById("index_content");
 			window.addEventListener('refreshvue', function(event) {
 				vueList.refresh(nFlowID = event.detail);
@@ -124,18 +129,18 @@
 						if(status !== null && status !== undefined) { //判断列表为空的情况
 							if(!fHasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
 								this.nSelectSort = sortId;
-								myStorage.setItem("thiseventsort",sortId)
+								localStorage.setItem("thiseventsort", sortId)
 								if(status == 5 || status == 7) {
 									mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", nFlowID + "," + sortId);
 									plus.webview.hide("plg_work", "fade-out");
 									plus.webview.show("plg_input", "fade-in");
 								} else if(status == 8) {
 									mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", nFlowID + "," + sortId);
-//									plus.webveiw.hide("plg_input", "fade-out");
+									//									plus.webveiw.hide("plg_input", "fade-out");
 									plus.webview.show("plg_work", "fade-in");
 								} else {
 									mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", nFlowID + "," + sortId);
-//									plus.webveiw.hide("plg_input", "fade-out");
+									//									plus.webveiw.hide("plg_input", "fade-out");
 									plus.webview.hide("plg_work", "fade-out");
 								}
 

@@ -23,7 +23,8 @@
 		var eventid = plus.webview.currentWebview().eventid;
 		var tempdata = JSON.parse(myStorage.getItem("data"));
 		var eventsortid = fFindObjSortById(eventid, tempdata.event);
-		location.href = "../../images/1.pdf"
+		var doc = tempdata.event[eventsortid].content.house_quotation;
+		location.href = gServer + "uploads/files/"+ doc;
 	})
 	</script>
 

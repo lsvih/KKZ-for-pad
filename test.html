@@ -8,22 +8,26 @@
 		<link href="css/mui.css" rel="stylesheet" />
 	</head>
 	<style>
-.mui-input-row{
-	width: 246px;
-}
+		.mui-input-row {
+			width: 246px;
+		}
 	</style>
 
 	<body>
-		<div class="mui-input-row" style="margin: 10px 0;">
-			<label>厨房</label>
-			<input type="number" placeholder="请输入面积" v-model="packageitem.size"><span>米</span>
-		</div>
+		<input value="" id="today" type="date">
 		<script type="text/javascript" src="js/common.js"></script>
 		<script type="text/javascript" src="js/vue.js"></script>
 		<script src="js/mui.js"></script>
 
 	</body>
 	<script>
+		window.onload = function() {
+			date = new Date();
+			Y = date.getFullYear() + '-';
+			M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+			D = date.getDate();
+			document.getElementById("today").value = Y+M+D
+		}
 	</script>
 
 </html>

@@ -134,19 +134,7 @@
 			line-height: 40px;
 			background-color: rgba(255, 255, 255, 0.3)
 		}
-		
-		#savePic {
-			z-index: 3;
-			position: fixed;
-			top: 20px;
-			right: 10px;
-			padding: 0 5px;
-			height: 40px;
-			border-radius: 3px;
-			font-size: 20px;
-			line-height: 40px;
-			background-color: rgba(255, 255, 255, 0.3)
-		}
+
 		
 		.mui-icon {
 			font-size: 45px;
@@ -159,7 +147,6 @@
 			<div id="back">
 				<返回</div>
 					<div id="clearPic">清除画布</div>
-					<div id="savePic">保存</div>
 					<!-- 画图面板区域 -->
 					<canvas id="canvas" width="1024" height="697"></canvas>
 					<canvas id="canvas_bak" width="1024" height="697"></canvas>
@@ -234,22 +221,13 @@
 			save();
 		});
 		document.getElementById('back').addEventListener('tap', function() {
-			mui.confirm('返回后将不会保存，确定返回吗？', gAppName, ['否', '是'], function(e) {
-				if(e.index == 1) {
-					plus.webview.close(plus.webview.currentWebview())
-				} else {
-					return false;
-				}
-			})
-		});
-		//图片保存功能，将从 data 协议中获取的图像信息送到后台处理，提供下载功能
-		document.getElementById('savePic').addEventListener('tap', function() {
 			var b64 = canvas.toDataURL();
 			var imgkey = "image-" + Math.random();
 			myStorage.setItem(imgkey,b64);
 			mui.fire(plus.webview.currentWebview().opener(), "diagram", eventid + "///" + packagesort + "///" + imgkey);
 			plus.webview.close(plus.webview.currentWebview())
 		});
+		
 		//获取 工具按钮
 		var Brush = document.getElementById('Brush'); //画笔
 		var Eraser = document.getElementById('Eraser'); //橡皮擦
