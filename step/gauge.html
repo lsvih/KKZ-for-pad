@@ -99,7 +99,8 @@
 			background: #00b06c!important;
 			z-index: 111!important;
 		}
-		.mui-progressbar{
+		
+		.mui-progressbar {
 			height: 5px!important;
 		}
 		
@@ -266,8 +267,8 @@
 					"内门工程": "内门",
 					"水电工程": "水电",
 					"地面工程": "地面",
-					"卫生间":"卫生间",
-					"厨房":"厨房"
+					"卫生间": "卫生间",
+					"厨房": "厨房"
 				}
 				console.log(packagesid)
 				return packagenamemapping[temppackage.packageinfo[fFindObjSortById(packagesid, temppackage.packageinfo)].name];
@@ -374,19 +375,20 @@
 			mui("body").on("tap", ".mui-icon-arrowright", function() {
 				tempdata.event[eventsortid] = vueContent.event;
 				myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
-//				if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)) {
-	if(true){ //TODO
-					document.getElementById("mask").style.zIndex = 110;
-					mui('body').progressbar({
-						progress: 0
-					}).show();
-					uploading = plus.nativeUI.showWaiting("正在上传量房信息，请耐心等待...");
-					fUploadInfo(); //上传图片
-				} else {
-					mui.toast("您尚未填写完成所有信息，请仔细填写");
-				}
-
-				//			location.href = "gauge.html?eventid=" + eventid;
+				//				if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)) {
+				//	if(true){ //TODO
+				//					document.getElementById("mask").style.zIndex = 110;
+				//					mui('body').progressbar({
+				//						progress: 0
+				//					}).show();
+				//					uploading = plus.nativeUI.showWaiting("正在上传量房信息，请耐心等待...");
+				//					fUploadInfo(); //上传图片
+				//				} else {
+				//					mui.toast("您尚未填写完成所有信息，请仔细填写");
+				//				}
+				//
+				//				//			location.href = "gauge.html?eventid=" + eventid;
+				plus.webview.currentWebview().loadURL("../step/house_quotation.html?eventid=" + eventid);
 			})
 
 			function fUploadInfo() {
@@ -419,7 +421,7 @@
 							"package_id": packages[s - 1].id,
 							"area": packages[s - 1].size,
 							"num": 1,
-//							"plan_t_img": packages[s - 1].diagram,//TODO
+							//							"plan_t_img": packages[s - 1].diagram,//TODO
 							//							"measure_t_imgs": imagesarr[s - 1],
 						}
 						mui.ajax(gAPIServer + 'house-packages?access-token=' + User("access_token"), {
@@ -477,7 +479,7 @@
 						temp.event[eventsortid].content.clear_amount = data.data.clear_amount;
 						temp.event[eventsortid].content.taxes_amount = data.data.taxes_amount;
 						temp.event[eventsortid].status = 1;
-						myStorage.setItem("data",JSON.stringify(temp));
+						myStorage.setItem("data", JSON.stringify(temp));
 						uploading.close();
 						mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
 						plus.webview.currentWebview().loadURL("../step/house_quotation.html?eventid=" + eventid);
@@ -488,11 +490,11 @@
 				},
 				error: function(xhr, textStatus, errorThrown) {
 					console.log(JSON.stringify(xhr))
-					mui.alert("获取排期信息失败，请稍候再试", gAppName,"确认",function(){
+					mui.alert("获取排期信息失败，请稍候再试", gAppName, "确认", function() {
 						uploading.close();
 						plus.webview.currentWebview().reload();
 					});
-					
+
 				}
 			});
 		}

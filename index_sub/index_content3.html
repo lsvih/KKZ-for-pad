@@ -115,6 +115,9 @@
 					var deleteitem = vueContent.event.content[statustarget].img[event.detail - 1];
 					vueContent.event.content[statustarget].img.$remove(deleteitem);
 				});
+				window.addEventListener('sb', function(event) { //纯展示用
+					document.getElementById("back-drop").style.display = "none";
+				});
 				vueContent = new Vue({
 					el: "#event",
 					data: {

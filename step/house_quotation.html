@@ -47,7 +47,7 @@
 				position: fixed;
 				top: 0;
 				left: 0;
-				height: 83px;
+				height: 110px;
 				width: 100%;
 				background-color: #fff;
 				z-index: 0;
@@ -67,17 +67,18 @@
 		<script type="text/javascript">
 			mui.init();
 			mui.plusReady(function() {
-				var eventid = GetRequest()["eventid"]; //获得eventid
-				var tempdata = JSON.parse(myStorage.getItem("data"));
-				var uploading;
-				var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
-				var eventsortid = fFindObjSortById(eventid, tempdata.event);
-				var _doc = tempdata.event[eventsortid].content.house_quotation;
+//				var eventid = GetRequest()["eventid"]; //获得eventid
+//				var tempdata = JSON.parse(myStorage.getItem("data"));
+//				var uploading;
+//				var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
+//				var eventsortid = fFindObjSortById(eventid, tempdata.event);
+//				var _doc = tempdata.event[eventsortid].content.house_quotation;
 				mui.openWindow({
-					url: gServer + "uploads/files/" + _doc,
+//					url: gServer + "uploads/files/" + _doc,
+					url: "../images/1.pdf",
 					id: "sub_doc",
 					styles: {
-						top: "80px",
+						top: "110px",
 						bottom: 0,
 						right: 0,
 						width: "100%",
@@ -94,42 +95,50 @@
 					plus.webview.close("sub_doc");
 					plus.webview.close(plus.webview.currentWebview());
 				});
-				mui("body").on("tap",".next-btn", function(){
+				mui("body").on("tap", ".next-btn", function() {
 					console.log(JSON.stringify(tempdata.event[eventsortid]))
 					console.log((myStorage.getItem("packageinfo")))
 				})
 				mui("body").on("tap", ".pick-again", function() {
 					var watiting = plus.nativeUI.showWaiting("正在返回量房状态，请稍后...")
-					mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
-						data: {
-							'status': 0,
-						},
-						dataType: 'json',
-						type: 'PUT',
-						timeout: 6000,
-						success: function(data) {
-							if(data.success == true) {
-								watiting.close();
-								var tempdata = JSON.parse(myStorage.getItem("data"));
-								tempdata.event[eventsortid].status = 0;
-								myStorage.setItem("data",JSON.stringify(tempdata))
-								plus.webview.close("sub_doc");
-								mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-								plus.webview.currentWebview().loadURL("../step/pick_products.html?eventid=" + eventid);
-							} else {
-								mui.alert(data.message, gAppName);
-								watiting.close();
-							}
-						},
-						error: function(xhr, textStatus, errorThrown) {
-							console.log(JSON.stringify(xhr))
-							mui.alert("状态修改失败，请稍候再试", gAppName,"确认",function(){
-								watiting.close();
-								plus.webview.currentWebview().reload();
-							});
-							
-						}
-					});
+						//					mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
+						//						data: {
+						//							'status': 0,
+						//						},
+						//						dataType: 'json',
+						//						type: 'PUT',
+						//						timeout: 6000,
+						//						success: function(data) {
+						//							if(data.success == true) {
+						//								watiting.close();
+						//								var tempdata = JSON.parse(myStorage.getItem("data"));
+						//								tempdata.event[eventsortid].status = 0;
+						//								myStorage.setItem("data",JSON.stringify(tempdata))
+						//								plus.webview.close("sub_doc");
+						//								mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+						//								plus.webview.currentWebview().loadURL("../step/pick_products.html?eventid=" + eventid);
+						//							} else {
+						//								mui.alert(data.message, gAppName);
+						//								watiting.close();
+						//							}
+						//						},
+						//						error: function(xhr, textStatus, errorThrown) {
+						//							console.log(JSON.stringify(xhr))
+						//							mui.alert("状态修改失败，请稍候再试", gAppName,"确认",function(){
+						//								watiting.close();
+						//								plus.webview.currentWebview().reload();
+						//							});
+						//							
+						//						}
+						//					});
+
+					watiting.close();
+					var tempdata = JSON.parse(myStorage.getItem("data"));
+					tempdata.event[eventsortid].status = 0;
+					myStorage.setItem("data", JSON.stringify(tempdata))
+					plus.webview.close("sub_doc");
+					mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+					plus.webview.currentWebview().loadURL("../step/pick_products.html?eventid=" + eventid);
 				})
 			})
 		</script>

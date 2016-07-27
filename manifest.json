@@ -109,7 +109,7 @@
 	},
 	"plus": {
 		"splashscreen": {
-			"autoclose": true,
+			"autoclose": false,
 			"waiting": true
 		},
 		"popGesture": "none",

@@ -48,8 +48,6 @@
 			margin-right: 15px;
 		}
 		
-		
-		
 		.mui-input-row label {
 			width: 110px;
 		}
@@ -62,15 +60,17 @@
 			width: 100%;
 			height: 44px;
 		}
-		.mui-input-row label ~ input,.mui-input-row label ~ select{
+		
+		.mui-input-row label~ input,
+		.mui-input-row label~ select {
 			float: left;
 			width: 70%
 		}
+		
 		.select-address label~ select {
 			float: left;
 			width: 20%;
 		}
-		
 	</style>
 
 	<body>
@@ -103,15 +103,15 @@
 			</div>
 
 		</form>
-		<div class="save"><button class="mui-btn mui-btn-danger" id="save" onclick="save()">保存</button></div>
+		<div class="save"><button class="mui-btn mui-btn-danger" id="save">保存</button></div>
 		<script class="resources library" src="../js/area.js"></script>
 		<script type="text/javascript">
 			_init_area();
 		</script>
 		<script src="../js/mui.js"></script>
-		<script type="text/javascript" src="../js/storage.js" ></script>
+		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
-		
+
 		<script type="text/javascript" src="../js/vue.js"></script>
 		<script type="text/javascript">
 			mui.plusReady(function() {
@@ -122,10 +122,15 @@
 					data: {
 						"event": objevent
 					},
-					ready: function(){
+					ready: function() {
 						document.getElementById("sex").options[this.event.sex].selected = true;
 					}
 				});
+				mui(".save").on("tap", "#save", function() {
+					mui.fire(plus.webview.currentWebview().opener(), "sb", "");
+					plus.webview.close(plus.webview.currentWebview())
+				});
+
 			});
 		</script>
 		<script type="text/javascript">

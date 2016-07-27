@@ -12,7 +12,6 @@
 		<link rel="stylesheet" href="../css/mui.css">
 		<!--App自定义的css-->
 		<link rel="stylesheet" href="../css/index_content.css" />
-		<link rel="stylesheet" href="../css/LCalendar.css" />
 	</head>
 	<style>
 		#mask {
@@ -125,7 +124,7 @@
 	<script type="text/javascript" src="../js/storage.js"></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/data.js"></script>
-	<script type="text/javascript" src="../js/cache.js" ></script>
+	<script type="text/javascript" src="../js/cache.js"></script>
 	<script src="../js/vue.js"></script>
 	<script>
 		"use strick";
@@ -137,7 +136,7 @@
 			},
 			swipeBack: false
 		});
-
+		var vueContent;
 		function plusReady() {}
 		if(window.plus) {
 			plusReady();
@@ -166,6 +165,9 @@
 			window.addEventListener('nocontent', function(event) {
 				document.getElementById("mask").style.zIndex = 9999;
 			});
+			window.addEventListener('sb', function(event) { //纯展示用
+				document.getElementById("back-drop").style.display = "none";
+			});
 
 		});
 		fAddVueCacheFilter()
@@ -173,7 +175,7 @@
 			return fFindObjById(value, gStatus.status).name;
 		});
 		console.log(JSON.stringify(thisevent))
-		var vueContent = new Vue({
+		vueContent = new Vue({
 			el: '#event',
 			data: {
 				"event": thisevent
@@ -325,7 +327,9 @@
 					});
 				}
 			},
-			ready: function() {}
+			ready: function() {
+				plus.navigator.closeSplashscreen();
+			}
 		});
 		document.getElementById("back-drop").addEventListener("tap", function() {
 			document.getElementById("back-drop").style.display = "none";
@@ -355,7 +359,7 @@
 						//TODO：放入同步队列
 						mui.ajax(gAPIServer + 'houses/' + vueContent.event.id + '?access-token=' + User("access_token"), {
 							data: {
-								"appointment_at" : fDateToTimeStamp(e.value)
+								"appointment_at": fDateToTimeStamp(e.value)
 							},
 							dataType: 'json',
 							type: 'PUT',

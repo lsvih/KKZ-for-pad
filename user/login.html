@@ -54,6 +54,7 @@
 			var datalength;
 			var insertSuccessCount;
 			mui.plusReady(function() {
+				plus.navigator.closeSplashscreen();
 				if(!localStorage.getItem("firstrun")) {
 					mui.alert("即将下载资源包，请确认当前网络环境为WiFi。", gAppName, "确认", function() {
 						if(plus.networkinfo.getCurrentType() != 3) { //判断当前环境是否为wifi环境
@@ -67,7 +68,6 @@
 								type: 'get',
 								timeout: 6000,
 								success: function(data) {
-
 									console.log(JSON.stringify(data.data))
 									var packageinfo = [];
 									for(var w = 0; w < data.data.length; w++) {
@@ -119,9 +119,9 @@
 											"product": tempproduct
 										});
 									}
-//									myStorage.setItem("packageinfo", JSON.stringify({
-//										"packageinfo": packageinfo
-//									}));
+									//									myStorage.setItem("packageinfo", JSON.stringify({
+									//										"packageinfo": packageinfo
+									//									}));
 
 									mui('body').progressbar({
 										progress: 0,
@@ -273,11 +273,11 @@
 											var LoadingUserinfo = setInterval(function() {
 												if(insertSuccessCount == datalength) {
 													clearInterval(LoadingUserinfo);
-//													myStorage.setItem("data", JSON.stringify(Tempdata));//TODO 为了展示因此载入本地数据
+													//													myStorage.setItem("data", JSON.stringify(Tempdata));//TODO 为了展示因此载入本地数据
 													loading.close();
-													mui.alert("登陆成功，" + gAppName + "即将重新启动以加载数据！", gAppName, "确认", function() {
-														plus.runtime.restart();
-													});
+													mui.toast("登陆成功!");
+													plus.runtime.restart();
+
 												}
 											}, 50); //定时检查是否完成下载，同时更新进度条
 

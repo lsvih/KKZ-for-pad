@@ -9,31 +9,35 @@
 		<link rel="stylesheet" href="css/common.css" />
 		<style>
 			.mui-bar {
-				height: 80px;
-				padding-top: 20px
+				height: 70px;
+				padding-top: 20px;
+				background-color: #06b26f;
+				color: #fff!important;
 			}
 			
-			.mui-icon-bars {
-				padding-top: 17px!important;
-			}
-			
-			.mui-icon .mui-badge {
-				top: 5px;
-				left: 70px;
+			.flow .mui-badge {
+				position: absolute;
+				background: #eb0505;
+				top: -5px;
+				left: -5px;
 			}
 			/*覆写图标样式*/
 			
 			.flow-icon {
-				padding: 10px 30px!important;
-				font-size: 36px!important;
+				display: inline-block;
+				position: relative;
+				width: 31px;
+				height: 31px;
+				background-size: 100% 100%;
+				margin: 0 30px;
 			}
 			
 			#flow {
 				position: absolute;
-				display: inline-block;
+				display: block;
+				top: 20px;
 				right: 40px;
 				left: 40px;
-				overflow: hidden;
 				width: auto;
 				text-align: center;
 			}
@@ -43,28 +47,74 @@
 				position: absolute;
 				bottom: 0;
 				left: 0;
-				width: 100%;
+				width: 40px;
+				margin-left: -5px;
+				height: 4px;
 				text-align: center;
 			}
 			
-			.cutoff-line {
+			/*.cutoff-line {
 				position: fixed;
 				top: 60px;
 				left: 38.4%;
 				height: 100%;
 				width: 0.2%;
 				background-color: #DCD2D2
+			}*/
+			
+			.flow-1 {
+				background-image: url(images/flow-icon/flow-1.png);
+			}
+			
+			.flow-1.mui-active {
+				background-image: url(images/flow-icon/flow-1-active.png);
+			}
+			
+			.flow-2 {
+				background-image: url(images/flow-icon/flow-2.png);
+			}
+			
+			.flow-2.mui-active {
+				background-image: url(images/flow-icon/flow-2-active.png);
+			}
+			
+			.flow-3 {
+				background-image: url(images/flow-icon/flow-3.png);
+			}
+			
+			.flow-3.mui-active {
+				background-image: url(images/flow-icon/flow-3-active.png);
+			}
+			
+			.flow-4 {
+				background-image: url(images/flow-icon/flow-4.png);
+			}
+			
+			.flow-4.mui-active {
+				background-image: url(images/flow-icon/flow-4-active.png);
+			}
+			
+			.flow-5 {
+				background-image: url(images/flow-icon/flow-5.png);
+			}
+			
+			.flow-5.mui-active {
+				background-image: url(images/flow-icon/flow-5-active.png);
+			}
+			
+			.flow-weixin {
+				background-image: url(images/flow-icon/flow-6.png);
 			}
 		</style>
 	</head>
 	<header class="mui-bar mui-bar-nav">
 		<span class="mui-icon mui-icon-bars mui-pull-left"></span>
-		<span id="flow"><span class="mui-icon mui-icon-{{flow.icon}} flow-icon flow" v-for="flow in flow" id="flow-{{flow.id}}"><span class="mui-badge mui-badge-danger" v-if="flow.num > 0">{{flow.num}}</span><span class="flow-name">{{flow.name}}</span></span>
-		<span class="mui-icon mui-icon-weixin flow-icon"><span class="flow-name">微信</span></span>
+		<span id="flow"><span class="flow-{{flow.icon}} flow-icon flow" v-for="flow in flow" id="flow-{{flow.id}}"><span class="mui-badge mui-badge-danger" v-if="flow.num > 0">{{flow.num}}</span><span class="flow-name">{{flow.name}}</span></span>
+		<span class="flow-weixin flow-icon"><span class="flow-name">微信</span></span>
 		</span>
-		<span class="mui-pull-right" style="height: 50px;background-color: #eee;z-index: 99999999999999999;" ontouchstart="fInstallTestData();">安装测试数据</span>
+		<span class="mui-pull-right" style="height: 50px;background-color: #06b26f;color:#06b26f;z-index: 99999999999999999;" ontouchstart="fInstallTestData();">安装测试数据</span>
 	</header>
-	<div class="cutoff-line"></div>
+	<!--<div class="cutoff-line"></div>-->
 
 	<body>
 		<script type="text/javascript" src="js/initdata.js"></script>
@@ -73,7 +123,7 @@
 		<script src="js/data.js"></script>
 		<script src="js/vue.js"></script>
 		<script src="js/mui.js"></script>
-		<script type="text/javascript" src="js/storage.js" ></script>
+		<script type="text/javascript" src="js/storage.js"></script>
 		<script src="js/common.js"></script>
 		<script src="js/sync.js"></script>
 		<script type="text/javascript">
@@ -93,21 +143,21 @@
 					id: 'list',
 					url: 'index_sub/list.html',
 					styles: {
-						top: 60 + gTopbarHeight + 'px',
+						top: 50 + gTopbarHeight + 'px',
 						bottom: 0,
 						left: 0,
-						width: '38.2%',
+						width: '38.7%',
 						bounce: 'vertical',
-						bounceBackground: '#ffffff', //设置webview背景
+						bounceBackground: '#f2f2f2', //设置webview背景
 						scrollIndicator: 'none',
 					}
 				}, {
 					id: 'index_content',
 					url: 'index_sub/index_content.html',
 					styles: {
-						top: 60 + gTopbarHeight + 'px',
+						top: 50 + gTopbarHeight + 'px',
 						bottom: 0,
-						left: "38.4%",
+						left: "38.6%",
 						width: '61.6%',
 						bounce: 'vertical',
 						bounceBackground: '#ffffff',
@@ -117,9 +167,9 @@
 					url: "index_sub/index_content3.html",
 					id: "plg_input",
 					styles: {
-						top: 60 + gTopbarHeight + 'px',
+						top: 50 + gTopbarHeight + 'px',
 						bottom: 0,
-						left: "38.4%",
+						left: "38.6%",
 						width: '61.6%',
 						bounce: 'vertical',
 						bounceBackground: '#ffffff',
@@ -138,9 +188,9 @@
 					url: "index_sub/index_content4.html",
 					id: "plg_work",
 					styles: {
-						top: 60 + gTopbarHeight + 'px',
+						top: 50 + gTopbarHeight + 'px',
 						bottom: 0,
-						left: "38.4%",
+						left: "38.6%",
 						width: '61.6%',
 						bounce: 'vertical',
 						bounceBackground: '#ffffff',
@@ -192,8 +242,8 @@
 						id: 'menu',
 						url: 'index_sub/menu.html',
 						styles: {
-							left: '-38.4%',
-							width: '38.4%',
+							left: '-38.8%',
+							width: '38.8%',
 							zindex: 999,
 						},
 						show: {
@@ -278,7 +328,7 @@
 					})
 					fSetSubPageMask("none");
 					menu.setStyle({
-						left: '-38.4%',
+						left: '-38.8%',
 						transition: {
 							duration: 200
 						}
