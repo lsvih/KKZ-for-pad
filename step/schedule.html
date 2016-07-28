@@ -1,9 +1,589 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
 	</head>
+	<style>
+		body {
+			background-color: rgba(0, 0, 0, 0.1);
+		}
+		
+		#detail {
+			margin-top: 110px;
+		}
+		
+		.circle-btn {
+			position: fixed;
+			top: 43px;
+			height: 40px;
+			width: 40px;
+			background-color: #FFF;
+			border-radius: 20px;
+			color: #00b06c;
+			line-height: 42px;
+			text-align: center;
+			box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+			z-index: 1001;
+		}
+		
+		.close-btn {
+			left: 33px;
+			font-size: 28px;
+		}
+		
+		.next-btn {
+			right: 33px;
+			font-size: 14px;
+		}
+		
+		#cover-image {
+			position: fixed;
+			height: 631px;
+			width: 100%;
+			z-index: 0;
+			background-size: 100% 100%;
+			will-change: margin;
+			/*transition: 1s;*/
+		}
+		
+		#cover-image-mask {
+			position: fixed;
+			height: 631.5px;
+			width: 100%;
+			z-index: 1;
+			background-color: #000;
+			opacity: 0;
+			will-change: margin;
+			/*transition: 1s;*/
+		}
+		
+		.content {
+			position: relative;
+			background-color: #fff;
+			z-index: 998;
+			padding: 0 30px;
+			margin: 0 auto;
+			width: 952px;
+			font-size: 18px;
+			height: auto;
+		}
+		
+		.content-text {
+			line-height: 28px;
+		}
+		
+		.content-text span {
+			display: inline-block;
+			color: #62DA73;
+			margin: 0 5px 0 -9px;
+			font-weight: bold;
+		}
+		
+		#wrapper {
+			z-index: 3;
+			padding: 1px;
+			height: 768px;
+		}
+		
+		#scroller {
+			margin: 1px;
+			height: auto;
+		}
+		
+		.blank {
+			height: 480px;
+		}
+		
+		.package-title {
+			display: block;
+			font-size: 20px;
+			font-weight: bold;
+			height: 45px;
+			padding-left: 30px;
+			line-height: 45px;
+			margin-left: -30px;
+			width: 952px;
+			background-color: rgba(0, 0, 0, .1)
+		}
+		
+		.package-title span {
+			display: inline-block;
+			color: #62DA73;
+			margin: 0 5px 0 -9px;
+			font-weight: bold;
+		}
+		
+		.line {
+			margin: 23px 0 25px -30px;
+			height: 10px;
+			width: 952px;
+			background-color: rgba(0, 0, 0, .1);
+		}
+		
+		#mask {
+			position: fixed;
+			height: 100%;
+			width: 100%;
+			z-index: 9999999;
+			background-color: #fff;
+			opacity: 1;
+			transition: 0.5s;
+		}
+		/*图片轴*/
+		
+		.img-contain {
+			display: block;
+			padding: 0;
+			height: 300px;
+			width: 100%;
+			overflow: scroll;
+			overflow-y: hidden;
+		}
+		
+		.iteminner {
+			display: block;
+			width: 100%;
+			height: 200px;
+			overflow: hidden;
+		}
+		
+		.lineimg {
+			display: block;
+			width: 2000px;
+		}
+		
+		.item {
+			float: left;
+			display: inline;
+			margin-right: 10px;
+		}
+		
+		.item img {
+			height: 200px;
+			width: 360px;
+		}
+		/*商品选择*/
+		
+		.product {
+			position: relative;
+			height: 230px;
+			width: 100%;
+		}
+		
+		.product i {
+			display: none;
+		}
+		
+		.product-img {
+			width: 325px;
+			height: 205px;
+		}
+		
+		.product-img img {
+			width: 100%;
+			height: 100%;
+		}
+		
+		.product-name {
+			position: absolute;
+			top: 0px;
+			left: 360px;
+			font-size: 18px;
+		}
+		
+		.product-brand {
+			position: absolute;
+			display: inline-block;
+			top: 45px;
+			left: 360px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.product-brand span {
+			display: inline-block;
+			padding-right: 25px;
+		}
+		
+		.product-model {
+			position: absolute;
+			top: 90px;
+			left: 360px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.product-model span {
+			display: inline-block;
+			padding-right: 25px;
+		}
+		
+		.product-size {
+			position: absolute;
+			top: 135px;
+			left: 360px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.product-size span {
+			display: inline-block;
+			padding-right: 25px;
+		}
+		
+		.product-color {
+			position: absolute;
+			top: 180px;
+			left: 360px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.selected {
+			color: #62da73!important;
+		}
+		
+		.selected-color {
+			border: 3px solid #62DA73!important;
+		}
+		
+		.color-block {
+			display: inline-block;
+			height: 28px;
+			width: 28px;
+			margin-right: 28px;
+			vertical-align: middle;
+			text-indent: -9999px;
+		}
+		/*end*/
+		/*文字伸缩模块*/
+		
+		.detail-text {
+			overflow: hidden;
+			height: 38px;
+			transition: 0.8s;
+			will-change: height;
+		}
+		
+		.detail-text p {
+			color: #888;
+			font-size: 16px;
+			line-height: 28px;
+		}
+		
+		.text-control {
+			text-align: center;
+			color: #62DA73;
+		}
+		/*end*/
+		
+		.header {
+			position: fixed;
+			top: 0;
+			left: 0;
+			height: 110px;
+			width: 100%;
+			border-bottom: 1px solid #eee;
+			background-color: #fff;
+			z-index: 1000;
+			text-align: center;
+			line-height: 130px;
+			font-size: 18px;
+		}
+		
+		.blank-30 {
+			height: 30px;
+		}
+	</style>
+
 	<body>
+		<div id="mask"></div>
+		<div class="header">选材</div>
+		<div class="circle-btn close-btn mui-icon mui-icon-closeempty"></div>
+		<div class="circle-btn next-btn">物业</div>
+		<div id="detail">
+			<div class="content" v-for="detail in detail" track-by="$index" v-bind:data-id="$index">
+				<div class="package-title"><span>|</span>{{detail.name}}</div>
+				<div class="blank-30"></div>
+				<div v-for="product in detail.products">
+					<!--商品选择模块-->
+
+					<div class="product">
+						<i>{{$index}}</i>
+						<div class="product-img"><img v-bind:src="product.showimage|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
+						<div class="product-name">{{product.name}}</div>
+						<div class="product-brand">品牌：&nbsp;
+							<span v-for="brand in product.brand" v-on:tap="Change($event)" v-bind:data-id="$index">{{brand.name}}&nbsp;&nbsp;</span></div>
+						<div class="product-model">型号：&nbsp;
+							<span v-for="model in product.brand[product.selectbrand].tree" v-on:tap="Change($event)" v-bind:value="$index" v-bind:data-id="model.id">{{model.name}}&nbsp;&nbsp;</span></div>
+						<div class="product-size" v-show="product.brand[product.selectbrand].size.length">尺寸：&nbsp;
+							<span v-for="size in product.brand[product.selectbrand].tree[product.brand[product.selectbrand].selectmodel].size" v-on:tap="Change($event)" v-bind:data-id="size.id">{{size.name}}&nbsp;&nbsp;</span></div>
+						<div class="product-color" v-show="product.brand[product.selectbrand].color.length">颜色：&nbsp;
+							<div v-for="color in product.brand[product.selectbrand].tree[product.brand[product.selectbrand].selectmodel].color" class="color-block" v-on:tap="Change($event)" v-bind:data-id="color.id">{{color.name|color}}</div>
+						</div>
+					</div>
+
+					<!--end-->
+
+					<!--文字阅读折叠模块-->
+					<div v-if="product.showtext" class="text-toggle" v-on:tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
+						<div class="detail-text">
+							<p>{{product.showtext}}
+							</p>
+						</div>
+						<div class="text-control" data-id="0"><span class="mui-icon mui-icon-arrowdown"></span></div>
+					</div>
+					<!--end-->
+					<div class="line" v-if="$index < detail.products.length - 1"></div>
+				</div>
+
+			</div>
+			<script src="../js/mui.js"></script>
+			<script type="text/javascript" src="../js/storage.js"></script>
+			<script type="text/javascript" src="../js/common.js"></script>
+			<script type="text/javascript" src="../js/vue.js"></script>
+			<script type="text/javascript" src="../js/palette.js"></script>
+			<script type="text/javascript" src="../js/cache.js"></script>
+			<script>
+				mui.init();
+				var loading;
+				mui.plusReady(function() {
+					loading = plus.nativeUI.showWaiting("正在加载，请稍后...");
+					setTimeout(function() {
+						showDetail()
+					}, 1);
+				});
+
+				function showDetail() {
+					var eventid = GetRequest()["eventid"]; //房屋
+					var tempdata = JSON.parse(myStorage.getItem("data"));
+					var thisevent = tempdata.event[fFindObjSortById(eventid, tempdata.event)];
+					var thispackage = thisevent.content.package;
+					var temppackageinfo = JSON.parse(myStorage.getItem("packageinfo")).packageinfo;
+					var packageinfo = [];
+					for(var k = 0; k < thispackage.length; k++) {
+						packageinfo.push(fDetailPipe(fFindObjById(thispackage[k].id, temppackageinfo)));
+					}
+					fAddVueCacheFilter();
+					fAddVueColorFilter();
+					var detailinfo = plus.webview.currentWebview().detail;
+					var vueContent = new Vue({
+						el: "#detail",
+						data: {
+							detail: packageinfo,
+						},
+						ready: function() {
+							fChangeColor();
+							document.getElementById("mask").style.opacity = 0;
+							document.getElementById("mask").style.zIndex = 0;
+							loading.close();
+							fSelectDefault();
+						},
+						methods: {
+							cache: function(value) {
+								return fCache(value);
+							},
+							previewimage: function(thisobj) { //查看单张图片大图
+								plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
+									images: thisobj.currentTarget.parentNode.innerHTML,
+									indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.getElementsByTagName("img")),
+									deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+								}), "fade-in", 200);
+							},
+							previewimages: function(thisobj) { //查看多张图片大图
+								plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
+									images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
+									indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
+									deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+								}), "fade-in", 200);
+							},
+							Change: function(thisevent) {
+								var thisobj = thisevent.currentTarget;
+								var thispackagesort = thisobj.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
+								if(fHasClass(thisobj, "selected") || fHasClass(thisobj, "selected-color")) return false;
+								var parent = thisobj.parentNode;
+								var productsortid = parent.parentNode.getElementsByTagName("i")[0].innerHTML;
+								var type = parent.className.split("product-")[1];
+								if(type !== "color") { //先改变对应的元素的颜色
+									var items = parent.getElementsByTagName("span");
+									for(var k = 0; k < items.length; k++) {
+										fRemoveClass(items[k], "selected");
+									}
+									fAddClass(thisobj, "selected");
+									if(type == "brand") {
+										var brandsortid = thisobj.getAttribute("data-id");
+										this.detail[thispackagesort].products[productsortid].selectbrand = brandsortid;
+										setTimeout(function() { //在渲染完成后把颜色重新替换色块
+											fChangeColor();
+										}, 1);
+									}
+									if(type == "model") {
+										var brandsortid = this.detail[thispackagesort].products[productsortid].selectbrand;
+										var modelsortid = thisobj.getAttribute("value");
+										this.detail[thispackagesort].products[productsortid].brand[brandsortid].selectmodel = modelsortid;
+										setTimeout(function() { //在渲染完成后把颜色重新替换色块
+											fChangeColor();
+										}, 1);
+									}
+								} else { //点击的是颜色的情况改变选择
+									var items = parent.getElementsByClassName("color-block");
+									for(var k = 0; k < items.length; k++) {
+										fRemoveClass(items[k], "selected-color");
+									}
+									fAddClass(thisobj, "selected-color");
+								}
+								//在选择后拼接字符串去查询sku,如果查询到则将图片与文字替换，如果没有查询到则不替换
+								var modelid = fGetDataIdFormSelectedItem(parent.parentNode.getElementsByClassName("product-model")[0]);
+								var sizeid = fGetDataIdFormSelectedItem(parent.parentNode.getElementsByClassName("product-size")[0]);
+								var colorid = fGetDataIdFormSelectedItem(parent.parentNode.getElementsByClassName("product-color")[0]);
+								//							console.log(modelid + '-' + sizeid + '-' + colorid);//得到的sku
+								var skusortid = fSearchSKU(this.detail[thispackagesort].products[productsortid].brand[this.detail[thispackagesort].products[productsortid].selectbrand].sku, modelid + '-' + sizeid + '-' + colorid)
+								if(skusortid !== false) { //考虑skusortid为0的情况
+									this.detail[thispackagesort].products[productsortid].showtext = this.detail[thispackagesort].products[productsortid].brand[this.detail[thispackagesort].products[productsortid].selectbrand].sku[skusortid].text;
+									this.detail[thispackagesort].products[productsortid].showimage = this.detail[thispackagesort].products[productsortid].brand[this.detail[thispackagesort].products[productsortid].selectbrand].sku[skusortid].image;
+								}
+							},
+							//文字展开
+							toggle: function(a, o, e) {
+								if(a == "1") { //收缩
+									o.style.height = "38px";
+									setTimeout(function() {
+										e.innerHTML = "<span class='mui-icon mui-icon-arrowdown'></span>";
+										e.setAttribute("data-id", 0);
+									}, 500);
+								} else { //展开
+									o.style.height = "150px";
+									setTimeout(function() {
+										e.innerHTML = "<span class='mui-icon mui-icon-arrowup'></span>";
+										e.setAttribute("data-id", 1);
+									}, 500);
+								}
+							},
+						}
+					});
+				}
+
+				/**
+				 * 运行时选择所有项的第一个
+				 */
+				function fSelectDefault() {
+					var products = document.getElementsByClassName("product");
+					for(var i = 0; i < products.length; i++) {
+						fAddClass(products[i].getElementsByClassName("product-brand")[0].getElementsByTagName("span")[0], "selected");
+						fAddClass(products[i].getElementsByClassName("product-model")[0].getElementsByTagName("span")[0], "selected");
+						//图片与尺寸为可选选项因此需要考虑不存在的情况
+						if(products[i].getElementsByClassName("product-size")[0] !== null && products[i].getElementsByClassName("product-size")[0] !== undefined) fAddClass(products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "selected");
+						if(products[i].getElementsByClassName("product-color")[0] !== null && products[i].getElementsByClassName("product-color")[0] !== undefined) fAddClass(products[i].getElementsByClassName("product-color")[0].getElementsByTagName("div")[0], "selected-color");
+					}
+				}
+				/**
+				 * 详情处理中间件，将详情中的每个商品都加上属性树
+				 * @param {Object} Detail 
+				 */
+				function fDetailPipe(Detail) {
+					if(Detail.products == undefined || Detail.products == null) return [];
+					//				console.log(JSON.stringify(Detail))
+					for(var i = 0; i < Detail.products.length; i++) {
+						for(var j = 0; j < Detail.products[i].brand.length; j++) {
+							var model = Detail.products[i].brand[j].model;
+							var size = Detail.products[i].brand[j].size;
+							var color = Detail.products[i].brand[j].color;
+							var sku = Detail.products[i].brand[j].sku;
+							Detail.products[i].brand[j].tree = fCreateProductBrandTree(model, size, color, sku);
+							Detail.products[i].showtext = Detail.products[i].brand[0].description || Detail.products[i].brand[0].sku[0].text;
+							Detail.products[i].showimage = Detail.products[i].brand[0].cover || Detail.products[i].brand[0].sku[0].image;
+							Detail.products[i].selectbrand = 0;
+							Detail.products[i].brand[j].selectmodel = 0;
+						}
+					}
+					return Detail;
+				}
+
+				/**
+				 * 根据初始型号生成品牌的属性树
+				 * @param {Array} Model 描述型号的数组
+				 * @param {Array} Size 描述尺寸的数组
+				 * @param {Array} Color 描述颜色的数组
+				 * @param {Array} Brand 品牌下的sku信息
+				 */
+				function fCreateProductBrandTree(Model, Size, Color, Brand) {
+					var TreeArray = [];
+					for(var j = 0; j < Brand.length; j++) {
+						var modelsort = fFindObjSortById(Brand[j].sku.split("-")[0], Model); //model为必填字段，因此在Model中必定能找到相应值
+						var sizesort = fFindObjSortById(Brand[j].sku.split("-")[1], Size); //尺寸与颜色为选填，因此考虑未查找到的情况
+						var colorsort = fFindObjSortById(Brand[j].sku.split("-")[2], Color);
+						var modelsortInTree = fFindObjSortById(Model[modelsort].id, TreeArray); //在TreeArray中查找sku的model是否已经存在，如果不存在则返回false,如果存在返回排序值
+						//以下判断全部使用 === false，因为有可能存在排序id=0的情况
+						if(modelsortInTree === false) {
+							TreeArray.push({
+								"id": Model[modelsort].id,
+								"name": Model[modelsort].name,
+								"size": [],
+								"color": []
+							});
+							modelsortInTree = TreeArray.length - 1; //如果在数组中已经有对应id则不插值,并将所在的下标值传出
+						}
+						if(sizesort !== false) { //如果不存在尺寸则跳过
+							var sizesortInTree = fFindObjSortById(Size[sizesort].id, TreeArray[modelsortInTree].size);
+							if(sizesortInTree === false) {
+								TreeArray[modelsortInTree].size.push({
+									"id": Size[sizesort].id,
+									"name": Size[sizesort].name
+								})
+							}
+						}
+						if(colorsort !== false) { //如果不存在颜色则跳过
+							var colorsortInTree = fFindObjSortById(Color[colorsort].id, TreeArray[modelsortInTree].color);
+							if(colorsortInTree === false) {
+								TreeArray[modelsortInTree].color.push({
+									"id": Color[colorsort].id,
+									"name": Color[colorsort].name
+								});
+							}
+						}
+					}
+					return TreeArray;
+				}
+
+				/**
+				 * 将所有的颜色代码全部转换为颜色色块
+				 */
+				function fChangeColor() {
+					var colors = document.getElementsByClassName("color-block");
+					for(var o = 0; o < colors.length; o++) {
+						colors[o].style.backgroundColor = colors[o].innerText;
+					}
+				}
+
+				/**
+				 * 在父元素中寻找含有selected或selected-color的子元素，并获取其data-id
+				 * @param {Object} 父元素
+				 */
+				function fGetDataIdFormSelectedItem(obj) {
+					var childitem = obj.getElementsByClassName("selected").length ? obj.getElementsByClassName("selected")[0] : obj.getElementsByClassName("selected-color")[0];
+					if(childitem == undefined) return "";
+					return childitem.getAttribute("data-id");
+				}
+				/**
+				 * 在sku数组中寻找skuid相等的sku下标，如果找到了则返回下标，没找到则返回false
+				 * @param {Object} skuarr
+				 * @param {Object} skuid
+				 */
+				function fSearchSKU(skuarr, skuid) {
+					for(var z in skuarr) {
+						if(skuid == skuarr[z].sku) return z;
+					}
+					return false;
+				}
+
+				mui("body").on("tap", ".close-btn", function() {
+					plus.webview.close(plus.webview.currentWebview());
+				});
+			</script>
 	</body>
+
 </html>

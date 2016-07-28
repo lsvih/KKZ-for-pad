@@ -255,6 +255,7 @@
 		function fAddAItemToPackage(packageId, eventid) {
 			tempdata.event[eventsortid].content.package.push({
 				"id": packageId,
+				"packageid": fFindObjById(packageId, temppackage.packageinfo).packageid,
 				"name": fFindObjById(packageId, temppackage.packageinfo).name,
 				"size": "",
 				"images": [],

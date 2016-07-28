@@ -270,8 +270,10 @@
 					<div class="content">
 						<div class="package-title">{{detail.name}}</div>
 						<div class="line"></div>
-						<div class="content-text"><span>|</span>{{detail.detail_text}}</div>
-						<div class="line"></div>
+						<div v-if="detail.detail_text">
+							<div class="content-text"><span>|</span>{{detail.detail_text}}</div>
+							<div class="line"></div>
+						</div>
 
 						<!--图片轴模块-->
 						<span class="iteminner">
@@ -304,7 +306,7 @@
 							<!--end-->
 
 							<!--文字阅读折叠模块-->
-							<div class="text-toggle" v-on:tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
+							<div v-if="product.showtext" class="text-toggle" v-on:tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
 								<div class="detail-text">
 									<p>{{product.showtext}}
 									</p>
@@ -322,7 +324,7 @@
 		</div>
 
 		<script src="../js/mui.js"></script>
-		<script type="text/javascript" src="../js/storage.js" ></script>
+		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/jroll.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
@@ -330,17 +332,19 @@
 		<script type="text/javascript" src="../js/cache.js"></script>
 		<script>
 			var jroll;
-		
+			var loading;
 			mui.init({
 				beforeback: function() {
 					plus.navigator.setFullscreen(false);
 				}
 			});
 			mui.plusReady(function() {
+				loading = plus.nativeUI.showWaiting("正在加载，请稍后...");
 				plus.navigator.setFullscreen(true);
 				fAddVueCacheFilter();
 				fAddVueColorFilter();
 				var detailinfo = plus.webview.currentWebview().detail;
+				console.log(detailinfo);
 				var vueContent = new Vue({
 					el: "#detail",
 					data: {
@@ -348,6 +352,7 @@
 					},
 					ready: function() {
 						fChangeColor();
+						loading.close();
 						document.getElementById("mask").style.opacity = 0;
 						document.getElementById("mask").style.zIndex = 0;
 						jroll = new JRoll("#wrapper", {
@@ -366,7 +371,7 @@
 						fSelectDefault();
 					},
 					methods: {
-						cache: function(value){
+						cache: function(value) {
 							return fCache(value);
 						},
 						previewimage: function(thisobj) { //查看单张图片大图
@@ -459,8 +464,8 @@
 					fAddClass(products[i].getElementsByClassName("product-brand")[0].getElementsByTagName("span")[0], "selected");
 					fAddClass(products[i].getElementsByClassName("product-model")[0].getElementsByTagName("span")[0], "selected");
 					//图片与尺寸为可选选项因此需要考虑不存在的情况
-					if(products[i].getElementsByClassName("product-size")[0]!==null&&products[i].getElementsByClassName("product-size")[0]!==undefined) fAddClass(products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "selected");
-					if(products[i].getElementsByClassName("product-color")[0]!==null&&products[i].getElementsByClassName("product-color")[0]!==undefined) fAddClass(products[i].getElementsByClassName("product-color")[0].getElementsByTagName("div")[0], "selected-color");
+					if(products[i].getElementsByClassName("product-size")[0] !== null && products[i].getElementsByClassName("product-size")[0] !== undefined) fAddClass(products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "selected");
+					if(products[i].getElementsByClassName("product-color")[0] !== null && products[i].getElementsByClassName("product-color")[0] !== undefined) fAddClass(products[i].getElementsByClassName("product-color")[0].getElementsByTagName("div")[0], "selected-color");
 				}
 			}
 			/**
@@ -468,8 +473,8 @@
 			 * @param {Object} Detail 
 			 */
 			function fDetailPipe(Detail) {
-				if(Detail.products == undefined||Detail.products == null) return [];
-//				console.log(JSON.stringify(Detail))
+				if(Detail.products == undefined || Detail.products == null) return [];
+				//				console.log(JSON.stringify(Detail))
 				for(var i = 0; i < Detail.products.length; i++) {
 					for(var j = 0; j < Detail.products[i].brand.length; j++) {
 						var model = Detail.products[i].brand[j].model;
@@ -477,8 +482,8 @@
 						var color = Detail.products[i].brand[j].color;
 						var sku = Detail.products[i].brand[j].sku;
 						Detail.products[i].brand[j].tree = fCreateProductBrandTree(model, size, color, sku);
-						Detail.products[i].showtext = Detail.products[i].brand[0].description||Detail.products[i].brand[0].sku[0].text;
-						Detail.products[i].showimage = Detail.products[i].brand[0].cover||Detail.products[i].brand[0].sku[0].image;
+						Detail.products[i].showtext = Detail.products[i].brand[0].description || Detail.products[i].brand[0].sku[0].text;
+						Detail.products[i].showimage = Detail.products[i].brand[0].cover || Detail.products[i].brand[0].sku[0].image;
 						Detail.products[i].selectbrand = 0;
 						Detail.products[i].brand[j].selectmodel = 0;
 					}

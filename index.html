@@ -61,7 +61,8 @@
 				background-color: #DCD2D2
 			}*/
 			
-			.flow-1 {
+			.flow-1,
+			#preload-00 {
 				background-image: url(images/flow-icon/flow-1.png);
 			}
 			
@@ -110,6 +111,7 @@
 				background-image: url(images/flow-icon/flow-6.png);
 			}
 			
+			#preload-00,
 			#preload-01,
 			#preload-02,
 			#preload-03,
@@ -130,6 +132,7 @@
 	</head>
 	<!--对激活状态的图片进行预加载，避免第一次点击时加载导致的图片消失片刻-->
 	<div class="preload-area">
+		<div id="preload-00"></div>
 		<div id="preload-01"></div>
 		<div id="preload-02"></div>
 		<div id="preload-03"></div>

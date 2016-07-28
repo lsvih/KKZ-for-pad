@@ -18,16 +18,13 @@
 		<script type="text/javascript" src="js/common.js"></script>
 		<script type="text/javascript" src="js/vue.js"></script>
 		<script src="js/mui.js"></script>
-
+	<div id="a"></div>
 	</body>
 	<script>
-		window.onload = function() {
-			date = new Date();
-			Y = date.getFullYear() + '-';
-			M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-			D = date.getDate();
-			document.getElementById("today").value = Y+M+D
-		}
+		var js = '<div class="mui-switch mui-switch-mini">'
+		js += '<div class="mui-switch-handle"></div>'
+		js += '</div>'
+		document.getElementById("a").innerHTML = js;
 	</script>
 
 </html>
