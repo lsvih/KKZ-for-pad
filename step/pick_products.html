@@ -255,12 +255,14 @@
 		function fAddAItemToPackage(packageId, eventid) {
 			tempdata.event[eventsortid].content.package.push({
 				"id": packageId,
+				"name": fFindObjById(packageId, temppackage.packageinfo).name,
 				"size": "",
 				"images": [],
 				"diagram": ""
 			});
 		}
 
+		
 		/**
 		 * 删除package中所有指定id的元素
 		 * @param {Object} packageId
@@ -274,11 +276,11 @@
 				}
 			}
 		}
-		
-		mui("body").on("tap",".close-btn",function(){
+
+		mui("body").on("tap", ".close-btn", function() {
 			plus.webview.currentWebview().loadURL("intro.html?eventid=" + eventid);
 		})
-		
+
 		mui("body").on("tap", ".next-btn", function() {
 			var values = document.getElementsByClassName("mui-input-numbox");
 			for(var j = 0; j < values.length; j++) {

@@ -212,7 +212,7 @@
 									timeout: 6000,
 									success: function(data) {
 										if(data.success == true) {
-											//											console.log(JSON.stringify(data));
+
 											if(!data.data.houses0) {
 												myStorage.setItem("data", JSON.stringify({
 														"event": []
@@ -230,7 +230,7 @@
 														"id": ToInsertData[i].id,
 														"name": ToInsertData[i].user.fullname,
 														"sex": Number(ToInsertData[i].user.sex),
-														"contractid": ToInsertData[i].house_contract.split(".")[0],
+														"contractid": ToInsertData[i].house_quotation.split(".")[0],
 														"status": ToInsertData[i].status,
 														"province": ToInsertData[i].province,
 														"city": ToInsertData[i].city,
@@ -244,7 +244,8 @@
 															"price": ToInsertData[i].package_amount,
 															"clear_amount": ToInsertData[i].clear_amount,
 															"distance_rate": ToInsertData[i].distance_rate,
-															"taxes_amount": ToInsertData[i].taxes_amount
+															"taxes_amount": ToInsertData[i].taxes_amount,
+															"house_quotation": ToInsertData[i].house_quotation
 														}
 													}
 													insertSuccessCount++; //成功计数增加
@@ -256,11 +257,11 @@
 											 * @param {Array} 待解析package数组
 											 */
 											function __fMapPackage(packagearr) {
-												if(!packagearr || !packagearr.legnth) return [];
+												if(packagearr == undefined || packagearr == null || packagearr.length == 0) return [];
 												var __temparr = [];
-												for(var __i = 0; __i < packagearr; __i++) {
+												for(var __i = 0; __i < packagearr.length; __i++) {
 													__temparr.push({
-														"id": packagearr[__i].id,
+														"id": packagearr[__i].package.id,
 														"name": packagearr[__i].package.name,
 														"size": packagearr[__i].area,
 														"images": packagearr[__i].measure_t_imgs,
@@ -354,7 +355,7 @@
 				if(thisattr == undefined || thisattr == null || !thisattr.length) {
 					return [];
 				} else {
-					for(var p = 0;p < thisattr.length;p++){
+					for(var p = 0; p < thisattr.length; p++) {
 						if(thisattr[p].name == toRead) {
 							var typeArray = [];
 							if(thisattr[p].attr_values !== undefined && thisattr[p].attr_values !== null && thisattr[p].attr_values.length) {

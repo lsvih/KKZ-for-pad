@@ -44,23 +44,28 @@
 					</span>
 					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
 				</div>
-				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span><span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
+				<div class="btns block">
+				<span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span>
+				<span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
 
 			</template>
 			<!--待排期-->
 			<template v-if="event.status==1">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
-					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br />
-					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-info-edit edit-icon"></span>
+					<div class="click-area user-info-edit" v-on:tap="__fEditUser(event.id)"></div><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br />
+					<span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span>量房报价信息</span><br/>
-					<span v-for="item in event.content.package"><span class="package-item">{{__fGetPackageInfo(item.id).name}}：{{item.size}}米²</span></span><br />
-					<span>总价:{{event.content.package_amount}}元</span>
-					<span class="more-info" v-on:tap="__fDetail(event.id,'gauge')">详情 ></span>
+					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.size}}米²</span><br /></span>
+					<span>总价:{{event.content.price}}元</span>
+					<span class="user-info-edit"><span class="mui-icon mui-icon-arrowright"></span></span>
+					<div class="click-area user-info-edit"  v-on:tap="__fDetail(event.id,'gauge')"></div>
 				</div>
-				<div class="btns block"><span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="mui-icon mui-icon-compose"></i>去排期</span></div>
+				<div class="btns block"><span class="mui-pull-left intro" v-on:tap="__fIntro(event.id)"><i class="schedule-icon"></i>去排期</span></div>
 			</template>
 
 			<!--待签约-->
@@ -259,11 +264,6 @@
 							}
 						})
 					},
-					//通过id获取package的信息
-					__fGetPackageInfo:function(id){
-						var temppackage = JSON.parse(myStorage.getItem("packageinfo")).packageinfo;
-						return fFindObjById(id,temppackage);
-					},
 					__fDetail: function(eventid, type, option) {
 						var extras = option ? {
 							type: type,
@@ -426,7 +426,6 @@
 				}
 			});
 		}
-		
 	</script>
 
 </html>

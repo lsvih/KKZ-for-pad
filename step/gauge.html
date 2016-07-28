@@ -136,12 +136,12 @@
 			margin: 10px 0;
 			border: 2px solid #32b16c;
 			border-radius: 22px;
-			width: 280px;
+			width: 310px;
 		}
 		
 		.package-text-image .mui-input-row label {
 			float: left;
-			width: 90px;
+			width: 110px;
 		}
 		
 		.package-text-image .mui-input-row label~ input {
@@ -263,8 +263,8 @@
 				var packagenamemapping = {
 					"厨房工程": "厨房",
 					"卫生间工程": "卫生间",
-					"涂装工程（不铲除）": "涂装不铲",
-					"涂装工程（铲除）": "涂装铲",
+					"涂装工程（不铲）": "涂装不铲",
+					"涂装工程（铲）": "涂装铲",
 					"内门工程": "内门",
 					"水电工程": "水电",
 					"地面工程": "地面",
@@ -272,7 +272,7 @@
 					"厨房": "厨房"
 				}
 				console.log(packagesid)
-				return packagenamemapping[temppackage.packageinfo[fFindObjSortById(packagesid, temppackage.packageinfo)].name];
+				return packagenamemapping[fFindObjById(packagesid, temppackage.packageinfo).name];
 			});
 			vueContent = new Vue({
 				el: "#package",
@@ -475,6 +475,7 @@
 						if(data.success == true) {
 							var temp = JSON.parse(myStorage.getItem("data"));
 							temp.event[eventsortid].content.house_quotation = data.data.house_quotation;
+							temp.event[eventsortid].contractid = data.data.house_quotation.split(".")[0];
 							temp.event[eventsortid].content.package_amount = data.data.package_amount;
 							temp.event[eventsortid].content.clear_amount = data.data.clear_amount;
 							temp.event[eventsortid].content.taxes_amount = data.data.taxes_amount;
