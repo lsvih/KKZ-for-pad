@@ -206,7 +206,7 @@
 									"access_token": data.data.access_token
 								});
 								loading.setTitle("正在加载用户数据，请稍后");
-								mui.ajax(gAPIServer + 'users/' + User("id") + '?expand=houses0.user,houses0.housePackages.package&access-token=' + User("access_token"), {
+								mui.ajax(gAPIServer + 'users/' + User("id") + '?expand=houses0.houseSchedules,houses0.user,houses0.housePackages.package&sort=houses0.housesSchedules.schedule_at&access-token=' + User("access_token"), {
 									dataType: 'json',
 									type: 'get',
 									timeout: 6000,
@@ -230,7 +230,7 @@
 														"id": ToInsertData[i].id,
 														"name": ToInsertData[i].user.fullname,
 														"sex": Number(ToInsertData[i].user.sex),
-														"contractid": ToInsertData[i].house_quotation.split(".")[0],
+														"contractid": ToInsertData[i].house_contract.split(".")[0],
 														"status": ToInsertData[i].status,
 														"province": ToInsertData[i].province,
 														"city": ToInsertData[i].city,
@@ -239,13 +239,19 @@
 														"address": ToInsertData[i].address,
 														"phone": ToInsertData[i].user.phone,
 														"content": {
+															"schedule":ToInsertData[i].houseSchedules,
 															"ordertime": fTimeStampToDate(ToInsertData[i].appointment_at),
 															"package": __fMapPackage(ToInsertData[i].housePackages),
 															"price": ToInsertData[i].package_amount,
 															"clear_amount": ToInsertData[i].clear_amount,
 															"distance_rate": ToInsertData[i].distance_rate,
 															"taxes_amount": ToInsertData[i].taxes_amount,
-															"house_quotation": ToInsertData[i].house_quotation
+															"house_quotation": ToInsertData[i].house_quotation,
+															"house_contract": ToInsertData[i].house_contract,
+															"time_period":ToInsertData[i].time_period,
+															"is_holiday_work":ToInsertData[i].is_holiday_work,
+															"duration":ToInsertData[i].duration,
+															"start_at":ToInsertData[i].start_at,
 														}
 													}
 													insertSuccessCount++; //成功计数增加

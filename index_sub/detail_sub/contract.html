@@ -18,9 +18,9 @@
 		var eventid = plus.webview.currentWebview().eventid;
 		var tempdata = JSON.parse(myStorage.getItem("data"));
 		var eventsortid = fFindObjSortById(eventid, tempdata.event);
-		var doc = tempdata.event[eventsortid].content.house_quotation;
+		var doc = tempdata.event[eventsortid].content.house_contract;
 		location.href = gServer + "uploads/files/"+ doc;
-	})
+	});
 	</script>
 
 </html>

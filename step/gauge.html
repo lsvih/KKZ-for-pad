@@ -476,8 +476,7 @@
 						if(data.success == true) {
 							var temp = JSON.parse(myStorage.getItem("data"));
 							temp.event[eventsortid].content.house_quotation = data.data.house_quotation;
-							temp.event[eventsortid].contractid = data.data.house_quotation.split(".")[0];
-							temp.event[eventsortid].content.package_amount = data.data.package_amount;
+							temp.event[eventsortid].content.price = data.data.package_amount;
 							temp.event[eventsortid].content.clear_amount = data.data.clear_amount;
 							temp.event[eventsortid].content.taxes_amount = data.data.taxes_amount;
 							temp.event[eventsortid].status = 1;

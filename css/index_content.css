@@ -30,7 +30,9 @@ body {
 	text-align: center;
 	color:#06b26f;
 }
-
+.user-info-edit.center{
+	top:20px;
+}
 #select-time {
 	display: inline-block;
 	z-index: -100;
