@@ -212,7 +212,6 @@
 									timeout: 6000,
 									success: function(data) {
 										if(data.success == true) {
-
 											if(!data.data.houses0) {
 												myStorage.setItem("data", JSON.stringify({
 														"event": []
@@ -228,6 +227,7 @@
 												for(var i = 0; i < ToInsertData.length; i++) {
 													Tempdata.event[i] = {
 														"id": ToInsertData[i].id,
+														"user_id": ToInsertData[i].user_id,
 														"name": ToInsertData[i].user.fullname,
 														"sex": Number(ToInsertData[i].user.sex),
 														"contractid": ToInsertData[i].house_contract.split(".")[0],
@@ -237,10 +237,10 @@
 														"district": ToInsertData[i].county,
 														"street": ToInsertData[i].street,
 														"address": ToInsertData[i].address,
-														"phone": ToInsertData[i].user.phone,
+														"phone": ToInsertData[i].user.mobile,
 														"content": {
-															"schedule":ToInsertData[i].houseSchedules,
-															"ordertime": fTimeStampToDate(ToInsertData[i].appointment_at),
+															"schedule": ToInsertData[i].houseSchedules,
+															"ordertime": fTimeStampToLocalDateTime(ToInsertData[i].appointment_at),
 															"package": __fMapPackage(ToInsertData[i].housePackages),
 															"price": ToInsertData[i].package_amount,
 															"clear_amount": ToInsertData[i].clear_amount,
@@ -248,10 +248,10 @@
 															"taxes_amount": ToInsertData[i].taxes_amount,
 															"house_quotation": ToInsertData[i].house_quotation,
 															"house_contract": ToInsertData[i].house_contract,
-															"time_period":ToInsertData[i].time_period,
-															"is_holiday_work":ToInsertData[i].is_holiday_work,
-															"duration":ToInsertData[i].duration,
-															"start_at":ToInsertData[i].start_at,
+															"time_period": ToInsertData[i].time_period,
+															"is_holiday_work": ToInsertData[i].is_holiday_work,
+															"duration": ToInsertData[i].duration,
+															"start_at": ToInsertData[i].start_at,
 														}
 													}
 													insertSuccessCount++; //成功计数增加

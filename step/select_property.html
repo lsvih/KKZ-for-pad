@@ -243,7 +243,7 @@
 							success: function(data) {
 								if(data.success == true) { //取出排期内容
 									var houseinfo = data.data
-									mui.ajax(gAPIServer + 'house-schedules?sort=schedule_at&filter=house_id:' + eventid + '&access-token=' + User("access_token"), {
+									mui.ajax(gAPIServer + 'house-schedules?sort=schedule_at&expand=packageProcess,sku.product,packageCheck.packageCheckStandards&max-per-page=100&per-page=100&filter=house_id:' + eventid + '&access-token=' + User("access_token"), {
 										data: {
 											'house_id': eventid
 										},

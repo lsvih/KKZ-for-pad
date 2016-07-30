@@ -19,17 +19,27 @@ function fGetDate() {
  * 将时间戳转换为YYYY-MM-DDThh:mm:ss
  * @param {Number} 时间戳
  */
-function fTimeStampToDate(timestamp) { //服务器php时间戳后加3个0才是js的时间戳
+function fTimeStampToLocalDateTime(timestamp) { //服务器php时间戳后加3个0才是js的时间戳
 	var date = new Date(timestamp * 1000);
 	Y = date.getFullYear() + '-';
 	M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-	D = date.getDate() + 'T';
+	D = (date.getDate()  < 10 ? '0' + (date.getDate()) : date.getDate()) + 'T';
 	h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
 	m = date.getMinutes() + ':';
 	s = date.getSeconds();
 	return(Y + M + D + h + m + s);
 }
-
+/**
+ * 将时间戳转换为YYYY-MM-DD
+ * @param {Number} 时间戳
+ */
+function fTimeStampToDate(timestamp) {
+	var date = new Date(timestamp * 1000);
+	Y = date.getFullYear() + '-';
+	M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+	D = (date.getDate()  < 10 ? '0' + (date.getDate()) : date.getDate());
+	return(Y + M + D);
+}
 /**
  * 将传入的标准日期时间数据YYYY-MM-DD hh-mm-ss转换为时间戳
  * @param {Date} YYYY-MM-DD hh-mm-ss

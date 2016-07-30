@@ -1,0 +1,241 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+		<style>
+			.circle-btn {
+				position: fixed;
+				top: 43px;
+				height: 40px;
+				width: 40px;
+				background-color: #FFF;
+				border-radius: 20px;
+				color: #00b06c;
+				line-height: 42px;
+				text-align: center;
+				box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+			}
+			
+			.close-btn {
+				left: 33px;
+				font-size: 28px;
+				z-index: 100;
+			}
+			
+			.next-btn {
+				right: 33px;
+				font-size: 28px;
+				z-index: 98;
+			}
+			
+			.pick-again {
+				position: fixed;
+				top: 53px;
+				right: 80px;
+				height: 30px;
+				width: 190px;
+				font-size: 20px;
+				z-index: 98;
+				color: #00B06C;
+			}
+			
+			.header {
+				position: fixed;
+				top: 0;
+				left: 0;
+				height: 110px;
+				width: 100%;
+				background-color: #fff;
+				border-bottom: 1px solid#eee;
+				z-index: 10;
+			}
+			
+			.close {
+				position: fixed;
+				top: 50px;
+				left: 95px;
+				height: 30px;
+				width: 120px;
+				z-index: 98;
+				color: #9f9f9f;
+			}
+			
+			.close .mui-icon {
+				font-size: 30px;
+			}
+			
+			.content {
+				position: relative;
+				width: 952px;
+				margin: 80px auto 0;
+				background-color: #fff;
+				padding: 43px 160px;
+			}
+			
+			.content .title {
+				width: 100%;
+				text-align: center;
+				font-size: 18px;
+			}
+			
+			.event {
+				min-height: 50px;
+			}
+			
+			.time {
+				display: inline-block;
+				height: 30px;
+				width: 81px;
+				border-radius: 3px;
+				text-align: center;
+				line-height: 30px;
+				font-size: 14px;
+				background-color: #06b26f;
+				color: #fff;
+			}
+			
+			.scheduleinfo {
+				display: inline-block;
+				vertical-align: top;
+				margin-left: 40px;
+				line-height: 30px;
+			}
+			
+			.event-name {
+				display: inline-block;
+				margin-left: 40px;
+				font-size: 18px;
+				margin-top: -20px;
+			}
+			
+			.event-detail {
+				padding: 16px 72px 13px 15px;
+				margin-left: 118px;
+				border: 1px solid #eeebeb;
+				background-color: #fcfcfc;
+				font-size: 14px;
+				color: #7f7d7d;
+			}
+			
+			.name-row {
+				display: inline-block;
+				height: 30px;
+				margin: 50px 0 0 0;
+			}
+			
+			#line {
+				position: absolute;
+				top: 98px;
+				margin-left: 40px;
+				width: 1px;
+				height: 56px;
+				background-color: #06b26f;
+				z-index: 0;
+				/*transition: 3s;*/
+			}
+			
+			#mask {
+				position: fixed;
+				height: 100%;
+				width: 100%;
+				z-index: 9999999;
+				background-color: #fff;
+				opacity: 1;
+				transition: 0.5s;
+			}
+			.hide{
+				background-color: #fff;
+			}
+		</style>
+
+	</head>
+	<div id="mask"></div>
+	<div class="circle-btn close-btn mui-icon mui-icon-closeempty"></div>
+	<div class="pick-again">效果图正在生成中</div>
+	<div class="circle-btn next-btn mui-icon mui-icon-arrowright"></div>
+	<div class="header"></div>
+	<div class="content">
+		<div id="timeline">
+			<img src="../images/schedule-bigger.png">
+			<span class="scheduleinfo">每周{{events.is_holiday_work?7:5}}天，{{events.time_period}}<br />总计{{events.duration}}天
+			</span>
+			<div id="line"></div>
+			<div v-for="event in events.schedule" class="event">
+				<span class="name-row">
+				<span class="time" v-bind:class="{'hide':!fIsFirstDate($index)}">{{__fTimeStampToDate(event.schedule_at)}}</span>
+
+				<span class="event-name">
+					<!--当前事件为单品-->
+					<span v-if="event.sku_id">{{event.sku.product.name}}</span>
+				<!--当前事件为工序-->
+				<span v-if="event.package_process_id">{{event.packageProcess.process_name}}</span>
+				<!--当前事件为验收-->
+				<span v-if="event.package_check_id">{{event.packageCheck.check_name}}</span>
+				</span>
+				</span>
+				<div class="event-detail" v-if="!event.sku_id">
+					<span v-if="event.package_process_id">{{event.packageProcess.process_content}}</span>
+					<span v-if="event.package_check_id">
+					<span v-for="check in event.packageCheck.packageCheckStandards">{{check.content}}</span>
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<body>
+		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/storage.js"></script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript" src="../js/vue.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var eventid = GetRequest()["eventid"]; //获得eventid
+			var tempdata = JSON.parse(myStorage.getItem("data"));
+			var eventsortid = fFindObjSortById(eventid, tempdata.event);
+			var vueContent;
+			mui.plusReady(function() {
+				vueContent = new Vue({
+					el: "#timeline",
+					data: {
+						"events": tempdata.event[eventsortid].content
+					},
+					methods: {
+						__fTimeStampToDate: function(timestamp) {
+							var datearr = fTimeStampToDate(timestamp).split("-");
+							return datearr[1] + "月" + datearr[2] + "日";
+						},
+						fIsFirstDate:function(sort){//如果不是第一次出现这个时间，即这个时间和上一个节点的时间一样，则不显示
+							if(sort == 0) return true;
+							console.log(this.__fTimeStampToDate(this.events.schedule[sort-1].schedule_at) + "----" + this.__fTimeStampToDate(this.events.schedule[sort].schedule_at))
+							if(this.__fTimeStampToDate(this.events.schedule[sort].schedule_at) == this.__fTimeStampToDate(this.events.schedule[sort-1].schedule_at)){
+								return false;
+							}else{
+								return true;
+							}
+						}
+					},
+					ready: function() {
+						var namearr = document.getElementsByClassName("event-name");
+						var lastItem = namearr[namearr.length - 1];
+						document.getElementById("line").style.height = lastItem.offsetTop - 98 + "px";
+						document.getElementById("mask").style.opacity = 0;
+						document.getElementById("mask").style.zIndex = 0;
+					}
+				});
+				mui("body").on("tap", ".close-btn", function() {
+					plus.webview.close(plus.webview.currentWebview());
+				});
+
+				mui("body").on("tap", ".next-btn", function() {
+					plus.webview.currentWebview().loadURL("../step/contract.html?eventid=" + eventid);
+				});
+			});
+		</script>
+	</body>
+
+</html>

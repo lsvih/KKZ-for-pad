@@ -73,7 +73,7 @@
 				<div class="mui-table">
 					<div class="mui-table-cell mui-col-xs-10">
 						<h4>{{event.name}} {{event.sex?"女士":"先生"}} {{event.phone}}</h4>
-						<p class="mui-h5 mui-ellipsis">{{event.address}}</p>
+						<p class="mui-h5 mui-ellipsis">{{event.street}}{{event.address}}</p>
 					</div>
 					<div class="mui-table-cell mui-col-xs-5 mui-text-right">
 						<span class="event-status">{{event.status | statusNumtoString}}</span>
@@ -108,7 +108,7 @@
 		mui.plusReady(function() {
 			localStorage.setItem("thiseventsort", 0)
 			index_content = plus.webview.getWebviewById("index_content");
-			window.addEventListener('refreshvue', function(event) {
+			window.addEventListener('refreshvue', function(event) {//接收别的webview发出的刷新指令
 				vueList.refresh(nFlowID = event.detail);
 			});
 			Vue.filter('statusNumtoString', function(value) {

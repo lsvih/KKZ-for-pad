@@ -46,12 +46,12 @@
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon"></span>
 					<div class="click-area user-info-edit" v-on:tap="__fEditUser(event.id)"></div><br />
-					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
 				</div>
 				<div class="block">
 					<span>待量房</span><br/>
 					<span class="check-time">预约上门时间：<span>
-						<input type="datetime-local" id="select-time"  v-bind:value="event.content.ordertime" init-time="{{event.content.ordertime}}" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)">
+						<input type="datetime-local" id="select-time"  v-bind:value="event.content.ordertime" v-bind:init-time="event.content.ordertime" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)">
 					</span>
 					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
 				</div>
@@ -66,8 +66,9 @@
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon"></span>
 					<div class="click-area user-info-edit" v-on:tap="__fEditUser(event.id)"></div><br />
-					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br />
-					<span>合同号：{{event.contractid}}</span>
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
+					<!--<span>合同号：{{event.contractid}}</span>-->
+					<!--这个步骤此时还没有产生合同-->
 				</div>
 				<div class="block">
 					<span>量房报价信息</span><br/>
@@ -84,7 +85,7 @@
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br />
-					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="rendering block" v-if="event.content.renderings&&event.content.renderings.length">
 					<!--图片轴模块-->
@@ -121,7 +122,7 @@
 			<template v-if="event.status==3">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
-					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span>已交定金</span><br/><span class="check-time">预约开工日期：{{event.content.expected_start_date}}</span>
@@ -136,7 +137,7 @@
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span>
 					<span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br />
-					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span class="check-time">原定开工日期：{{event.content.expected_start_date}}</span>

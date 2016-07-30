@@ -15,7 +15,10 @@
 			<!--确认物业-->
 			<template v-if="event.status==5">
 				<div class="user-info block">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
+					<span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span>物业交割信息</span>
@@ -36,7 +39,10 @@
 			<!--待确认-->
 			<template v-if="event.status==6">
 				<div class="user-info block">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
+					<span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span>选材信息</span><br/>
@@ -55,7 +61,10 @@
 			<!--待开工-->
 			<template v-if="event.status==7">
 				<div class="user-info block">
-					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span><span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
+					<span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span class="check-time">预计开工时间：<span><input type="date" id="select-time"  v-bind:value="event.content.expected_start_date" init-time="{{event.content.expected_start_date}}" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)"></span></span><span class="user-info-edit edit-time"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
