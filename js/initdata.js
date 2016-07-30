@@ -2215,7 +2215,7 @@ var packagearr = [{
 			}]
 		}]
 	}]
-},{
+}, {
 	"name": "涂装工程（不铲除）",
 	"id": "1079",
 	"cover": "5794a5fd56c47.jpg",
@@ -2923,7 +2923,7 @@ var packagearr = [{
 			}]
 		}]
 	}]
-},{
+}, {
 	"name": "内门工程",
 	"id": "1080",
 	"cover": "5794a5fd56c47.jpg",
@@ -3645,9 +3645,107 @@ function fInstallTestData() {
 	//			alert(e.message);
 	//		});
 	//	});
-//	myStorage.setItem("data", JSON.stringify(data));
-//	myStorage.setItem("packageinfo", JSON.stringify(packageinfo))
+	//	myStorage.setItem("data", JSON.stringify(data));
+	//	myStorage.setItem("packageinfo", JSON.stringify(packageinfo))
 	plus.runtime.restart();
 }
 
 //localStorage.clear("data")
+
+function refresh() {
+	myStorage.removeItem("data");
+	var loading=plus.nativeUI.showWaiting("正在刷新数据");
+	mui.ajax(gAPIServer + 'users/' + User("id") + '?expand=houses0.houseSchedules,houses0.user,houses0.housePackages.package&sort=houses0.housesSchedules.schedule_at&access-token=' + User("access_token"), {
+		dataType: 'json',
+		type: 'get',
+		timeout: 6000,
+		success: function(data) {
+			if(data.success == true) {
+				if(!data.data.houses0) {
+					myStorage.setItem("data", JSON.stringify({
+							"event": []
+						})) //如果房屋信息不存在，则直接让event为空数组
+				} else { //如果信息存在，则将后台数据格式转化为前端数据格式存入myStorage.data中
+					var ToInsertData = data.data.houses0;
+					datalength = ToInsertData.length;
+					insertSuccessCount = 0; //成功计数
+					var Tempdata = {
+						"event": []
+					};
+					console.log(JSON.stringify(ToInsertData))
+					for(var i = 0; i < ToInsertData.length; i++) {
+						Tempdata.event[i] = {
+							"id": ToInsertData[i].id,
+							"user_id": ToInsertData[i].user_id,
+							"name": ToInsertData[i].user.fullname,
+							"sex": Number(ToInsertData[i].user.sex),
+							"contractid": ToInsertData[i].house_contract.split(".")[0],
+							"status": ToInsertData[i].status,
+							"province": ToInsertData[i].province,
+							"city": ToInsertData[i].city,
+							"district": ToInsertData[i].county,
+							"street": ToInsertData[i].street,
+							"address": ToInsertData[i].address,
+							"phone": ToInsertData[i].user.mobile,
+							"content": {
+								"schedule": ToInsertData[i].houseSchedules,
+								"ordertime": fTimeStampToLocalDateTime(ToInsertData[i].appointment_at),
+								"package": __fMapPackage(ToInsertData[i].housePackages),
+								"price": ToInsertData[i].package_amount,
+								"clear_amount": ToInsertData[i].clear_amount,
+								"distance_rate": ToInsertData[i].distance_rate,
+								"taxes_amount": ToInsertData[i].taxes_amount,
+								"house_quotation": ToInsertData[i].house_quotation,
+								"house_contract": ToInsertData[i].house_contract,
+								"time_period": ToInsertData[i].time_period,
+								"is_holiday_work": ToInsertData[i].is_holiday_work,
+								"duration": ToInsertData[i].duration,
+								"start_at": ToInsertData[i].start_at,
+							}
+						}
+						insertSuccessCount++; //成功计数增加
+					}
+				}
+				/**
+				 * 子函数
+				 * 解析package数组信息，返回符合格式的package数组
+				 * @param {Array} 待解析package数组
+				 */
+				function __fMapPackage(packagearr) {
+					if(packagearr == undefined || packagearr == null || packagearr.length == 0) return [];
+					var __temparr = [];
+					for(var __i = 0; __i < packagearr.length; __i++) {
+						__temparr.push({
+							"id": packagearr[__i].package.id,
+							"packageid": packagearr[__i].package_id,
+							"name": packagearr[__i].package.name,
+							"size": packagearr[__i].area,
+							"images": packagearr[__i].measure_t_imgs,
+							"diagram": packagearr[__i].plan_t_img
+						})
+					}
+					return __temparr;
+				}
+
+				var LoadingUserinfo = setInterval(function() {
+					if(insertSuccessCount == datalength) {
+						clearInterval(LoadingUserinfo);
+						myStorage.setItem("data", JSON.stringify(Tempdata));
+						loading.close();
+						mui.toast("刷新成功!");
+						plus.runtime.restart();
+
+					}
+				}, 50); //定时检查是否完成下载，同时更新进度条
+
+			} else {
+				mui.alert(data.message, gAppName);
+				console.log(JSON.stringify(data));
+			}
+		},
+		error: function(xhr, textStatus, errorThrown) {
+			mui.alert("获取用户信息时网络连接失败，请稍候再试", gAppName);
+			loading.close();
+		}
+	});
+}
