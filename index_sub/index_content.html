@@ -153,6 +153,7 @@
 		</article>
 
 	</body>
+	<script type="text/javascript" src="../js/lsvih.js" ></script>
 	<script src="../js/mui.js"></script>
 	<script type="text/javascript" src="../js/storage.js"></script>
 	<script src="../js/common.js"></script>
@@ -204,7 +205,7 @@
 			});
 			fAddVueCacheFilter()
 			Vue.filter('statusNumtoString', function(value) {
-				return fFindObjById(value, gStatus.status).name;
+				return lsvih.array.getObjByKey({"id":value}, gStatus.status).name;
 			});
 			console.log(JSON.stringify(thisevent))
 			vueContent = new Vue({
@@ -404,14 +405,11 @@
 				var newdate = (e.value.split("T")[0] + ' ' + e.value.split("T")[1]).split(":33")[0];
 				mui.confirm('是否将预约上门时间从' + olddate + '修改为' + newdate + '？', gAppName, ['否', '是'], function(f) {
 					if(f.index == 1) {
-						//						var tempobj = JSON.parse(myStorage.getItem("data"));
-						//						tempobj.event[fFindObjSortById(thisevent.id, tempobj.event)].content.ordertime = e.value;
-						//						vueContent.event.content.ordertime = e.value;
-						//						myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改时间
+						
 						//TODO：放入同步队列
 						mui.ajax(gAPIServer + 'houses/' + vueContent.event.id + '?access-token=' + User("access_token"), {
 							data: {
-								"appointment_at": fDateToTimeStamp(e.value)
+								"appointment_at": lsvih.time.strToStamp(e.value)
 							},
 							dataType: 'json',
 							type: 'PUT',
@@ -420,7 +418,7 @@
 								if(data.success == true) {
 									mui.toast("预约时间修改成功")
 									var tempobj = JSON.parse(myStorage.getItem("data"));
-									tempobj.event[fFindObjSortById(thisevent.id, tempobj.event)].content.ordertime = e.value;
+									tempobj.event[lsvih.array.getSubByKey({"id":thisevent.id}, tempobj.event)].content.ordertime = e.value;
 									vueContent.event.content.ordertime = e.value;
 									myStorage.setItem("data", JSON.stringify(tempobj)); //初版在远程修改时间成功后再在本地存储修改时间
 								} else {

@@ -156,6 +156,7 @@
 		<script type="text/javascript" src="js/initdata.js"></script>
 
 		<!--加载测试数据-->
+		<script type="text/javascript" src="js/lsvih.js" ></script>
 		<script src="js/data.js"></script>
 		<script src="js/vue.js"></script>
 		<script src="js/mui.js"></script>
@@ -300,11 +301,11 @@
 				el: '#flow',
 				data: gFlow,
 				ready: function() {
-					fAddClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
+					lsvih.dom.addClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
 					mui('#flow').on('tap', '.flow', function() {
-						if(!fHasClass(this, "mui-active")) { //重复点击不进行切换
-							fRemoveClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
-							fAddClass(this, "mui-active");
+						if(!lsvih.dom.hasClass(this, "mui-active")) { //重复点击不进行切换
+							lsvih.dom.removeClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
+							lsvih.dom.addClass(this, "mui-active");
 							nActiveMenu = this.id.split("-")[1];
 							//							fCloseSubPage();
 							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", nActiveMenu); //点击图标时传值到list并刷新视图

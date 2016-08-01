@@ -8,6 +8,7 @@
 		<link href="../../css/mui.css" rel="stylesheet" />
 	</head>
 	<body>
+		<script type="text/javascript" src="../../js/lsvih.js" ></script>
 		<script src="../../js/mui.js"></script>
 		<script type="text/javascript" src="../../js/storage.js" ></script>
 		<script type="text/javascript" src="../../js/common.js"></script>
@@ -17,7 +18,7 @@
 	mui.plusReady(function(){
 		var eventid = plus.webview.currentWebview().eventid;
 		var tempdata = JSON.parse(myStorage.getItem("data"));
-		var eventsortid = fFindObjSortById(eventid, tempdata.event);
+		var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
 		var doc = tempdata.event[eventsortid].content.house_contract;
 		location.href = gServer + "uploads/files/"+ doc;
 	});

@@ -61,6 +61,7 @@
 	<div class="header"></div>
 
 	<body>
+		<script type="text/javascript" src="../js/lsvih.js" ></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -71,7 +72,7 @@
 				var tempdata = JSON.parse(myStorage.getItem("data"));
 				var uploading;
 				var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
-				var eventsortid = fFindObjSortById(eventid, tempdata.event);
+				var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
 				var _doc = tempdata.event[eventsortid].content.house_contract;
 				mui.openWindow({
 					url: gServer + "uploads/files/" + _doc,

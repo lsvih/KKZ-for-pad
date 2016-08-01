@@ -343,6 +343,7 @@
 
 			</div>
 		</div>
+		<script type="text/javascript" src="../js/lsvih.js" ></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -356,7 +357,7 @@
 			var eventid = GetRequest()["eventid"]; //房屋
 			if(GetRequest()["back"] !== undefined && GetRequest()["back"] !== null) mui.toast("请重新选择材料")
 			var tempdata = JSON.parse(myStorage.getItem("data"));
-			var eventsortid = fFindObjSortById(eventid, tempdata.event);
+			var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
 			var thisevent = tempdata.event[eventsortid];
 			var thispackage = thisevent.content.package;
 			var successcount = 0;
@@ -372,7 +373,7 @@
 
 				var temppackageinfo = JSON.parse(myStorage.getItem("packageinfo")).packageinfo;
 				for(var k = 0; k < thispackage.length; k++) {
-					packageinfo.push(fDetailPipe(fFindObjById(thispackage[k].id, temppackageinfo)));
+					packageinfo.push(fDetailPipe(lsvih.array.getObjByKey({"id":thispackage[k].id}, temppackageinfo)));
 				}
 				fAddVueCacheFilter();
 				fAddVueColorFilter();
@@ -397,29 +398,29 @@
 							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
 								images: thisobj.currentTarget.parentNode.innerHTML,
 								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.getElementsByTagName("img")),
-								deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds") ? "true" : "false"
 							}), "fade-in", 200);
 						},
 						previewimages: function(thisobj) { //查看多张图片大图
 							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
 								images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
 								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
-								deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds") ? "true" : "false"
 							}), "fade-in", 200);
 						},
 						Change: function(thisevent) {
 							var thisobj = thisevent.currentTarget;
 							var thispackagesort = thisobj.parentNode.parentNode.parentNode.parentNode.getAttribute("data-id");
-							if(fHasClass(thisobj, "selected") || fHasClass(thisobj, "selected-color")) return false;
+							if(lsvih.dom.hasClass(thisobj, "selected") || lsvih.dom.hasClass(thisobj, "selected-color")) return false;
 							var parent = thisobj.parentNode;
 							var productsortid = parent.parentNode.getElementsByTagName("i")[0].innerHTML;
 							var type = parent.className.split("product-")[1];
 							if(type !== "color") { //先改变对应的元素的颜色
 								var items = parent.getElementsByTagName("span");
 								for(var k = 0; k < items.length; k++) {
-									fRemoveClass(items[k], "selected");
+									lsvih.dom.removeClass(items[k], "selected");
 								}
-								fAddClass(thisobj, "selected");
+								lsvih.dom.addClass(thisobj, "selected");
 								if(type == "brand") {
 									var brandsortid = thisobj.getAttribute("value");
 									this.detail[thispackagesort].products[productsortid].selectbrand = brandsortid;
@@ -438,9 +439,9 @@
 							} else { //点击的是颜色的情况改变选择
 								var items = parent.getElementsByClassName("color-block");
 								for(var k = 0; k < items.length; k++) {
-									fRemoveClass(items[k], "selected-color");
+									lsvih.dom.removeClass(items[k], "selected-color");
 								}
-								fAddClass(thisobj, "selected-color");
+								lsvih.dom.addClass(thisobj, "selected-color");
 							}
 							setTimeout(function() {
 								//在选择后拼接字符串去查询sku,如果查询到则将图片与文字替换，如果没有查询到则不替换
@@ -488,18 +489,18 @@
 			function fSelectDefault() {
 				var products = document.getElementsByClassName("product");
 				for(var i = 0; i < products.length; i++) {
-					fAddClass(products[i].getElementsByClassName("product-brand")[0].getElementsByTagName("span")[0], "selected");
-					fAddClass(products[i].getElementsByClassName("product-model")[0].getElementsByTagName("span")[0], "selected");
+					lsvih.dom.addClass(products[i].getElementsByClassName("product-brand")[0].getElementsByTagName("span")[0], "selected");
+					lsvih.dom.addClass(products[i].getElementsByClassName("product-model")[0].getElementsByTagName("span")[0], "selected");
 					products[i].value = products[i].getElementsByClassName("product-model")[0].getElementsByTagName("span")[0].getAttribute("data-id") + "-";
 					//图片与尺寸为可选选项因此需要考虑不存在的情况
 					if(products[i].getElementsByClassName("product-size")[0] !== null && products[i].getElementsByClassName("product-size")[0] !== undefined) {
-						fAddClass(products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "selected");
+						lsvih.dom.addClass(products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "selected");
 						products[i].value += products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0].getAttribute("data-id") + "-";
 					} else {
 						products[i].value += "x" + "-";
 					}
 					if(products[i].getElementsByClassName("product-color")[0] !== null && products[i].getElementsByClassName("product-color")[0] !== undefined) {
-						fAddClass(products[i].getElementsByClassName("product-color")[0].getElementsByTagName("div")[0], "selected-color");
+						lsvih.dom.addClass(products[i].getElementsByClassName("product-color")[0].getElementsByTagName("div")[0], "selected-color");
 						products[i].value += products[i].getElementsByClassName("product-color")[0].getElementsByTagName("span")[0].getAttribute("data-id");
 					} else {
 						products[i].value += "x";
@@ -539,10 +540,10 @@
 			function fCreateProductBrandTree(Model, Size, Color, Brand) {
 				var TreeArray = [];
 				for(var j = 0; j < Brand.length; j++) {
-					var modelsort = fFindObjSortById(Brand[j].sku.split("-")[0], Model); //model为必填字段，因此在Model中必定能找到相应值
-					var sizesort = fFindObjSortById(Brand[j].sku.split("-")[1], Size); //尺寸与颜色为选填，因此考虑未查找到的情况
-					var colorsort = fFindObjSortById(Brand[j].sku.split("-")[2], Color);
-					var modelsortInTree = fFindObjSortById(Model[modelsort].id, TreeArray); //在TreeArray中查找sku的model是否已经存在，如果不存在则返回false,如果存在返回排序值
+					var modelsort = lsvih.array.getSubByKey({"id":Brand[j].sku.split("-")[0]}, Model); //model为必填字段，因此在Model中必定能找到相应值
+					var sizesort = lsvih.array.getSubByKey({"id":Brand[j].sku.split("-")[1]}, Size); //尺寸与颜色为选填，因此考虑未查找到的情况
+					var colorsort = lsvih.array.getSubByKey({"id":Brand[j].sku.split("-")[2]}, Color);
+					var modelsortInTree = lsvih.array.getSubByKey({"id":Model[modelsort].id}, TreeArray); //在TreeArray中查找sku的model是否已经存在，如果不存在则返回false,如果存在返回排序值
 					//以下判断全部使用 === false，因为有可能存在排序id=0的情况
 					if(modelsortInTree === false) {
 						TreeArray.push({
@@ -554,7 +555,7 @@
 						modelsortInTree = TreeArray.length - 1; //如果在数组中已经有对应id则不插值,并将所在的下标值传出
 					}
 					if(sizesort !== false) { //如果不存在尺寸则跳过
-						var sizesortInTree = fFindObjSortById(Size[sizesort].id, TreeArray[modelsortInTree].size);
+						var sizesortInTree = lsvih.array.getSubByKey({"id":Size[sizesort].id}, TreeArray[modelsortInTree].size);
 						if(sizesortInTree === false) {
 							TreeArray[modelsortInTree].size.push({
 								"id": Size[sizesort].id,
@@ -563,7 +564,7 @@
 						}
 					}
 					if(colorsort !== false) { //如果不存在颜色则跳过
-						var colorsortInTree = fFindObjSortById(Color[colorsort].id, TreeArray[modelsortInTree].color);
+						var colorsortInTree = lsvih.array.getSubByKey({"id":Color[colorsort].id}, TreeArray[modelsortInTree].color);
 						if(colorsortInTree === false) {
 							TreeArray[modelsortInTree].color.push({
 								"id": Color[colorsort].id,
@@ -620,10 +621,10 @@
 				} //先判断是否全部选择完毕
 				uploading = plus.nativeUI.showWaiting("正在生成选材资料，请稍后...");
 				for(var s = 0; s < products.length; s++) {
-					var thispackage = fFindObjById(products[s].getAttribute("data-packageid"), packageinfo);
-					var thisproduct = fFindObjById(products[s].getAttribute("data-productid"), thispackage.products);
+					var thispackage = lsvih.array.getObjByKey({"id":products[s].getAttribute("data-packageid")}, packageinfo);
+					var thisproduct = lsvih.array.getObjByKey({"id":products[s].getAttribute("data-productid")}, thispackage.products);
 					var brandid = products[s].getElementsByClassName("product-brand")[0].getElementsByClassName("selected")[0].getAttribute("data-id");
-					var thissku = fFindObjById(brandid, thisproduct.brand).sku;
+					var thissku = lsvih.array.getObjByKey({"id":brandid}, thisproduct.brand).sku;
 					var sku_value = products[s].value.replace("x", "");
 					for(var p = 0; p < thissku.length; p++) {
 						if(thissku[p].sku == sku_value) {

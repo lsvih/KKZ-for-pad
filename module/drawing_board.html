@@ -134,7 +134,6 @@
 			line-height: 40px;
 			background-color: rgba(255, 255, 255, 0.3)
 		}
-
 		
 		.mui-icon {
 			font-size: 45px;
@@ -179,7 +178,7 @@
 		</section>
 	</body>
 	<script type="text/javascript" src="../js/mui.js"></script>
-	<script type="text/javascript" src="../js/storage.js" ></script>
+	<script type="text/javascript" src="../js/storage.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script>
 		mui.init({
@@ -223,11 +222,11 @@
 		document.getElementById('back').addEventListener('tap', function() {
 			var b64 = canvas.toDataURL();
 			var imgkey = "image-" + Math.random();
-			myStorage.setItem(imgkey,b64);
+			myStorage.setItem(imgkey, b64);
 			mui.fire(plus.webview.currentWebview().opener(), "diagram", eventid + "///" + packagesort + "///" + imgkey);
 			plus.webview.close(plus.webview.currentWebview())
 		});
-		
+
 		//获取 工具按钮
 		var Brush = document.getElementById('Brush'); //画笔
 		var Eraser = document.getElementById('Eraser'); //橡皮擦
@@ -350,40 +349,64 @@
 			var status = 0;
 			setStatus(actions, n, 1);
 			canvas_bak.onmouseup = function(e) {
-				e = window.event || e;
-				var x = e.pageX - this.offsetLeft;
-				var y = e.pageY - this.offsetTop;
-				mui.prompt('请输入填充的文字：', '', gAppName, ['取消', '确定'], function(f) {
-					if(f.index == 1) {
-						clearContext();
-						if(f.value !== null) {
-							can.fillText(f.value, x, y);
-							save();
-						}
-					} else {
-						clearContext();
-					}
-				});
-			}
-			canvas_bak.ontouchend = function(e) {
 				if(status) {
+					status = 0;
 					e = window.event || e;
 					var x = e.pageX - this.offsetLeft;
 					var y = e.pageY - this.offsetTop;
 					mui.prompt('请输入填充的文字：', '', gAppName, ['取消', '确定'], function(f) {
 						if(f.index == 1) {
-							status = 0;
 							clearContext();
 							if(f.value !== null) {
 								can.fillText(f.value, x, y);
 								save();
 							}
 						} else {
-							status = 0;
 							clearContext();
 						}
 					});
 				}
+
+			}
+			canvas_bak.onclick = function(e) {
+				if(status) {
+					status = 0;
+					e = window.event || e;
+					var x = e.pageX - this.offsetLeft;
+					var y = e.pageY - this.offsetTop;
+					mui.prompt('请输入填充的文字：', '', gAppName, ['取消', '确定'], function(f) {
+						if(f.index == 1) {
+							clearContext();
+							if(f.value !== null) {
+								can.fillText(f.value, x, y);
+								save();
+							}
+						} else {
+							clearContext();
+						}
+					});
+				}
+
+			}
+			canvas_bak.ontouchend = function(e) {
+				if(status) {
+					status = 0;
+					e = window.event || e;
+					var x = e.pageX - this.offsetLeft;
+					var y = e.pageY - this.offsetTop;
+					mui.prompt('请输入填充的文字：', '', gAppName, ['取消', '确定'], function(f) {
+						if(f.index == 1) {
+							clearContext();
+							if(f.value !== null) {
+								can.fillText(f.value, x, y);
+								save();
+							}
+						} else {
+							clearContext();
+						}
+					});
+				}
+
 			}
 			canvas_bak.ontouchmove = function(e) {
 				status = 1;

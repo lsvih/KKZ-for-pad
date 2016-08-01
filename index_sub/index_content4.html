@@ -116,6 +116,7 @@
 				</ul>
 			</div>
 		</article>
+		<script type="text/javascript" src="../js/lsvih.js" ></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/data.js"></script>
@@ -139,7 +140,7 @@
 					vueContent.refresh(aShow[0], aShow[1]);
 				});
 				window.addEventListener('delete', function(event) { //今日播报的删除图片
-					var deleteitem = vueContent.event.content.timeline[fGetSortIdByDate(fGetDate(), vueContent.event)].today_broadcast.img[event.detail - 1];
+					var deleteitem = vueContent.event.content.timeline[fGetSortIdByDate(lsvih.time.day(), vueContent.event)].today_broadcast.img[event.detail - 1];
 					vueContent.event.content.today_broadcast.img.$remove(deleteitem);
 				});
 				vueContent = new Vue({
@@ -152,7 +153,7 @@
 							return fTodayIsChecked(a);
 						},
 						__fGetDate: function() {
-							return fGetDate();
+							return lsvih.time.day();
 						},
 						__fGetSortIdByDate: function(a, b) {
 							return fGetSortIdByDate(a, b);
@@ -160,7 +161,7 @@
 						refresh: function(a, b) {
 							if(vueContent.event !== undefined && vueContent.event !== null) {
 								var tempobj = JSON.parse(myStorage.getItem("data"));
-								tempobj.event[fFindObjSortById(vueContent.event.id, tempobj.event)] = vueContent.event;
+								tempobj.event[lsvih.array.getSubByKey({"id":vueContent.event.id}, tempobj.event)] = vueContent.event;
 								myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改
 							}
 							vueContent.event = fListAllFlowEvent(a)[b];
@@ -214,7 +215,7 @@
 								extras: {
 									images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
 									indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
-									deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+									deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds") ? "true" : "false"
 								},
 								show: {
 									aniShow: "fade-in"
@@ -279,17 +280,17 @@
 			//分屏切换看整体时间轴
 			document.getElementById("history-detail").addEventListener("tap", function() {
 				var innerIcon = this.getElementsByClassName("mui-icon")[0];
-				if(fHasClass(innerIcon, "mui-icon-arrowright")) {
-					fRemoveClass(innerIcon, "mui-icon-arrowright");
-					fAddClass(innerIcon, "mui-icon-arrowleft")
+				if(lsvih.dom.hasClass(innerIcon, "mui-icon-arrowright")) {
+					lsvih.dom.removeClass(innerIcon, "mui-icon-arrowright");
+					lsvih.dom.addClass(innerIcon, "mui-icon-arrowleft")
 					var sliderApi = mui("#slider-contain").slider({
 						scrollTime: 500
 					});
 					sliderApi.gotoItem(1);
 					sliderApi.destroy();
 				} else {
-					fRemoveClass(innerIcon, "mui-icon-arrowleft");
-					fAddClass(innerIcon, "mui-icon-arrowright")
+					lsvih.dom.removeClass(innerIcon, "mui-icon-arrowleft");
+					lsvih.dom.addClass(innerIcon, "mui-icon-arrowright")
 					var sliderApi = mui("#slider-contain").slider({
 						scrollTime: 500
 					});

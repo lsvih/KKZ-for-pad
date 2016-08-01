@@ -3689,7 +3689,7 @@ function refresh() {
 							"phone": ToInsertData[i].user.mobile,
 							"content": {
 								"schedule": ToInsertData[i].houseSchedules,
-								"ordertime": fTimeStampToLocalDateTime(ToInsertData[i].appointment_at),
+								"ordertime": lsvih.time.stampToStr(ToInsertData[i].appointment_at*1000,"datetime-local"),
 								"package": __fMapPackage(ToInsertData[i].housePackages),
 								"price": ToInsertData[i].package_amount,
 								"clear_amount": ToInsertData[i].clear_amount,

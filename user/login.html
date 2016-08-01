@@ -44,6 +44,7 @@
 				</div>
 			</form>
 		</div>
+		<script type="text/javascript" src="../js/lsvih.js" ></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -149,7 +150,7 @@
 												if(successfilecount == arr.length) {
 													clearInterval(processController);
 													mui("body").progressbar().setProgress(100);
-													localStorage.setItem("firstrun", fGetDate());
+													localStorage.setItem("firstrun", lsvih.time.day());
 													mui.toast("资源包下载完成！");
 													loading.close();
 												}
@@ -240,7 +241,7 @@
 														"phone": ToInsertData[i].user.mobile,
 														"content": {
 															"schedule": ToInsertData[i].houseSchedules,
-															"ordertime": fTimeStampToLocalDateTime(ToInsertData[i].appointment_at),
+															"ordertime": lsvih.time.stampToStr(ToInsertData[i].appointment_at*1000,"datetime-local"),
 															"package": __fMapPackage(ToInsertData[i].housePackages),
 															"price": ToInsertData[i].package_amount,
 															"clear_amount": ToInsertData[i].clear_amount,
@@ -394,17 +395,17 @@
 					var attrid = temparr[p];
 					for(var _i = 0; _i < attrs.length; _i++) {
 						if(attrs[_i].name == "型号") {
-							if(fFindObjSortById(attrid, attrs[_i].attr_values) !== false) model = attrid;
+							if(lsvih.array.getSubByKey({"id":attrid}, attrs[_i].attr_values) !== false) model = attrid;
 						}
 					}
 					for(var _j = 0; _j < attrs.length; _j++) {
 						if(attrs[_j].name == "尺寸") {
-							if(fFindObjSortById(attrid, attrs[_j].attr_values) !== false) size = attrid;
+							if(lsvih.array.getSubByKey({"id":attrid}, attrs[_j].attr_values) !== false) size = attrid;
 						}
 					}
 					for(var _k = 0; _k < attrs.length; _k++) {
 						if(attrs[_k].name == "颜色") {
-							if(fFindObjSortById(attrid, attrs[_k].attr_values) !== false) color = attrid;
+							if(lsvih.array.getSubByKey({"id":attrid}, attrs[_k].attr_values) !== false) color = attrid;
 						}
 					}
 				}

@@ -102,6 +102,7 @@
 
 		</form>
 		<div class="save"><button class="mui-btn mui-btn-danger" id="save">保存</button></div>
+		<script type="text/javascript" src="../../js/lsvih.js" ></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -115,7 +116,7 @@
 			var uploading;
 			mui.plusReady(function() {
 				eventid = plus.webview.currentWebview().eventid;
-				eventsortid = fFindObjSortById(eventid, tempobj);
+				eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempobj);
 				vueContent = new Vue({
 					el: '#userinfo',
 					data: {

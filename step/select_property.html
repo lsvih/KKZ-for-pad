@@ -154,6 +154,7 @@
 	</div>
 
 	<body>
+		<script type="text/javascript" src="../js/lsvih.js" ></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -164,7 +165,7 @@
 			var uploading;
 			var successcount = 0;
 			var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
-			var eventsortid = fFindObjSortById(eventid, tempdata.event);
+			var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
 			var uploaddata;
 			mui.plusReady(function() {
 					uploaddata = JSON.parse(myStorage.getItem("tempproperty"));
@@ -178,7 +179,7 @@
 						plus.webview.close(plus.webview.currentWebview());
 					}); //关闭
 					mui("body").on("tap", ".next-btn", function() {
-						var startat = fDateToTimeStamp(document.getElementById("starttime").value);
+						var startat = lsvih.time.strToStamp(document.getElementById("starttime").value);
 						var from = document.getElementById("from").value;
 						var to = document.getElementById("to").value;
 						var isholidaywork = document.getElementById("isholidaywork").getElementsByTagName("input")[0].checked ? 1 : 0;

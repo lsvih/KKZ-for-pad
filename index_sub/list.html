@@ -84,6 +84,7 @@
 		</ul>
 
 	</body>
+	<script type="text/javascript" src="../js/lsvih.js" ></script>
 	<script src="../js/mui.js"></script>
 	<script type="text/javascript" src="../js/storage.js"></script>
 	<script src="../js/common.js"></script>
@@ -112,7 +113,7 @@
 				vueList.refresh(nFlowID = event.detail);
 			});
 			Vue.filter('statusNumtoString', function(value) {
-				return fFindObjById(value, gStatus.status).name;
+				return lsvih.array.getObjByKey({"id":value}, gStatus.status).name;
 			})
 			var vueList = new Vue({
 				el: '#event-list',
@@ -127,7 +128,7 @@
 					},
 					changecontent: function(sortId, thisObject, status) {
 						if(status !== null && status !== undefined) { //判断列表为空的情况
-							if(!fHasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
+							if(!lsvih.dom.hasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
 								this.nSelectSort = sortId;
 								localStorage.setItem("thiseventsort", sortId)
 								if(status == 5 || status == 7) {

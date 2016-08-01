@@ -231,6 +231,7 @@
 				</li>
 			</ul>
 		</div>
+		<script type="text/javascript" src="../js/lsvih.js" ></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -245,7 +246,7 @@
 		var tempdata = JSON.parse(myStorage.getItem("data"));
 		var uploading;
 		var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
-		var eventsortid = fFindObjSortById(eventid, tempdata.event);
+		var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
 		var packagesortid;
 		mui.plusReady(function() {
 			window.addEventListener('delete', function(event) {
@@ -273,7 +274,7 @@
 					"厨房": "厨房"
 				}
 				console.log(packagesid)
-				return packagenamemapping[fFindObjById(packagesid, temppackage.packageinfo).name];
+				return packagenamemapping[lsvih.array.getObjByKey({"id":packagesid}, temppackage.packageinfo).name];
 			});
 			vueContent = new Vue({
 				el: "#package",
@@ -287,7 +288,7 @@
 				compute: {
 					__fGetPackageName: function(e) {
 						var packagesid = vueContent.event.content.package[e].id;
-						return temppackage[fFindObjSortById(packagesid, temppackage)].name;
+						return temppackage[lsvih.array.getSubByKey({"id":packagesid}, temppackage)].name;
 					}
 				},
 				methods: {
@@ -311,7 +312,7 @@
 							extras: {
 								images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
 								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
-								deletemode: fHasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds") ? "true" : "false"
 							},
 							show: {
 								aniShow: "fade-in"

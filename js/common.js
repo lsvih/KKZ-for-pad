@@ -6,85 +6,13 @@ var gTopbarHeight = 20; //状态栏高度，沉浸式使用
 var gServer = "http://123.56.200.45/kkz/"
 var gAPIServer = gServer + "api/web/" //api接口目录
 
-/**
- * 获得当前日期
- * 日期返回格式：YYYY-MM-DD
- */
-function fGetDate() {
-	var d = new Date();
-	return d.getFullYear() + "-" + ((d.getMonth() + 1) < 10 ? "0" : "") + (d.getMonth() + 1) + "-" + d.getDate();
-}
 
-/**
- * 将时间戳转换为YYYY-MM-DDThh:mm:ss
- * @param {Number} 时间戳
- */
-function fTimeStampToLocalDateTime(timestamp) { //服务器php时间戳后加3个0才是js的时间戳
-	var date = new Date(timestamp * 1000);
-	Y = date.getFullYear() + '-';
-	M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-	D = (date.getDate()  < 10 ? '0' + (date.getDate()) : date.getDate()) + 'T';
-	h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
-	m = date.getMinutes() + ':';
-	s = date.getSeconds();
-	return(Y + M + D + h + m + s);
-}
-/**
- * 将时间戳转换为YYYY-MM-DD
- * @param {Number} 时间戳
- */
-function fTimeStampToDate(timestamp) {
-	var date = new Date(timestamp * 1000);
-	Y = date.getFullYear() + '-';
-	M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-	D = (date.getDate()  < 10 ? '0' + (date.getDate()) : date.getDate());
-	return(Y + M + D);
-}
-/**
- * 将传入的标准日期时间数据YYYY-MM-DD hh-mm-ss转换为时间戳
- * @param {Date} YYYY-MM-DD hh-mm-ss
- */
-function fDateToTimeStamp(date) {
-	var tempdate = new Date(date);
-	return Math.floor(tempdate.getTime() / 1000)
-}
 
 //判断是否存在队列对象，如果不存在则创建
 if(!localStorage.FIFO) localStorage.FIFO = JSON.stringify([]);
-/**
- * 查找某元素是否有指定的ClassName
- * fHasClass(elements, cName)
- * @param {Object} 判断的对象
- * @param {String} ClassName
- * @return true=找到
- */
-function fHasClass(elements, cName) {
-	if(elements == undefined || elements == null || elements.length == 0) return "error";
-	return !!elements.className.match(new RegExp("(\\s|^)" + cName + "(\\s|$)")); // ( \\s|^ ) 判断前面是否有空格 （\\s | $ ）判断后面是否有空格 两个感叹号为转换为布尔值 以方便做判断 
-}
 
-/**
- * 为指定元素增加ClassName
- * fAddClass(elements, cName) 
- * @param {Object} 添加ClassName的对象
- * @param {String} ClassName
- */
-function fAddClass(elements, cName) {
-	if(!fHasClass(elements, cName) && fHasClass(elements, cName) !== "error") {
-		elements.className += " " + cName;
-	}
-}
-/**
- * 将指定元素的指定ClassName移除
- * fRemoveClass(elements, cName)
- * @param {Object} 待移除ClassName的对象
- * @param {String} ClassName
- */
-function fRemoveClass(elements, cName) {
-	if(fHasClass(elements, cName)) {
-		elements.className = elements.className.replace(new RegExp("(\\s|^)" + cName + "(\\s|$)"), " "); // replace方法是替换 
-	}
-}
+
+
 
 /**
  * 列出某工作流步骤下的所有事件
@@ -109,30 +37,6 @@ function fListAllFlowEvent(flowId) {
 	return aFlowEvent;
 }
 
-/**
- * 根据id，在数组中查找并返回对象
- * @param {Number} id
- * @param {Array} 查找的数组
- * @return {Object} 返回符合条件的对象 
- * 			false = 没有找到符合条件的对象
- */
-function fFindObjById(id, array) {
-	if(fFindObjSortById(id, array) === false) return false;
-	return array[fFindObjSortById(id, array)]
-}
-/**
- * 根据id,在数组中查找并返回对象的下标
- * @param {Number} id
- * @param {Array} 查找的数组
- * @return {Number} 返回对象在数组中的下标值
- * 			false 没有找到符合条件的对象
- */
-function fFindObjSortById(id, array) {
-	for(var p = 0; p < array.length; p++) {
-		if(id == array[p].id) return p;
-	}
-	return false;
-}
 
 /**
  * 关闭子页面并将工作流3与4隐藏
