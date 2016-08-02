@@ -6,13 +6,22 @@ var gTopbarHeight = 20; //状态栏高度，沉浸式使用
 var gServer = "http://123.56.200.45/kkz2/"
 var gAPIServer = gServer + "api/web/" //api接口目录
 
-
-
 //判断是否存在队列对象，如果不存在则创建
 if(!localStorage.FIFO) localStorage.FIFO = JSON.stringify([]);
 
+function uuid() {
+	var s = [];
+	var hexDigits = "0123456789abcdef";
+	for(var i = 0; i < 36; i++) {
+		s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+	}
+	s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
+	s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+	s[8] = s[13] = s[18] = s[23] = "-";
 
-
+	var uuid = s.join("");
+	return uuid;
+}
 
 /**
  * 列出某工作流步骤下的所有事件
@@ -36,7 +45,6 @@ function fListAllFlowEvent(flowId) {
 	}
 	return aFlowEvent;
 }
-
 
 /**
  * 关闭子页面并将工作流3与4隐藏
