@@ -4,13 +4,18 @@
  * @description 工具类库
  */
 (function($) {
+	"use strict";
 	var warn = undefined;
 	//本地作用域的全局变量
 	if(!$.lsvih) {
 		$.lsvih = {};
 	};
+	/**
+	 * 报错函数
+	 * @param msg 报错信息
+	 */
 	warn = function(msg) {
-		console.error('[lsvih warn]' + msg);
+		console.error('[lsvih warn]:' + msg);
 	};
 	$.lsvih = {
 		init: function() {
@@ -137,7 +142,7 @@
 					warn("请输入正确的键值对");
 					return false;
 				}
-				if(!array.length){
+				if(!array.length) {
 					warn("请输入正确的数组");
 					return false;
 				}
@@ -157,7 +162,7 @@
 			 * @param {Array} 待寻找数组
 			 */
 			getObjByKey: function(keyjson, array) {
-				return array[this.getSubByKey(keyjson,array)];
+				return array[this.getSubByKey(keyjson, array)];
 			}
 		},
 		/**
@@ -180,11 +185,46 @@
 				}
 				return size;
 			}
+		},
+		/**
+		 * 监听操作
+		 */
+		listen: {
+			/**
+			 * 多事件监听器
+			 * @param {Array} 监听的多事件函数数组
+			 * @param {Number} 监听成功总数 
+			 * @param {Object} 进度条
+			 * @param {Function} 成功回调函数(必填)
+			 * @param {Function} 错误回调函数(必填)
+			 * @param {Object} 配置(可选)
+			 */
+			//TODO~~~~~
+			events: function(events, maxCount, progress, callback, error, option) {
+				var errorFunction = error || function(msg) {
+					warn(msg);
+					return false;
+				}
+				var successFunction = callback || function() {
+					return true;
+				}
+				var progressFunction = progress || function(e) {};
+				var setTime = option.setTime || 50; //定时器设定时间，可选
+				var __successCount = 0;
+				var __timer = setInterval(function() {
+					if(maxCount == __successCount) {
+						clearInterval(__timer);
+						progress(100);
+						callback();
+						return true;
+					}
+				}, setTime)
+			}
 		}
 	};
 	/**
-	 * 判断变量是否存在
-	 * @param {String} 变量名
+	 * 判断对象是否存在
+	 * @param {String} 对象|变量名
 	 */
 	function isExitsVariable(variableName) {
 		try {

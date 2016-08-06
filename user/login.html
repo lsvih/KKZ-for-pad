@@ -55,280 +55,380 @@
 			var datalength;
 			var insertSuccessCount;
 			mui.plusReady(function() {
+				var PGJiguanPush = {
+					PluginSetTagsFunction: function(CbId, tag, Argus3, Argus4, successCallback, errorCallback) {
+						var success = typeof successCallback !== 'function' ? null : function(args) {
+								successCallback(args);
+							},
+							fail = typeof errorCallback !== 'function' ? null : function(code) {
+								errorCallback(code);
+							};
+						callbackID = B.callbackId(success, fail);
+						// 通知Native层plugintest扩展插件运行”PluginTestFunction”方法
+						return B.exec(_BARCODE, "PluginTestFunction", [callbackID, Argus1, Argus2, Argus3, Argus4]);
+					}
+				}
+
 				plus.navigator.closeSplashscreen();
 				if(!localStorage.getItem("firstrun")) {
 					mui.alert("即将下载资源包，请确认当前网络环境为WiFi。", gAppName, "确认", function() {
-							if(plus.networkinfo.getCurrentType() != 3) { //判断当前环境是否为wifi环境
-								mui.alert("请确认您的网络环境为WiFi环境", gAppName, "确认", function() {
-									plus.runtime.restart();
-								});
-							} else { //如果为wifi环境则开始下载资源包
-								loading = plus.nativeUI.showWaiting("正在下载资源包列表，请耐心等待...");
-								mui.ajax(gAPIServer + 'packages/groupPackages.group.groupProducts.product.productBrands.brand,groupPackages.group.groupProducts.product.productBrands.skus', { //下载套餐包数据
-										dataType: 'json',
-										type: 'get',
-										timeout: 6000,
-										success: function(data) {
-											console.log(JSON.stringify(data.data))
-											var packageinfo = [];
-											if(data.data.items !== null && data.data.items !== undefined && data.data.items.length !== 0)) {
-											for(var a = 0; a < data.data.items.length; a++) {
-												var tempproduct = [];
-												if(data.data.items[a].groupPackages !== null && data.data.items[a].groupPackages !== undefined && data.data.items[a].groupPackages.length !== 0) {
-													for(var b = 0; b < data.data.items[a].groupPackages.length; b++) {
-														tempproduct.push({
-
-														})
-													}
-												}
-												packageinfo.push({
-													"id": data.data.items[a].id,
-													"name": data.data.items[a].name,
-													"cover": data.data.items[a].cover_t_img,
-													"images": data.data.items[a].show_t_imgs,
-													"text": data.data.items[a].description,
-													"products": tempproduct
-												});
-											}
-
-										}
-
-											myStorage.setItem("packageinfo", JSON.stringify({
-											"packageinfo": packageinfo
-										}));
-
-										mui('body').progressbar({
-											progress: 0,
-											color: 'success'
-										}).show();
-										//显示进度条与遮罩,提示开始下载
-										mui.ajax(gServer + 'uploads/assets/commonFiles.txt', {
-											dataType: 'text',
-											type: 'get',
-											timeout: 6000,
-											success: function(data) {
-												loading.setTitle("正在下载资源包，请耐心等待...");
-												var arr = eval(data); //将资源包列表转换为数组对象进行遍历
-												for(var i = 0; i < arr.length; i++) {
-													var filenamearr = arr[i].split("/");
-													var filename = filenamearr[filenamearr.length - 1];
-													if(!myStorage.getItem("filename")) {
-														DownloadResource(gServer + 'uploads/' + arr[i]);
-													}
-												}
-												var processController = setInterval(function() {
-													if(successfilecount < arr.length) {
-														mui("body").progressbar().setProgress(successfilecount / arr.length * 100);
-													}
-													if(successfilecount == arr.length) {
-														clearInterval(processController);
-														mui("body").progressbar().setProgress(100);
-														localStorage.setItem("firstrun", lsvih.time.day());
-														mui.toast("资源包下载完成！");
-														loading.close();
-													}
-												}, 50); //定时检查是否完成下载，同时更新进度条
-
-											},
-											error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
-												console.log(JSON.stringify(xhr))
-												mui.alert("请确认网络连接后重试", gAppName, "确认", function() {
-													plus.runtime.restart();
-												});
-											}
-										});
-									},
-									error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
-										mui.alert("请确认网络连接后重试", gAppName, "确认", function() {
-											plus.runtime.restart();
-										});
-									}
-								});
-
-						}
-
-					});
-			}
-			mui("body").on("tap", "#login", function() {
-				var username = document.getElementById("username").value;
-				var password = document.getElementById("password").value;
-				if(!username) {
-					mui.alert("请输入用户名", gAppName);
-					return false;
-				}
-				if(!password) {
-					mui.alert("请输入密码", gAppName);
-					return false;
-				}
-				document.activeElement.blur();
-				loading = plus.nativeUI.showWaiting("正在登录，请稍后...");
-				mui.ajax(gAPIServer + 'users/login', {
-					data: {
-						'LoginForm[username]': username,
-						'LoginForm[password]': password
-					},
-					dataType: 'json',
-					type: 'post',
-					timeout: 6000,
-					success: function(data) {
-						if(data.success == true) {
-							localStorage.user = JSON.stringify({
-								"id": data.data.id,
-								"username": data.data.username,
-								"sex": data.data.sex,
-								"head_img-url": data.data["head_img-url"],
-								"access_token": data.data.access_token
+						if(plus.networkinfo.getCurrentType() != 3) { //判断当前环境是否为wifi环境
+							mui.alert("请确认您的网络环境为WiFi环境", gAppName, "确认", function() {
+								plus.runtime.restart();
 							});
-							loading.setTitle("正在加载用户数据，请稍后");
-							mui.ajax(gAPIServer + 'users/' + User("id") + '?expand=houseAppointments0.house.user,houses0.houseSchedules,houses0.user,houses0.housePackages.package&sort=houses0.housesSchedules.schedule_at&access-token=' + User("access_token"), {
+						} else { //如果为wifi环境则开始下载资源包
+							loading = plus.nativeUI.showWaiting("正在下载资源包列表，请耐心等待...");
+							mui.ajax(gAPIServer + 'packages?expand=groupPackages.group.groupProducts.product.productBrands.brand,groupPackages.group.groupProducts.product.productBrands.skus', { //下载套餐包数据
 								dataType: 'json',
 								type: 'get',
 								timeout: 6000,
 								success: function(data) {
-									if(data.success == true) {
-										var tempdata = {
-											"event": []
-										};
-										if(data.data.houseAppointments0 !== null && data.data.houseAppointments0 !== undefined && data.data.houseAppointments0.length !== 0) {
-											var appoint = data.data.houseAppointments0;
-											for(var i = 0; i < appoint.length; i++) {
-												var toinsertdata = {
-													"id": uuid(),
-													"user_id": appoint[i].user_id,
-													"name": appoint[i].house.user.fullname,
-													"sex": appoint[i].house.user.sex,
-													"status": 0,
-													"province": appoint[i].house.province,
-													"city": appoint[i].house.city,
-													"district": appoint[i].house.county,
-													"street": appoint[i].house.street,
-													"address": appoint[i].house.address,
-													"phone": appoint[i].house.user.mobile,
-													"content": {
-														"ordertime": lsvih.time.stampToStr(appoint[i].appointment_at * 1000, "datetime-local")
+									var packageinfo = [];
+									if(data.data.items !== null && data.data.items !== undefined && data.data.items.length !== 0) {
+										for(var a = 0; a < data.data.items.length; a++) {
+											var packageitem = data.data.items[a];
+											var tempProductGroup = [];
+											if(packageitem.groupPackages !== null && packageitem.groupPackages !== undefined && packageitem.groupPackages.length !== 0) {
+												for(var b = 0; b < packageitem.groupPackages.length; b++) {
+													var grouppackageitem = packageitem.groupPackages[b];
+													var tempGroupProduct = [];
+													if(grouppackageitem.group.groupProducts !== null && grouppackageitem.group.groupProducts !== undefined && grouppackageitem.group.groupProducts.length !== 0) {
+														for(var c = 0; c < grouppackageitem.group.groupProducts.length; c++) {
+															var tempProductBrand = [];
+															var groupproductitem = grouppackageitem.group.groupProducts[c];
+															if(groupproductitem.product.productBrands !== null && groupproductitem.product.productBrands !== undefined && groupproductitem.product.productBrands.length !== 0) {
+																for(var d = 0; d < groupproductitem.product.productBrands.length; d++) {
+																	var productbranditem = groupproductitem.product.productBrands[d];
+																	var tempSku = [];
+																	if(productbranditem.skus !== null && productbranditem.skus !== undefined && productbranditem.skus.length !== 0) {
+																		for(var e = 0; e < productbranditem.skus.length; e++) {
+																			var skuitem = productbranditem.skus[e];
+																			tempSku.push({
+																				"sku_id": skuitem.id,
+																				"model": skuitem.model,
+																				"color": skuitem.color,
+																				"size": skuitem.size,
+																				"text": skuitem.description,
+																				"img": skuitem.show_t_imgs
+																			});
+																		}
+																	}
+																	tempProductBrand.push({
+																		"product_brand_id": productbranditem.id,
+																		"brand_id": productbranditem.brand_id,
+																		"brand_name": productbranditem.brand.name,
+																		"skus": tempSku
+																	});
+																}
+															}
+															tempGroupProduct.push({
+																"group_product_id": groupproductitem.id,
+																"product_id": groupproductitem.product_id,
+																"num": groupproductitem.num,
+																"is_selectable": groupproductitem.is_selectable,
+																"name": groupproductitem.name,
+																"product_brands": tempProductBrand
+															});
+														}
 													}
+
+													tempProductGroup.push({
+														"group_package_id": grouppackageitem.id,
+														"group_id": grouppackageitem.group_id,
+														"group_name": grouppackageitem.group.name,
+														"group_products": tempGroupProduct
+													});
 												}
-												tempdata.event.push(toinsertdata);
-												toinsertdata = {};
 											}
+											packageinfo.push({
+												"package_id": packageitem.id,
+												"name": packageitem.name,
+												"cover": packageitem.cover_t_img,
+												"images": packageitem.show_t_imgs,
+												"text": packageitem.description,
+												"package_groups": tempProductGroup
+											});
 										}
-									} else {
-										mui.alert(data.message, gAppName);
-										console.log(JSON.stringify(data));
+
 									}
+
+									myStorage.setItem("packageinfo", JSON.stringify({
+										"packageinfo": packageinfo
+									}));
+									console.log(myStorage.getItem("packageinfo"))
+									mui('body').progressbar({
+										progress: 0,
+										color: 'success'
+									}).show();
+									//显示进度条与遮罩,提示开始下载
+									mui.ajax(gServer + 'uploads/assets/commonFiles.txt', {
+										dataType: 'text',
+										type: 'get',
+										timeout: 6000,
+										success: function(data) {
+											loading.setTitle("正在下载资源包，请耐心等待...");
+											var arr;
+											if(data !== null && data !== undefined && data !== "") {
+												arr = eval(data); //将资源包列表转换为数组对象进行遍历
+											} else {
+												arr = [];
+											}
+											for(var i = 0; i < arr.length; i++) {
+												var filenamearr = arr[i].split("/");
+												var filename = filenamearr[filenamearr.length - 1];
+												if(!myStorage.getItem("filename")) {
+													DownloadResource(gServer + 'uploads/' + arr[i]);
+												}
+											}
+											var processController = setInterval(function() {
+												if(successfilecount < arr.length) {
+													mui("body").progressbar().setProgress(successfilecount / arr.length * 100);
+												}
+												if(successfilecount == arr.length) {
+													clearInterval(processController);
+													mui("body").progressbar().setProgress(100);
+													localStorage.setItem("firstrun", lsvih.time.day());
+													mui.toast("资源包下载完成！");
+													loading.close();
+												}
+											}, 50); //定时检查是否完成下载，同时更新进度条
+
+										},
+										error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
+											console.log(JSON.stringify(xhr))
+											mui.alert("请确认网络连接后重试", gAppName, "确认", function() {
+												plus.runtime.restart();
+											});
+										}
+									});
 								},
-								error: function(xhr, textStatus, errorThrown) {
-									mui.alert("获取用户信息时网络连接失败，请稍候再试", gAppName);
-									loading.close();
+								error: function(xhr, textStatus, errorThrown) { //如果获取资源包列表时的网络连接失败了，则判定当前网络状态差，重新执行
+									mui.alert("请确认网络连接后重试", gAppName, "确认", function() {
+										plus.runtime.restart();
+									});
 								}
 							});
 
-							//								mui.ajax(gAPIServer + 'users/' + User("id") + '?expand=houses0.houseSchedules,houses0.user,houses0.housePackages.package&sort=houses0.housesSchedules.schedule_at&access-token=' + User("access_token"), {
-							//									dataType: 'json',
-							//									type: 'get',
-							//									timeout: 6000,
-							//									success: function(data) {
-							//										if(data.success == true) {
-							//											if(!data.data.houses0) {
-							//												myStorage.setItem("data", JSON.stringify({
-							//														"event": []
-							//													})) //如果房屋信息不存在，则直接让event为空数组
-							//											} else { //如果信息存在，则将后台数据格式转化为前端数据格式存入myStorage.data中
-							//												var ToInsertData = data.data.houses0;
-							//												datalength = ToInsertData.length;
-							//												insertSuccessCount = 0; //成功计数
-							//												var Tempdata = {
-							//													"event": []
-							//												};
-							//												console.log(JSON.stringify(ToInsertData))
-							//												for(var i = 0; i < ToInsertData.length; i++) {
-							//													Tempdata.event[i] = {
-							//														"id": ToInsertData[i].id,
-							//														"user_id": ToInsertData[i].user_id,
-							//														"name": ToInsertData[i].user.fullname,
-							//														"sex": Number(ToInsertData[i].user.sex),
-							//														"contractid": ToInsertData[i].house_contract.split(".")[0],
-							//														"status": ToInsertData[i].status,
-							//														"province": ToInsertData[i].province,
-							//														"city": ToInsertData[i].city,
-							//														"district": ToInsertData[i].county,
-							//														"street": ToInsertData[i].street,
-							//														"address": ToInsertData[i].address,
-							//														"phone": ToInsertData[i].user.mobile,
-							//														"content": {
-							//															"schedule": ToInsertData[i].houseSchedules,
-							//															"ordertime": lsvih.time.stampToStr(ToInsertData[i].appointment_at*1000,"datetime-local"),
-							//															"package": __fMapPackage(ToInsertData[i].housePackages),
-							//															"price": ToInsertData[i].package_amount,
-							//															"clear_amount": ToInsertData[i].clear_amount,
-							//															"distance_rate": ToInsertData[i].distance_rate,
-							//															"taxes_amount": ToInsertData[i].taxes_amount,
-							//															"house_quotation": ToInsertData[i].house_quotation,
-							//															"house_contract": ToInsertData[i].house_contract,
-							//															"time_period": ToInsertData[i].time_period,
-							//															"is_holiday_work": ToInsertData[i].is_holiday_work,
-							//															"duration": ToInsertData[i].duration,
-							//															"start_at": ToInsertData[i].start_at,
-							//														}
-							//													}
-							//													insertSuccessCount++; //成功计数增加
-							//												}
-							//											}
-							//											/**
-							//											 * 子函数
-							//											 * 解析package数组信息，返回符合格式的package数组
-							//											 * @param {Array} 待解析package数组
-							//											 */
-							//											function __fMapPackage(packagearr) {
-							//												if(packagearr == undefined || packagearr == null || packagearr.length == 0) return [];
-							//												var __temparr = [];
-							//												for(var __i = 0; __i < packagearr.length; __i++) {
-							//													__temparr.push({
-							//														"id": packagearr[__i].package.id,
-							//														"packageid": packagearr[__i].package_id,
-							//														"name": packagearr[__i].package.name,
-							//														"size": packagearr[__i].area,
-							//														"images": packagearr[__i].measure_t_imgs,
-							//														"diagram": packagearr[__i].plan_t_img
-							//													})
-							//												}
-							//												return __temparr;
-							//											}
-							//
-							//											var LoadingUserinfo = setInterval(function() {
-							//												if(insertSuccessCount == datalength) {
-							//													clearInterval(LoadingUserinfo);
-							//													myStorage.setItem("data", JSON.stringify(Tempdata));
-							//													loading.close();
-							//													mui.toast("登陆成功!");
-							//													plus.runtime.restart();
-							//
-							//												}
-							//											}, 50); //定时检查是否完成下载，同时更新进度条
-							//
-							//										} else {
-							//											mui.alert(data.message, gAppName);
-							//											console.log(JSON.stringify(data));
-							//										}
-							//									},
-							//									error: function(xhr, textStatus, errorThrown) {
-							//										mui.alert("获取用户信息时网络连接失败，请稍候再试", gAppName);
-							//										loading.close();
-							//									}
-							//								});
-						} else {
-							mui.alert(data.message, gAppName);
-							loading.close();
-							console.log(JSON.stringify(data));
 						}
-					},
-					error: function(xhr, textStatus, errorThrown) {
-						mui.alert("登录时网络连接失败，请稍后重试", gAppName);
-						loading.close();
-					}
-				});
 
-			});
+					});
+				}
+				mui("body").on("tap", "#login", function() {
+					var username = document.getElementById("username").value;
+					var password = document.getElementById("password").value;
+					if(!username) {
+						mui.alert("请输入用户名", gAppName);
+						return false;
+					}
+					if(!password) {
+						mui.alert("请输入密码", gAppName);
+						return false;
+					}
+					document.activeElement.blur();
+					loading = plus.nativeUI.showWaiting("正在登录，请稍后...");
+					mui.ajax(gAPIServer + 'users/login', {
+						data: {
+							'LoginForm[username]': username,
+							'LoginForm[password]': password
+						},
+						dataType: 'json',
+						type: 'post',
+						timeout: 6000,
+						success: function(data) {
+							if(data.success == true) {
+								localStorage.user = JSON.stringify({
+									"id": data.data.id,
+									"username": data.data.username,
+									"sex": data.data.sex,
+									"head_img-url": data.data["head_img-url"],
+									"access_token": data.data.access_token
+								});
+								loading.setTitle("正在加载用户数据，请稍后");
+								mui.ajax(gAPIServer + 'house-appointments?filter=inspector_id:' + User("id") + '&expand=houseGroups.houseGroupSchedules,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
+									dataType: 'json',
+									type: 'get',
+									timeout: 6000,
+									success: function(data) {
+										if(data.success == true) {
+											var tempdata = {
+												"event": []
+											};
+											if(data.data.items !== null && data.data.items !== undefined && data.data.items.length !== 0) {
+												for(var i = 0; i < data.data.items.length; i++) {
+													var appoint = data.data.items[i];
+													var toinsertdata = {
+														"id": appoint.id,
+														"user_id": appoint.user_id,
+														"name": appoint.user.fullname,
+														"sex": appoint.user.sex,
+														"status": appoint.houseGroups.length !== 0 ? appoint.houseGroups[0].status : -1,
+														"province": appoint.house.province,
+														"city": appoint.house.city,
+														"district": appoint.house.county,
+														"street": appoint.house.street,
+														"address": appoint.house.address,
+														"phone": appoint.user.mobile,
+														"content": {
+															"schedule": appoint.houseGroups[0].houseGroupSchedules,
+															"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
+															"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
+															"price": appoint.houseGroups[0].group_amount,
+															"clear_amount": appoint.houseGroups[0].clear_amount,
+															"distance_rate": appoint.houseGroups[0].distance_rate,
+															"taxes_amount": appoint.houseGroups[0].taxes_amount,
+															"house_quotation": appoint.houseGroups[0].group_quotation,
+															"house_contract": appoint.houseGroups[0].group_contract,
+															"time_period": appoint.houseGroups[0].time_period,
+															"is_holiday_work": appoint.houseGroups[0].is_holiday_work,
+															"duration": appoint.houseGroups[0].duration,
+															"start_at": appoint.houseGroups[0].start_at
+														}
+													}
+													tempdata.event.push(toinsertdata);
+													toinsertdata = {};
+												}
+											}
+											myStorage.setItem("data", JSON.stringify(tempdata));
+											loading.close();
+											mui.toast("登陆成功!");
+											plus.runtime.restart();
+										} else {
+											mui.alert(data.message, gAppName);
+											console.log(JSON.stringify(data));
+										}
+									},
+									error: function(xhr, textStatus, errorThrown) {
+										mui.alert("获取用户信息时网络连接失败，请稍候再试", gAppName);
+										loading.close();
+									}
+								});
+								/**
+								 * 将传入的packages数组转化为符合的格式
+								 */
+								function __fMapPackage(packagearr) {
+									if(packagearr !== null && packagearr !== undefined && packagearr.length !== 0) {
+										var __temparr = [];
+										for(var __i = 0; __i < packagearr.length; __i++) {
+											__temparr.push({
+												"house_group_id": packagearr[__i].house_group_id,
+												"package_id": packagearr[__i].package_id,
+												"name": packagearr[__i].package.name,
+												"size": packagearr[__i].area,
+												"images": packagearr[__i].measure_t_imgs,
+												"diagram": packagearr[__i].plan_t_img
+											})
+										}
+										return __temparr;
+									} else {
+										return [];
+									}
+								}
+								//								mui.ajax(gAPIServer + 'users/' + User("id") + '?expand=houses0.houseSchedules,houses0.user,houses0.housePackages.package&sort=houses0.housesSchedules.schedule_at&access-token=' + User("access_token"), {
+								//									dataType: 'json',
+								//									type: 'get',
+								//									timeout: 6000,
+								//									success: function(data) {
+								//										if(data.success == true) {
+								//											if(!data.data.houses0) {
+								//												myStorage.setItem("data", JSON.stringify({
+								//														"event": []
+								//													})) //如果房屋信息不存在，则直接让event为空数组
+								//											} else { //如果信息存在，则将后台数据格式转化为前端数据格式存入myStorage.data中
+								//												var ToInsertData = data.data.houses0;
+								//												datalength = ToInsertData.length;
+								//												insertSuccessCount = 0; //成功计数
+								//												var Tempdata = {
+								//													"event": []
+								//												};
+								//												console.log(JSON.stringify(ToInsertData))
+								//												for(var i = 0; i < ToInsertData.length; i++) {
+								//													Tempdata.event[i] = {
+								//														"id": ToInsertData[i].id,
+								//														"user_id": ToInsertData[i].user_id,
+								//														"name": ToInsertData[i].user.fullname,
+								//														"sex": Number(ToInsertData[i].user.sex),
+								//														"contractid": ToInsertData[i].house_contract.split(".")[0],
+								//														"status": ToInsertData[i].status,
+								//														"province": ToInsertData[i].province,
+								//														"city": ToInsertData[i].city,
+								//														"district": ToInsertData[i].county,
+								//														"street": ToInsertData[i].street,
+								//														"address": ToInsertData[i].address,
+								//														"phone": ToInsertData[i].user.mobile,
+								//														"content": {
+								//															"schedule": ToInsertData[i].houseSchedules,
+								//															"ordertime": lsvih.time.stampToStr(ToInsertData[i].appointment_at*1000,"datetime-local"),
+								//															"package": __fMapPackage(ToInsertData[i].housePackages),
+								//															"price": ToInsertData[i].package_amount,
+								//															"clear_amount": ToInsertData[i].clear_amount,
+								//															"distance_rate": ToInsertData[i].distance_rate,
+								//															"taxes_amount": ToInsertData[i].taxes_amount,
+								//															"house_quotation": ToInsertData[i].house_quotation,
+								//															"house_contract": ToInsertData[i].house_contract,
+								//															"time_period": ToInsertData[i].time_period,
+								//															"is_holiday_work": ToInsertData[i].is_holiday_work,
+								//															"duration": ToInsertData[i].duration,
+								//															"start_at": ToInsertData[i].start_at,
+								//														}
+								//													}
+								//													insertSuccessCount++; //成功计数增加
+								//												}
+								//											}
+								//											/**
+								//											 * 子函数
+								//											 * 解析package数组信息，返回符合格式的package数组
+								//											 * @param {Array} 待解析package数组
+								//											 */
+								//											function __fMapPackage(packagearr) {
+								//												if(packagearr == undefined || packagearr == null || packagearr.length == 0) return [];
+								//												var __temparr = [];
+								//												for(var __i = 0; __i < packagearr.length; __i++) {
+								//													__temparr.push({
+								//														"id": packagearr[__i].package.id,
+								//														"packageid": packagearr[__i].package_id,
+								//														"name": packagearr[__i].package.name,
+								//														"size": packagearr[__i].area,
+								//														"images": packagearr[__i].measure_t_imgs,
+								//														"diagram": packagearr[__i].plan_t_img
+								//													})
+								//												}
+								//												return __temparr;
+								//											}
+								//
+								//											var LoadingUserinfo = setInterval(function() {
+								//												if(insertSuccessCount == datalength) {
+								//													clearInterval(LoadingUserinfo);
+								//													myStorage.setItem("data", JSON.stringify(Tempdata));
+								//													loading.close();
+								//													mui.toast("登陆成功!");
+								//													plus.runtime.restart();
+								//
+								//												}
+								//											}, 50); //定时检查是否完成下载，同时更新进度条
+								//
+								//										} else {
+								//											mui.alert(data.message, gAppName);
+								//											console.log(JSON.stringify(data));
+								//										}
+								//									},
+								//									error: function(xhr, textStatus, errorThrown) {
+								//										mui.alert("获取用户信息时网络连接失败，请稍候再试", gAppName);
+								//										loading.close();
+								//									}
+								//								});
+							} else {
+								mui.alert(data.message, gAppName);
+								loading.close();
+								console.log(JSON.stringify(data));
+							}
+						},
+						error: function(xhr, textStatus, errorThrown) {
+							mui.alert("登录时网络连接失败，请稍后重试", gAppName);
+							loading.close();
+						}
+					});
+
+				});
 			});
 
 			function DownloadResource(url) {
