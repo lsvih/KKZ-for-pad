@@ -41,6 +41,26 @@
 		<div id="back-drop"></div>
 		<article id="event">
 			<!--待量房-->
+			<template v-if="event.status==-1">
+				<div class="user-info block">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit edit-icon"></span>
+					<div class="click-area user-info-edit" v-on:tap="__fEditUser(event.id)"></div><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
+				</div>
+				<div class="block">
+					<span>待量房</span><br/>
+					<span class="check-time">预约上门时间：<span>
+						<input type="datetime-local" id="select-time"  v-bind:value="event.content.ordertime" v-bind:init-time="event.content.ordertime" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)">
+					</span>
+					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
+				</div>
+				<div class="btns block">
+					<span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span>
+					<span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
+
+			</template>
+			<!--待量房-->
 			<template v-if="event.status==0">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
@@ -182,17 +202,7 @@
 		var thisevent = fListAllFlowEvent(1)[0]; //从myStorage里获取信息
 		var MAXIMAGECOUNT = 10;
 		mui.plusReady(function() {
-
-			//			var url =  'type=tran&appid=' + encodeURIComponent(plus.runtime.appid);
-			//			url += ('&cid=' + encodeURIComponent(plus.push.getClientInfo().clientid));
-			//			if(plus.os.name == 'iOS') {
-			//				url += ('&token=' + encodeURIComponent(plus.push.getClientInfo().token));
-			//			}
-			//			url += ('&title=' + encodeURIComponent('Hello H5+'));
-			//			url += ('&content=' + encodeURIComponent('带透传数据推送通知，可通过plus.push API获取数据并进行业务逻辑处理！'));
-			//			url += ('&payload=' + encodeURIComponent('{title:"Hello H5+ Test",content:"test content",payload:{id:"1234567890"}}'));
-			//			url += ('&version=' + encodeURIComponent(plus.runtime.version));
-			//			console.log(url);
+			
 			window.addEventListener('refreshvue', function(event) {
 				var aShow = event.detail.split(",");
 				vueContent.refresh(aShow[0], aShow[1]);
@@ -407,7 +417,7 @@
 					if(f.index == 1) {
 						
 						//TODO：放入同步队列
-						mui.ajax(gAPIServer + 'houses/' + vueContent.event.id + '?access-token=' + User("access_token"), {
+						mui.ajax(gAPIServer + 'house-appointments/' + vueContent.event.id + '?access-token=' + User("access_token"), {
 							data: {
 								"appointment_at": lsvih.time.strToStamp(e.value)
 							},

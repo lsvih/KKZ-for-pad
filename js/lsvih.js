@@ -60,7 +60,7 @@
 					case "datetime":
 						D += " ";
 					case "datetime-local":
-						D = /\d{2}\s/.test(D)?D:(D+"T");
+						D = /\d{2}\s/.test(D) ? D : (D + "T");
 						return(Y + M + D + h + m + s);
 						break;
 					case "time":

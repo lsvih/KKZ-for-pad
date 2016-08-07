@@ -3654,90 +3654,57 @@ function fInstallTestData() {
 
 function refresh() {
 	myStorage.removeItem("data");
-	var loading=plus.nativeUI.showWaiting("正在刷新数据");
-	mui.ajax(gAPIServer + 'users/' + User("id") + '?expand=houses0.houseSchedules,houses0.user,houses0.housePackages.package&sort=houses0.housesSchedules.schedule_at&access-token=' + User("access_token"), {
+	var loading = plus.nativeUI.showWaiting("正在刷新数据");
+	mui.ajax(gAPIServer + 'house-appointments?filter=inspector_id:' + User("id") + '&expand=houseGroups.houseGroupSchedules,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
 		dataType: 'json',
 		type: 'get',
 		timeout: 6000,
 		success: function(data) {
 			if(data.success == true) {
-				if(!data.data.houses0) {
-					myStorage.setItem("data", JSON.stringify({
-							"event": []
-						})) //如果房屋信息不存在，则直接让event为空数组
-				} else { //如果信息存在，则将后台数据格式转化为前端数据格式存入myStorage.data中
-					var ToInsertData = data.data.houses0;
-					datalength = ToInsertData.length;
-					insertSuccessCount = 0; //成功计数
-					var Tempdata = {
-						"event": []
-					};
-					console.log(JSON.stringify(ToInsertData))
-					for(var i = 0; i < ToInsertData.length; i++) {
-						Tempdata.event[i] = {
-							"id": ToInsertData[i].id,
-							"user_id": ToInsertData[i].user_id,
-							"name": ToInsertData[i].user.fullname,
-							"sex": Number(ToInsertData[i].user.sex),
-							"contractid": ToInsertData[i].house_contract.split(".")[0],
-							"status": ToInsertData[i].status,
-							"province": ToInsertData[i].province,
-							"city": ToInsertData[i].city,
-							"district": ToInsertData[i].county,
-							"street": ToInsertData[i].street,
-							"address": ToInsertData[i].address,
-							"phone": ToInsertData[i].user.mobile,
-							"content": {
-								"schedule": ToInsertData[i].houseSchedules,
-								"ordertime": lsvih.time.stampToStr(ToInsertData[i].appointment_at*1000,"datetime-local"),
-								"package": __fMapPackage(ToInsertData[i].housePackages),
-								"price": ToInsertData[i].package_amount,
-								"clear_amount": ToInsertData[i].clear_amount,
-								"distance_rate": ToInsertData[i].distance_rate,
-								"taxes_amount": ToInsertData[i].taxes_amount,
-								"house_quotation": ToInsertData[i].house_quotation,
-								"house_contract": ToInsertData[i].house_contract,
-								"time_period": ToInsertData[i].time_period,
-								"is_holiday_work": ToInsertData[i].is_holiday_work,
-								"duration": ToInsertData[i].duration,
-								"start_at": ToInsertData[i].start_at,
+				var tempdata = {
+					"event": []
+				};
+				if(data.data.items !== null && data.data.items !== undefined && data.data.items.length !== 0) {
+					for(var i = 0; i < data.data.items.length; i++) {
+						var appoint = data.data.items[i];
+						var toinsertdata = {
+							"id": appoint.id,
+							"user_id": appoint.user_id,
+							"name": appoint.user.fullname,
+							"sex": appoint.user.sex,
+							"status": appoint.houseGroups.length !== 0 ? appoint.houseGroups[0].status : -1,
+							"province": appoint.house.province,
+							"city": appoint.house.city,
+							"district": appoint.house.county,
+							"street": appoint.house.street,
+							"address": appoint.house.address,
+							"phone": appoint.user.mobile,
+							"content": appoint.houseGroups.length == 0 ? {
+								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local")
+							} : {
+								"schedule": appoint.houseGroups[0].houseGroupSchedules,
+								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
+								"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
+								"price": appoint.houseGroups[0].group_amount,
+								"clear_amount": appoint.houseGroups[0].clear_amount,
+								"distance_rate": appoint.houseGroups[0].distance_rate,
+								"taxes_amount": appoint.houseGroups[0].taxes_amount,
+								"house_quotation": appoint.houseGroups[0].group_quotation,
+								"house_contract": appoint.houseGroups[0].group_contract,
+								"time_period": appoint.houseGroups[0].time_period,
+								"is_holiday_work": appoint.houseGroups[0].is_holiday_work,
+								"duration": appoint.houseGroups[0].duration,
+								"start_at": appoint.houseGroups[0].start_at
 							}
 						}
-						insertSuccessCount++; //成功计数增加
+						tempdata.event.push(toinsertdata);
+						toinsertdata = {};
 					}
 				}
-				/**
-				 * 子函数
-				 * 解析package数组信息，返回符合格式的package数组
-				 * @param {Array} 待解析package数组
-				 */
-				function __fMapPackage(packagearr) {
-					if(packagearr == undefined || packagearr == null || packagearr.length == 0) return [];
-					var __temparr = [];
-					for(var __i = 0; __i < packagearr.length; __i++) {
-						__temparr.push({
-							"id": packagearr[__i].package.id,
-							"packageid": packagearr[__i].package_id,
-							"name": packagearr[__i].package.name,
-							"size": packagearr[__i].area,
-							"images": packagearr[__i].measure_t_imgs,
-							"diagram": packagearr[__i].plan_t_img
-						})
-					}
-					return __temparr;
-				}
-
-				var LoadingUserinfo = setInterval(function() {
-					if(insertSuccessCount == datalength) {
-						clearInterval(LoadingUserinfo);
-						myStorage.setItem("data", JSON.stringify(Tempdata));
-						loading.close();
-						mui.toast("刷新成功!");
-						plus.runtime.restart();
-
-					}
-				}, 50); //定时检查是否完成下载，同时更新进度条
-
+				myStorage.setItem("data", JSON.stringify(tempdata));
+				loading.close();
+				mui.toast("登陆成功!");
+				plus.runtime.restart();
 			} else {
 				mui.alert(data.message, gAppName);
 				console.log(JSON.stringify(data));
@@ -3748,4 +3715,25 @@ function refresh() {
 			loading.close();
 		}
 	});
+	/**
+	 * 将传入的packages数组转化为符合的格式
+	 */
+	function __fMapPackage(packagearr) {
+		if(packagearr !== null && packagearr !== undefined && packagearr.length !== 0) {
+			var __temparr = [];
+			for(var __i = 0; __i < packagearr.length; __i++) {
+				__temparr.push({
+					"house_group_id": packagearr[__i].house_group_id,
+					"package_id": packagearr[__i].package_id,
+					"name": packagearr[__i].package.name,
+					"size": packagearr[__i].area,
+					"images": packagearr[__i].measure_t_imgs,
+					"diagram": packagearr[__i].plan_t_img
+				})
+			}
+			return __temparr;
+		} else {
+			return [];
+		}
+	}
 }

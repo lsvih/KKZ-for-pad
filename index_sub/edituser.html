@@ -102,7 +102,7 @@
 
 		</form>
 		<div class="save"><button class="mui-btn mui-btn-danger" id="save">保存</button></div>
-		<script type="text/javascript" src="../../js/lsvih.js" ></script>
+		<script type="text/javascript" src="../js/lsvih.js" ></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -144,7 +144,7 @@
 						mui.toast("请正确填写客户手机号");
 						return false;
 					}
-					//TODO:队列化，不需要提示
+					//TODO:队列化之后不需要提示
 					uploading = plus.nativeUI.showWaiting("正在上传修改数据，请稍后...")
 					mui.ajax(gAPIServer + 'users/' + vueContent.event.user_id + '?access-token=' + User("access_token"), {
 						data: {
@@ -162,7 +162,6 @@
 								tempdata.event[eventsortid].phone = phonenum;
 								myStorage.setItem("data", JSON.stringify(tempdata)); //将已经修改成功的数据在本地修改
 								//修改房屋地址部分
-								
 								mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
 									data: {
 										'street': street,

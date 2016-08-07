@@ -298,7 +298,7 @@
 							lsvih.dom.removeClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
 							lsvih.dom.addClass(this, "mui-active");
 							nActiveMenu = this.id.split("-")[1];
-							//							fCloseSubPage();
+							//fCloseSubPage();
 							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", nActiveMenu); //点击图标时传值到list并刷新视图
 							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", nActiveMenu + ",0"); //传值到index_content
 							myStorage.setItem("thisflow", nActiveMenu);
@@ -346,9 +346,7 @@
 			 * 关闭菜单
 			 */
 			function fCloseMenu() {
-				if(bIsInTransition) {
-					return;
-				}
+				if(bIsInTransition) return;
 				if(bShowMenu) {
 					//关闭遮罩；
 					//主窗体开始侧滑；
