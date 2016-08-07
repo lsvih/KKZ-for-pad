@@ -47,28 +47,23 @@
 					return false;
 				}
 				var d = new Date(timestamp);
+				var Y = d.getFullYear() + '-';
+				var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
+				var D = isExitsVariable(D) ? D : (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
+				var h = (d.getHours() < 10 ? '0' + d.getHours() : d.getHours()) + ':';
+				var m = d.getMinutes() + ':';
+				var s = d.getSeconds();
 				switch(type) {
 					case "date":
-						var Y = d.getFullYear() + '-';
-						var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
-						var D = (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
 						return(Y + M + D);
 						break;
 					case "datetime":
-						var D = (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate()) + ' ';
+						D += " ";
 					case "datetime-local":
-						var Y = d.getFullYear() + '-';
-						var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
-						var D = isExitsVariable(D) ? D : (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate()) + 'T';
-						var h = (d.getHours() < 10 ? '0' + d.getHours() : d.getHours()) + ':';
-						var m = d.getMinutes() + ':';
-						var s = d.getSeconds();
+						D = /\d{2}\s/.test(D)?D:(D+"T");
 						return(Y + M + D + h + m + s);
 						break;
 					case "time":
-						var h = (d.getHours() < 10 ? '0' + d.getHours() : d.getHours()) + ':';
-						var m = d.getMinutes() + ':';
-						var s = d.getSeconds();
 						return(h + m + s);
 						break;
 					default:
