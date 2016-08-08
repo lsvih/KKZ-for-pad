@@ -155,20 +155,20 @@
 			<div id="package">
 				<div class="package-title">选择套餐</div>
 				<div class="package-item-container" v-for="package in packageinfo">
-					<div class="edit-num" v-bind:class="{'edit-num-active' : __fGetpackageNum(package.id)}">
+					<div class="edit-num" v-bind:class="{'edit-num-active' : __fGetpackageNum(package.package_id)}">
 						<div class="mui-numbox" data-numbox-min='0' data-numbox-max='9'>
 							<button class="mui-btn mui-btn-numbox-minus mui-icon mui-icon-minus" type="button"></button>
-							<input class="mui-input-numbox" type="number" v-bind:value="__fGetpackageNum(package.id)" v-bind:data-id="__fGetpackageNum(package.id)" v-on:change="__fEditNum($event.currentTarget)" disabled/>
+							<input class="mui-input-numbox" type="number" v-bind:value="__fGetpackageNum(package.package_id)" v-bind:data-id="__fGetpackageNum(package.package_id)" v-on:change="__fEditNum($event.currentTarget)" disabled/>
 							<button class="mui-btn mui-btn-numbox-plus mui-icon mui-icon-plus" type="button"></button>
 						</div>
 					</div>
-					<div class="check-mask" v-show="__fGetpackageNum(package.id)" v-on:tap="__fCancelSelect(package.id,$event.currentTarget)"></div>
-					<img v-bind:src="package.cover|cache" v-on:tap="__fSelectThisPackage(package.id,$event.currentTarget,$index)">
-					<span class="package-item-title" v-show="!__fGetpackageNum(package.id)">{{package.name}}</span></div>
+					<div class="check-mask" v-show="__fGetpackageNum(package.package_id)" v-on:tap="__fCancelSelect(package.package_id,$event.currentTarget)"></div>
+					<img v-bind:src="package.cover|cache" v-on:tap="__fSelectThisPackage(package.package_id,$event.currentTarget,$index)">
+					<span class="package-item-title" v-show="!__fGetpackageNum(package.package_id)">{{package.name}}</span></div>
 			</div>
 			<div class="package-title" style="margin-top: 30px;">单品</div>
 		</div>
-		<script type="text/javascript" src="../js/lsvih.js" ></script>
+		<script type="text/javascript" src="../js/lsvih.js"></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -186,14 +186,21 @@
 		var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
 		var temptimeout;
 		var packagenum = temppackage.packageinfo.length;
+		for(var _i = 0; _i < temppackage.packageinfo.length; _i++) {
+			temppackage.packageinfo[_i] = fDetailPipe(temppackage.packageinfo[_i]);
+		}
 		var numboxarr = new Array(packagenum);
-		var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
+		var eventsortid = lsvih.array.getSubByKey({
+			"id": eventid
+		}, tempdata.event);
+		var thiseventpackage = tempdata.event[eventsortid].content.package;
 		mui.plusReady(function() {
 			fAddVueCacheFilter();
 			vueContent = new Vue({
 				el: '#package',
 				data: temppackage,
 				ready: function() {
+					console.log(JSON.stringify(temppackage))
 					document.getElementById("mask").style.opacity = 0;
 					document.getElementById("mask").style.zIndex = 0;
 					var numboxs = document.getElementsByClassName("mui-numbox");
@@ -203,7 +210,7 @@
 				},
 				methods: {
 					__fGetpackageNum: function(packageId) {
-						return fGetpackageNum(packageId, eventid);
+						return fGetpackageNum(packageId);
 					},
 					__fCancelSelect: function(packageId, thismask) {
 						thismask.style.display = "none";
@@ -221,10 +228,10 @@
 						thisItem.parentNode.getElementsByClassName("mui-input-numbox")[0].setAttribute("data-id", 1);
 						thisItem.parentNode.getElementsByClassName("check-mask")[0].style.display = "block";
 						thisItem.parentNode.getElementsByClassName("package-item-title")[0].style.display = "none";
-						lsvih.dom.addClass(thisItem.parentNode.getElementsByClassName("edit-num")[0], "edit-num-active")
+						lsvih.dom.addClass(thisItem.parentNode.getElementsByClassName("edit-num")[0], "edit-num-active");
 					},
 					__fEditNum: function(thisValue) {
-						thisValue.setAttribute("data-id", thisValue.value)
+						thisValue.setAttribute("data-id", thisValue.value);
 					}
 				}
 			});
@@ -235,66 +242,71 @@
 		/**
 		 * 通过套餐的id与eventid来获取对应event中含有本套餐的数量，如果没有则传回0；
 		 * @param {Object} id 套餐的id
-		 * @param {Object} eventid
 		 */
-		function fGetpackageNum(id, eventid) {
-			var tempdata = JSON.parse(myStorage.getItem("data"));
-			var thiseventpackage = lsvih.array.getObjByKey({"id":eventid}, tempdata.event).content.package;
+		function fGetpackageNum(package_id) {
 			if(thiseventpackage == null || thiseventpackage == undefined) return 0;
 			var num = 0;
 			for(var i = 0; i < thiseventpackage.length; i++) {
-				if(thiseventpackage[i].id == id) num++;
+				if(thiseventpackage[i].package_id == package_id) num++;
 			}
 			return num;
 		}
 
 		/**
 		 * 向套餐中增加一项指定id的套餐
-		 * @param {Object} packageId
-		 * @param {Object} eventid
+		 * @param {Object} package_id
 		 */
-		function fAddAItemToPackage(packageId, eventid) {
+		function fAddAItemToPackage(package_id) {
 			tempdata.event[eventsortid].content.package.push({
-				"id": packageId,
-				"packageid": lsvih.array.getObjByKey({"id":packageId}, temppackage.packageinfo).packageid,
-				"name": lsvih.array.getObjByKey({"id":packageId}, temppackage.packageinfo).name,
+				"package_id": package_id,
+				"name": lsvih.array.getObjByKey({
+					"package_id": package_id
+				}, temppackage.packageinfo).name,
 				"size": "",
 				"images": [],
 				"diagram": ""
 			});
 		}
 
-		
+		function fDetailPipe(Detail) {
+			if(Detail.package_groups == null || Detail.package_groups == undefined || Detail.package_groups.legnth == 0) return false;
+			//step.1 找到名字相同的group_package
+			Detail.package_groups = _fFindTheCurrentPackage(Detail.package_groups, Detail.name);
+			return Detail;
+
+			function _fFindTheCurrentPackage(detail, name) {
+				for(var a = 0; a < detail.length; a++) {
+					if(detail[a].group_name == name) return detail[a];
+				}
+			}
+		}
 		/**
 		 * 删除package中所有指定id的元素
-		 * @param {Object} packageId
-		 * @param {Object} eventid
+		 * @param {Object} package_id
 		 */
-		function fDeleteAllIdInPackage(packageId, eventid) {
+		function fDeleteAllIdInPackage(package_id) {
 			var tlength = tempdata.event[eventsortid].content.package.length
 			for(var k = tlength - 1; k > -1; k--) {
-				if(tempdata.event[eventsortid].content.package[k].id == packageId) {
+				if(tempdata.event[eventsortid].content.package[k].package_id == package_id) {
 					fRemoveObecjtFormArray(tempdata.event[eventsortid].content.package, k);
 				}
 			}
 		}
-
 		mui("body").on("tap", ".close-btn", function() {
 			plus.webview.currentWebview().loadURL("intro.html?eventid=" + eventid);
 		})
-
 		mui("body").on("tap", ".next-btn", function() {
 			var values = document.getElementsByClassName("mui-input-numbox");
 			for(var j = 0; j < values.length; j++) {
 				if(values[j].getAttribute("data-id") != 0) {
-					if(values[j].getAttribute("data-id") != fGetpackageNum(temppackage.packageinfo[j].id, eventid)) { //如果发现data-id和存储的数量不同，则删除所有对应的package
-						fDeleteAllIdInPackage(temppackage.packageinfo[j].id, eventid); //删除所有对应的package
+					if(values[j].getAttribute("data-id") != fGetpackageNum(temppackage.packageinfo[j].package_id)) { //如果发现data-id和存储的数量不同，则删除所有对应的package
+						fDeleteAllIdInPackage(temppackage.packageinfo[j].package_id); //删除所有对应的package
 						for(var i = 0; i < values[j].getAttribute("data-id"); i++) { //删除对应的package后遍历写入新的package
-							fAddAItemToPackage(temppackage.packageinfo[j].id, eventid);
+							fAddAItemToPackage(temppackage.packageinfo[j].package_id, eventid);
 						}
 					}
 				} else {
-					fDeleteAllIdInPackage(temppackage.packageinfo[j].id, eventid); //如果没有被选择则删除所有对应的package
+					fDeleteAllIdInPackage(temppackage.packageinfo[j].package_id); //如果没有被选择则删除所有对应的package
 				}
 			}
 			if(!tempdata.event[eventsortid].content.package.length) {
