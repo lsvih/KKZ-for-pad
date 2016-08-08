@@ -147,7 +147,8 @@
 					value = keyjson[key];
 				}
 				for(var p = 0; p < array.length; p++) {
-					if(value == array[p][key]) return p;
+					var itemkey = eval("array[p]."+ Key)
+					if(value == itemkey) return p;
 				}
 				return false;
 			},

@@ -231,7 +231,7 @@
 				</li>
 			</ul>
 		</div>
-		<script type="text/javascript" src="../js/lsvih.js" ></script>
+		<script type="text/javascript" src="../js/lsvih.js"></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -239,15 +239,20 @@
 
 	</body>
 	<script>
-
 		var vueContent;
 		var MAXIMAGECOUNT = 10;
 		var eventid = GetRequest()["eventid"]; //获得eventid
 		var tempdata = JSON.parse(myStorage.getItem("data"));
 		var uploading;
 		var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
-		var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
+		for(var _i = 0; _i < temppackage.packageinfo.length; _i++) {
+			temppackage.packageinfo[_i] = fDetailPipe(temppackage.packageinfo[_i]);
+		}
+		var eventsortid = lsvih.array.getSubByKey({
+			"id": eventid
+		}, tempdata.event);
 		var packagesortid;
+		var thispackages = tempdata.event[eventsortid].content.package;
 		mui.plusReady(function() {
 			window.addEventListener('delete', function(event) {
 				var statustarget = "package[" + packagesortid + "].images";
@@ -260,8 +265,8 @@
 				vueContent.event.content.package[tempdiagramarr[1]].diagram = myStorage.getItem(imgkey);
 				myStorage.removeItem(imgkey);
 			});
-			Vue.filter('GetPackageName', function(value) {
-				var packagesid = tempdata.event[eventsortid].content.package[value].id;
+			Vue.filter('GetPackageName', function(sort) {
+				var packagesid = tempdata.event[eventsortid].content.package[sort].package_id;
 				var packagenamemapping = {
 					"厨房工程": "厨房",
 					"卫生间工程": "卫生间",
@@ -273,8 +278,9 @@
 					"卫生间": "卫生间",
 					"厨房": "厨房"
 				}
-				console.log(packagesid)
-				return packagenamemapping[lsvih.array.getObjByKey({"id":packagesid}, temppackage.packageinfo).name];
+				return packagenamemapping[temppackage.packageinfo[lsvih.array.getSubByKey({
+					"package_id": packagesid
+				}, temppackage.packageinfo)].name];
 			});
 			vueContent = new Vue({
 				el: "#package",
@@ -287,8 +293,10 @@
 				},
 				compute: {
 					__fGetPackageName: function(e) {
-						var packagesid = vueContent.event.content.package[e].id;
-						return temppackage[lsvih.array.getSubByKey({"id":packagesid}, temppackage)].name;
+						var packagesid = vueContent.event.content.package[e].package_id;
+						return temppackage.packageinfo[lsvih.array.getSubByKey({
+							"package_id": packagesid
+						}, temppackage)].name;
 					}
 				},
 				methods: {
@@ -380,87 +388,119 @@
 				tempdata.event[eventsortid] = vueContent.event;
 				myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
 				if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)) {
-					document.getElementById("mask").style.zIndex = 110;
 					mui('body').progressbar({
 						progress: 0
 					}).show();
 					uploading = plus.nativeUI.showWaiting("正在上传量房信息，请耐心等待...");
-					fUploadInfo(); //上传图片
+					fUploadImages(); //上传图片
 				} else {
 					mui.toast("您尚未填写完成所有信息，请仔细填写");
 				}
 				//
 				//				//			location.href = "gauge.html?eventid=" + eventid;
 
-				function fUploadInfo() {
-					var packages = tempdata.event[eventsortid].content.package;
-					var packagelength = packages.length;
-					var successcount = 0;
-					var imagesarr = [];
-					var reader = [];
-					var s = 0;
-					var z = 0;
-					for(s = 0; s < packagelength; s++) {
-						imagesarr[s] = [];
-						reader[s] = [];
-						for(z = 0; z < packages[s].images.length; z++) {
-							plus.io.resolveLocalFileSystemURL(packages[s].images[z], function(entry) {
-								entry.file(function(file) {
-									reader = new plus.io.FileReader();
-									reader.onloadend = function(e) {
-										imagesarr[s - 1].push(e.target.result);
-									}
-									reader.readAsDataURL(entry);
-								});
-							}, function(e) {
-								console.log("Resolve file URL failed: " + e.message);
-							});
-						}
-						setTimeout(function() {
-							data = {
-								"house_id": eventid,
-								"package_id": packages[s - 1].id,
-								"area": packages[s - 1].size,
-								"num": 1,
-//								"plan_t_img": packages[s - 1].diagram, //TODO
-								"measure_t_imgs": imagesarr[s - 1],
+				function fUploadImages() {
+					var grouplength = thispackages.length;
+					var imagesarr = new Array(grouplength);
+					for(var s = 0; s < imagesarr.length; s++) {
+						imagesarr[s] = new Array(thispackages[s].images.length);
+					} //构建存储图片的数组
+					_fGroupImages(grouplength);
+
+					function _fGroupImages(grouptosuccess) {
+						if(grouptosuccess == 0) { //所有组全部改写base64完毕
+							//success
+							fUploadStatus();
+						} else {
+							var tempimgarr = thispackages[grouplength - grouptosuccess].images; //当前组的下标
+							var thisGroupCount = tempimgarr.length;
+							_fImg2Base64(thisGroupCount); //开始组内图片递归
+							function _fImg2Base64(tosuccess) {
+								if(tosuccess == 0) { //这个组里的所有图片改写base64完毕
+									_fGroupImages(grouptosuccess - 1); //组递归
+								} else {
+									var bitmap = new plus.nativeObj.Bitmap(uuid());
+									// 从本地加载Bitmap图片
+									bitmap.load(thispackages[grouplength - grouptosuccess].images[thisGroupCount - tosuccess], function() {
+										var base64 = bitmap.toBase64Data();
+										imagesarr[grouplength - grouptosuccess][thisGroupCount - tosuccess] = base64;
+										_fImg2Base64(tosuccess - 1); //递归开始下一张图片
+									}, function(e) {
+										console.log('加载图片失败：' + JSON.stringify(e));
+									});
+								}
 							}
-							mui.ajax(gAPIServer + 'house-packages?access-token=' + User("access_token"), {
-								data: data,
-								dataType: 'json',
+						}
+
+					}
+
+				}
+			});
+			/**
+			 * 当所有图片都存好后，开始更新状态与上传信息的过程
+			 */
+			function fUploadStatus() {
+				var group_id_arr = [];
+				for(var a = 0; a < thispackages.length; a++) {
+					group_id_arr.push(thispackages[a].package_id);
+				}
+				mui.ajax(gAPIServer + 'groups/group-by-package?package_ids=[' + group_id_arr + ']&access-token=' + User("access_token"), {
+					type: 'GET',
+					dataType: 'json',
+					timeout: 6000,
+					success: function(data) {
+						if(data.success == true) {
+							var house_appointment_id = tempdata.event[eventsortid].id;
+							var house_id = tempdata.event[eventsortid].house_id;
+							var group_id = data.data.group_id;
+							mui.ajax(gAPIServer + 'house-groups?access-token=' + User("access_token"), {
+								data: {
+									'house_appointment_id': house_appointment_id,
+									'house_id': house_id,
+									'group_id': group_id
+								},
 								type: 'POST',
+								dataType: 'json',
 								timeout: 6000,
 								success: function(data) {
 									if(data.success == true) {
-										successcount++;
+										console.log(JSON.stringify(data.data));
+										var tempdata = JSON.parse(myStorage.getItem("data"));
+										tempdata.event[eventsortid].content.house_group_id = data.data.id;
+										myStorage.setItem("data",JSON.stringify(tempdata));
+										uploading.close();
 									} else {
 										mui.alert(data.message, gAppName);
 										uploading.close();
 									}
 								},
 								error: function(xhr, textStatus, errorThrown) {
-									console.log(JSON.stringify(xhr))
-									mui.alert("上传量房信息失败，请稍候再试", gAppName);
-									uploading.close();
+									console.log(JSON.stringify(xhr));
+									mui.alert("新增房屋套餐组失败，请稍后重试", gAppName, "确认", function() {
+										uploading.close();
+										plus.webview.currentWebview().reload();
+									});
+
 								}
 							});
-						}, 500);
+							//拿到group_id，创建一个house_group
+
+						} else {
+							mui.alert(data.message, gAppName);
+							uploading.close();
+						}
+					},
+					error: function(xhr, textStatus, errorThrown) {
+						console.log(JSON.stringify(xhr));
+						mui.alert("更新状态失败，请稍后重试", gAppName, "确认", function() {
+							uploading.close();
+							plus.webview.currentWebview().reload();
+						});
 
 					}
-					var uploadingController = setInterval(function() { //判断是否所有套餐任务全部上传完成
-						if(successcount < packagelength) {
-							mui("body").progressbar().setProgress(successcount / packagelength * 100);
-						}
-						if(successcount == packagelength) {
-							clearInterval(uploadingController);
-							mui("body").progressbar().setProgress(100);
-							mui.toast("数据上传完成！");
-							uploading.setTitle("正在生成排期单，请稍后...");
-							fChangeState();
-						}
-					}, 50); //定时检查是否完成上传，同时更新进度条
-				}
-			});
+				});
+			}
+
 			/**
 			 * 将状态从0更改成1时，服务器会同步传回生成的报价文件。在更改状态的时候需要同时更新list与content
 			 */
@@ -502,6 +542,19 @@
 				});
 			}
 		});
+
+		function fDetailPipe(Detail) {
+			if(Detail.package_groups == null || Detail.package_groups == undefined || Detail.package_groups.legnth == 0) return false;
+			//step.1 找到名字相同的group_package
+			Detail.package_groups = _fFindTheCurrentPackage(Detail.package_groups, Detail.name);
+			return Detail;
+
+			function _fFindTheCurrentPackage(detail, name) {
+				for(var a = 0; a < detail.length; a++) {
+					if(detail[a].group_name == name) return detail[a];
+				}
+			}
+		}
 	</script>
 
 </html>

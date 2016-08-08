@@ -3669,6 +3669,7 @@ function refresh() {
 						var appoint = data.data.items[i];
 						var toinsertdata = {
 							"id": appoint.id,
+							"house_id": appoint.house.id,
 							"user_id": appoint.user_id,
 							"name": appoint.user.fullname,
 							"sex": appoint.user.sex,
@@ -3683,6 +3684,7 @@ function refresh() {
 								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
 								"package":[]
 							} : {
+								"house_group_id": appoint.houseGroups[0].id,
 								"schedule": appoint.houseGroups[0].houseGroupSchedules,
 								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
 								"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
