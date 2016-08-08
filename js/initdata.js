@@ -3680,7 +3680,8 @@ function refresh() {
 							"address": appoint.house.address,
 							"phone": appoint.user.mobile,
 							"content": appoint.houseGroups.length == 0 ? {
-								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local")
+								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
+								"package":[]
 							} : {
 								"schedule": appoint.houseGroups[0].houseGroupSchedules,
 								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),

@@ -106,7 +106,7 @@
 																			tempSku.push({
 																				"sku_id": skuitem.id,
 																				"model": skuitem.model,
-																				"color": skuitem.color,
+																				//"color": skuitem.color,
 																				"size": skuitem.size,
 																				"text": skuitem.description,
 																				"img": skuitem.show_t_imgs
@@ -266,7 +266,8 @@
 														"address": appoint.house.address,
 														"phone": appoint.user.mobile,
 														"content": appoint.houseGroups.length == 0 ? {
-															"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local")
+															"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
+															"package":[]
 														} : {
 															"schedule": appoint.houseGroups[0].houseGroupSchedules,
 															"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),

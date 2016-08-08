@@ -285,7 +285,7 @@
 						</span>
 						<!--end-->
 						<div class="line"></div>
-						<div v-for="product in detail.package_groups.group_products">
+						<div v-for="product in detail.package_groups.group_products" v-bind:data-id="product.product_brands[0].skus[0].sku_id">
 							<!--商品选择模块-->
 
 							<div class="product">
@@ -293,14 +293,13 @@
 								<div class="product-img"><img v-bind:src="product.showimage|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
 								<div class="product-name">{{product.name}}</div>
 								<div class="product-brand">品牌：&nbsp;
-									<span v-for="brand in product.product_brands" v-on:tap="Change($event)" v-bind:data-id="$index">{{brand.brand_name}}&nbsp;&nbsp;</span></div>
+									<span v-for="brand in product.product_brands" v-on:tap="Change($event)" v-bind:value="$index">{{brand.brand_name}}&nbsp;&nbsp;</span></div>
 								<div class="product-model">型号：&nbsp;
-									<span v-for="model in product.brand[product.selectbrand].tree" v-on:tap="Change($event)" v-bind:value="$index" v-bind:data-id="model.id">{{model.name}}&nbsp;&nbsp;</span></div>
-								<div class="product-size" v-show="product.brand[product.selectbrand].size.length">尺寸：&nbsp;
-									<span v-for="size in product.brand[product.selectbrand].tree[product.brand[product.selectbrand].selectmodel].size" v-on:tap="Change($event)" v-bind:data-id="size.id">{{size.name}}&nbsp;&nbsp;</span></div>
-								<div class="product-color" v-show="product.brand[product.selectbrand].color.length">颜色：&nbsp;
-									<div v-for="color in product.brand[product.selectbrand].tree[product.brand[product.selectbrand].selectmodel].color" class="color-block" v-on:tap="Change($event)" v-bind:data-id="color.id">{{color.name|color}}</div>
+									<span v-for="model in product.product_brands[product.selectbrand].tree" v-on:tap="Change($event)" v-bind:value="$index">{{model.name}}&nbsp;&nbsp;</span></div>
+								<div class="product-size">尺寸：&nbsp;
+									<span v-for="size in product.product_brands[product.selectbrand].tree[product.product_brands[product.selectbrand].selectmodel].size" v-on:tap="Change($event)">{{size.name}}&nbsp;&nbsp;</span>
 								</div>
+
 							</div>
 
 							<!--end-->
@@ -328,7 +327,6 @@
 		<script type="text/javascript" src="../js/jroll.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript" src="../js/vue.js"></script>
-		<script type="text/javascript" src="../js/palette.js"></script>
 		<script type="text/javascript" src="../js/cache.js"></script>
 		<script>
 			var jroll;
@@ -342,16 +340,13 @@
 				loading = plus.nativeUI.showWaiting("正在加载，请稍后...");
 				plus.navigator.setFullscreen(true);
 				fAddVueCacheFilter();
-				fAddVueColorFilter();
 				var detailinfo = plus.webview.currentWebview().detail;
-				console.log(detailinfo)
 				var vueContent = new Vue({
 					el: "#detail",
 					data: {
 						detail: fDetailPipe(JSON.parse(detailinfo)),
 					},
 					ready: function() {
-						fChangeColor();
 						loading.close();
 						document.getElementById("mask").style.opacity = 0;
 						document.getElementById("mask").style.zIndex = 0;
@@ -394,44 +389,30 @@
 							var parent = thisobj.parentNode;
 							var productsortid = parent.parentNode.getElementsByTagName("i")[0].innerHTML;
 							var type = parent.className.split("product-")[1];
-							if(type !== "color") { //先改变对应的元素的颜色
-								var items = parent.getElementsByTagName("span");
-								for(var k = 0; k < items.length; k++) {
-									lsvih.dom.removeClass(items[k], "selected");
-								}
-								lsvih.dom.addClass(thisobj, "selected");
-								if(type == "brand") {
-									var brandsortid = thisobj.getAttribute("data-id");
-									this.detail.products[productsortid].selectbrand = brandsortid;
-									setTimeout(function() { //在渲染完成后把颜色重新替换色块
-										fChangeColor();
-									}, 1);
-								}
-								if(type == "model") {
-									var brandsortid = this.detail.products[productsortid].selectbrand;
-									var modelsortid = thisobj.getAttribute("value");
-									this.detail.products[productsortid].brand[brandsortid].selectmodel = modelsortid;
-									setTimeout(function() { //在渲染完成后把颜色重新替换色块
-										fChangeColor();
-									}, 1);
-								}
-							} else { //点击的是颜色的情况改变选择
-								var items = parent.getElementsByClassName("color-block");
-								for(var k = 0; k < items.length; k++) {
-									lsvih.dom.removeClass(items[k], "selected-color");
-								}
-								lsvih.dom.addClass(thisobj, "selected-color");
+							var items = parent.getElementsByTagName("span");
+							for(var k = 0; k < items.length; k++) {
+								lsvih.dom.removeClass(items[k], "selected");
 							}
-							//在选择后拼接字符串去查询sku,如果查询到则将图片与文字替换，如果没有查询到则不替换
-							var modelid = fGetDataIdFormSelectedItem(parent.parentNode.getElementsByClassName("product-model")[0]);
-							var sizeid = fGetDataIdFormSelectedItem(parent.parentNode.getElementsByClassName("product-size")[0]);
-							var colorid = fGetDataIdFormSelectedItem(parent.parentNode.getElementsByClassName("product-color")[0]);
-							//							console.log(modelid + '-' + sizeid + '-' + colorid);//得到的sku
-							var skusortid = fSearchSKU(this.detail.products[productsortid].brand[this.detail.products[productsortid].selectbrand].sku, modelid + '-' + sizeid + '-' + colorid)
-							if(skusortid !== false) { //考虑skusortid为0的情况
-								this.detail.products[productsortid].showtext = this.detail.products[productsortid].brand[this.detail.products[productsortid].selectbrand].sku[skusortid].text;
-								this.detail.products[productsortid].showimage = this.detail.products[productsortid].brand[this.detail.products[productsortid].selectbrand].sku[skusortid].image;
+							lsvih.dom.addClass(thisobj, "selected");
+							if(type == "brand") {
+								var brandsortid = thisobj.getAttribute("value");
+								this.detail.package_groups.group_products[productsortid].selectbrand = brandsortid;
+								setTimeout(function() {
+									mui.trigger(parent.parentNode.getElementsByClassName("product-model")[0].getElementsByTagName("span")[0], "tap");
+								}, 1);
 							}
+							if(type == "model") {
+								var brandsortid = this.detail.package_groups.group_products[productsortid].selectbrand;
+								var modelsortid = thisobj.getAttribute("value");
+								this.detail.package_groups.group_products[productsortid].product_brands[brandsortid].selectmodel = modelsortid;
+								mui.trigger(parent.parentNode.getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "tap");
+								var modelName = thisobj.innerText.replace(/\s+/g,"");
+								var skus = this.detail.package_groups.group_products[productsortid].product_brands[brandsortid].skus;
+								var sku = lsvih.array.getObjByKey({"model":modelName},skus);
+								this.detail.package_groups.group_products[productsortid].showimage = sku.img;
+								this.detail.package_groups.group_products[productsortid].showtext = sku.text;
+							}
+
 						},
 						//文字展开
 						toggle: function(a, o, e) {
@@ -461,11 +442,7 @@
 			function fSelectDefault() {
 				var products = document.getElementsByClassName("product");
 				for(var i = 0; i < products.length; i++) {
-					lsvih.dom.addClass(products[i].getElementsByClassName("product-brand")[0].getElementsByTagName("span")[0], "selected");
-					lsvih.dom.addClass(products[i].getElementsByClassName("product-model")[0].getElementsByTagName("span")[0], "selected");
-					//图片与尺寸为可选选项因此需要考虑不存在的情况
-					if(products[i].getElementsByClassName("product-size")[0] !== null && products[i].getElementsByClassName("product-size")[0] !== undefined) lsvih.dom.addClass(products[i].getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "selected");
-					if(products[i].getElementsByClassName("product-color")[0] !== null && products[i].getElementsByClassName("product-color")[0] !== undefined) lsvih.dom.addClass(products[i].getElementsByClassName("product-color")[0].getElementsByTagName("div")[0], "selected-color");
+					mui.trigger(products[i].getElementsByClassName("product-brand")[0].getElementsByTagName("span")[0],"tap");	
 				}
 			}
 			/**
@@ -480,11 +457,14 @@
 				Detail.images = Detail.images.split("|");
 				//step.3 为每个产品的每个品牌生成属性数
 				for(var b = 0; b < Detail.package_groups.group_products.length; b++) {
+					Detail.package_groups.group_products[b].showtext = Detail.package_groups.group_products[b].product_brands[0].skus[0].text;
+					Detail.package_groups.group_products[b].showimage = Detail.package_groups.group_products[b].product_brands[0].skus[0].img;
+					Detail.package_groups.group_products[b].selectbrand = 0;
 					for(var c = 0; c < Detail.package_groups.group_products[b].product_brands.length; c++) {
 						Detail.package_groups.group_products[b].product_brands[c].tree = fCreateProductBrandTree(Detail.package_groups.group_products[b].product_brands[c].skus);
+						Detail.package_groups.group_products[b].product_brands[c].selectmodel = 0;
 					}
 				}
-				console.log(JSON.stringify(Detail))
 				return Detail;
 
 				function _fFindTheCurrentPackage(detail, name) {
@@ -493,49 +473,21 @@
 					}
 				}
 			}
-
 			/**
 			 * 根据初始型号生成品牌的属性树
 			 * @param {Array} Brand 品牌下的sku信息
 			 */
 			function fCreateProductBrandTree(Brand) {
 				var TreeArray = [];
-				console.log(JSON.stringify(Brand));
-				for(var c=0;c<Brand.length;c++){
-					
+				for(var c = 0; c < Brand.length; c++) {
+					TreeArray.push({
+						"name": Brand[c].model, //型号名称
+						"size": [{
+								"name": Brand[c].size
+							}] //尺寸，需求为一对一关系
+					});
 				}
 				return TreeArray;
-			}
-
-			/**
-			 * 将所有的颜色代码全部转换为颜色色块
-			 */
-			function fChangeColor() {
-				var colors = document.getElementsByClassName("color-block");
-				for(var o = 0; o < colors.length; o++) {
-					colors[o].style.backgroundColor = colors[o].innerText;
-				}
-			}
-
-			/**
-			 * 在父元素中寻找含有selected或selected-color的子元素，并获取其data-id
-			 * @param {Object} 父元素
-			 */
-			function fGetDataIdFormSelectedItem(obj) {
-				var childitem = obj.getElementsByClassName("selected").length ? obj.getElementsByClassName("selected")[0] : obj.getElementsByClassName("selected-color")[0];
-				if(childitem == undefined) return "";
-				return childitem.getAttribute("data-id");
-			}
-			/**
-			 * 在sku数组中寻找skuid相等的sku下标，如果找到了则返回下标，没找到则返回false
-			 * @param {Object} skuarr
-			 * @param {Object} skuid
-			 */
-			function fSearchSKU(skuarr, skuid) {
-				for(var z in skuarr) {
-					if(skuid == skuarr[z].sku) return z;
-				}
-				return false;
 			}
 		</script>
 	</body>
