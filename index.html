@@ -238,14 +238,11 @@
 				swipeBack: false
 			});
 			mui.plusReady(function() {
-				fRefreshData([1])
 				//推送监听
 				plus.push.addEventListener("click", function(msg) {
-					//                alert( "用户点击了消息:" + JSON.stringify(msg) );
 					fRefreshData(msg.payload.house_appointment_id.split("|")); //刷新局部数据
 				}, false);
 				plus.push.addEventListener("receive", function(msg) {
-					//                alert( "app收到了消息:" + JSON.stringify(msg) );
 					fRefreshData(msg.payload.house_appointment_id.split("|")); //刷新局部数据
 				}, false);
 				//推送监听end
@@ -430,7 +427,8 @@
 				var successCount = 0;
 				loading = plus.nativeUI.showWaiting("正在更新数据，请稍后");
 				for(var a = 0; a < eventids.length; a++) {
-					mui.ajax(gAPIServer + 'house-appointments/' + eventids[a] + '?expand=houseGroups.houseGroupSchedules,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
+					var thiseventid = eventids[a];
+					mui.ajax(gAPIServer + 'house-appointments/' + thiseventid + '?expand=houseGroups.houseGroupSchedules,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
 						dataType: 'json',
 						type: 'get',
 						timeout: 6000,
@@ -473,6 +471,17 @@
 										}
 									}
 								}
+
+								var tempdata = JSON.parse(myStorage.getItem("data"));
+								console.log(appoint.id)
+								var tempeventsortid = lsvih.array.getSubByKey({
+									"id": appoint.id
+								}, tempdata.event);
+								tempdata.event[tempeventsortid] = toinsertdata;
+								myStorage.setItem("data", JSON.stringify(tempdata));
+								console.log(myStorage.getItem("data"))
+								successCount++;
+
 								/**
 								 * 将传入的packages数组转化为符合的格式
 								 */
@@ -494,15 +503,6 @@
 										return [];
 									}
 								}
-								
-								var tempdata = JSON.parse(myStorage.getItem("data"));
-								var tempeventsortid = lsvih.array.getSubByKey({
-									"id": eventids[a]
-								}, tempdata.event);
-								tempdata.event[tempeventsortid] = toinsertdata;
-								myStorage.setItem("data", JSON.stringify(tempdata));
-								console.log(myStorage.getItem("data"))
-								successCount++;
 							} else {
 								mui.alert(data.message, gAppName);
 								console.log(JSON.stringify(data));
