@@ -255,8 +255,8 @@
 											if(data.success == true) {
 												var temp = JSON.parse(myStorage.getItem("data"));
 												temp.event[eventsortid].content.schedule = data.data.items;
-												temp.event[eventsortid].content.house_contract = houseinfo.house_contract;
-												temp.event[eventsortid].contractid = houseinfo.house_contract.split(".")[0];
+												temp.event[eventsortid].content.group_contract = houseinfo.group_contract;
+												temp.event[eventsortid].contractid = houseinfo.group_contract.split(".")[0];
 												temp.event[eventsortid].content.start_at = houseinfo.start_at;
 												temp.event[eventsortid].content.is_holiday_work = houseinfo.is_holiday_work;
 												temp.event[eventsortid].content.time_period = houseinfo.time_period;

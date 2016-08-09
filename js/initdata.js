@@ -3665,6 +3665,7 @@ function refresh() {
 					"event": []
 				};
 				if(data.data.items !== null && data.data.items !== undefined && data.data.items.length !== 0) {
+					console.log(JSON.stringify(data.data))
 					for(var i = 0; i < data.data.items.length; i++) {
 						var appoint = data.data.items[i];
 						var toinsertdata = {
@@ -3692,8 +3693,8 @@ function refresh() {
 								"clear_amount": appoint.houseGroups[0].clear_amount,
 								"distance_rate": appoint.houseGroups[0].distance_rate,
 								"taxes_amount": appoint.houseGroups[0].taxes_amount,
-								"house_quotation": appoint.houseGroups[0].group_quotation,
-								"house_contract": appoint.houseGroups[0].group_contract,
+								"group_quotation": appoint.houseGroups[0].group_quotation,
+								"group_contract": appoint.houseGroups[0].group_contract,
 								"time_period": appoint.houseGroups[0].time_period,
 								"is_holiday_work": appoint.houseGroups[0].is_holiday_work,
 								"duration": appoint.houseGroups[0].duration,

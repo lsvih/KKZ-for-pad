@@ -306,42 +306,56 @@
 		<div class="circle-btn close-btn mui-icon mui-icon-closeempty"></div>
 		<div class="circle-btn next-btn">物业</div>
 		<div id="detail">
-			<div class="content" v-for="detail in detail" track-by="$index" v-bind:data-id="$index">
-				<div class="package-title"><span>|</span>{{detail.name}}</div>
-				<div class="blank-30"></div>
-				<div v-for="product in detail.products">
-					<!--商品选择模块-->
-
-					<div class="product" v-bind:data-packageid="detail.id" v-bind:data-productid="product.id" value="">
-						<i>{{$index}}</i>
-						<div class="product-img"><img v-bind:src="product.showimage|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
-						<div class="product-name">{{product.name}}</div>
-						<div class="product-brand">品牌：&nbsp;
-							<span v-for="brand in product.brand" v-on:tap="Change($event)" v-bind:data-id="brand.id" v-bind:value="$index">{{brand.name}}&nbsp;&nbsp;</span></div>
-						<div class="product-model">型号：&nbsp;
-							<span v-for="model in product.brand[product.selectbrand].tree" v-on:tap="Change($event)" v-bind:value="$index" v-bind:data-id="model.id">{{model.name}}&nbsp;&nbsp;</span></div>
-						<div class="product-size" v-if="product.brand[product.selectbrand].size.length">尺寸：&nbsp;
-							<span v-for="size in product.brand[product.selectbrand].tree[product.brand[product.selectbrand].selectmodel].size" v-on:tap="Change($event)" v-bind:data-id="size.id">{{size.name}}&nbsp;&nbsp;</span></div>
-						<div class="product-color" v-if="product.brand[product.selectbrand].color.length">颜色：&nbsp;
-							<div v-for="color in product.brand[product.selectbrand].tree[product.brand[product.selectbrand].selectmodel].color" class="color-block" v-on:tap="Change($event)" v-bind:data-id="color.id">{{color.name|color}}</div>
+			<div class="content">
+						<div class="package-title">{{detail.name}}</div>
+						<div class="line"></div>
+						<div v-if="detail.detail_text">
+							<div class="content-text"><span>|</span>{{detail.detail_text}}</div>
+							<div class="line"></div>
 						</div>
-					</div>
 
-					<!--end-->
+						<!--图片轴模块-->
+						<span class="iteminner">
+						<span class="img-contain">
+					<span class="lineimg" >
+						<span class="item" v-for="img_src in detail.images" track-by="$index"><img class="rendering-images" v-bind:src="img_src|cache" v-on:tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
+						</span>
+						</span>
+						</span>
+						<!--end-->
+						<div class="line"></div>
+						<div v-for="product in detail.package_groups.group_products" v-bind:data-id="product.product_brands[0].skus[0].sku_id">
+							<!--商品选择模块-->
 
-					<!--文字阅读折叠模块-->
-					<div v-if="product.showtext" class="text-toggle" v-on:tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
-						<div class="detail-text">
-							<p>{{product.showtext}}
-							</p>
+							<div class="product">
+								<i>{{$index}}</i>
+								<div class="product-img"><img v-bind:src="product.showimage|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
+								<div class="product-name">{{product.name}}</div>
+								<div class="product-brand">品牌：&nbsp;
+									<span v-for="brand in product.product_brands" v-on:tap="Change($event)" v-bind:value="$index">{{brand.brand_name}}&nbsp;&nbsp;</span></div>
+								<div class="product-model">型号：&nbsp;
+									<span v-for="model in product.product_brands[product.selectbrand].tree" v-on:tap="Change($event)" v-bind:value="$index">{{model.name}}&nbsp;&nbsp;</span></div>
+								<div class="product-size">尺寸：&nbsp;
+									<span v-for="size in product.product_brands[product.selectbrand].tree[product.product_brands[product.selectbrand].selectmodel].size" v-on:tap="Change($event)">{{size.name}}&nbsp;&nbsp;</span>
+								</div>
+
+							</div>
+
+							<!--end-->
+
+							<!--文字阅读折叠模块-->
+							<div v-if="product.showtext" class="text-toggle" v-on:tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
+								<div class="detail-text">
+									<p>{{product.showtext}}
+									</p>
+								</div>
+								<div class="text-control" data-id="0"><span class="mui-icon mui-icon-arrowdown"></span></div>
+							</div>
+							<!--end-->
+							<div class="line"></div>
 						</div>
-						<div class="text-control" data-id="0"><span class="mui-icon mui-icon-arrowdown"></span></div>
-					</div>
-					<!--end-->
-					<div class="line" v-if="$index < detail.products.length - 1"></div>
-				</div>
 
-			</div>
+					</div>
 		</div>
 		<script type="text/javascript" src="../js/lsvih.js" ></script>
 		<script src="../js/mui.js"></script>

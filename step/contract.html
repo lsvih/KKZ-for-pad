@@ -73,7 +73,7 @@
 				var uploading;
 				var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
 				var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
-				var _doc = tempdata.event[eventsortid].content.house_contract;
+				var _doc = tempdata.event[eventsortid].content.group_contract;
 				mui.openWindow({
 					url: gServer + "uploads/files/" + _doc,
 					id: "sub_doc",
