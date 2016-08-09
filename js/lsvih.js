@@ -51,8 +51,8 @@
 				var M = (d.getMonth() + 1 < 10 ? '0' + (d.getMonth() + 1) : d.getMonth() + 1) + '-';
 				var D = isExitsVariable(D) ? D : (d.getDate() < 10 ? '0' + (d.getDate()) : d.getDate());
 				var h = (d.getHours() < 10 ? '0' + d.getHours() : d.getHours()) + ':';
-				var m = d.getMinutes() + ':';
-				var s = d.getSeconds();
+				var m = (d.getMinutes() < 10 ? '0' + d.getMinutes() : d.getMinutes()) + ':';
+				var s = (d.getSeconds() < 10 ? '0' + d.getSeconds() : d.getSeconds());
 				switch(type) {
 					case "date":
 						return(Y + M + D);
@@ -77,8 +77,16 @@
 			 * @param {String} 字符串，需符合[date|datetime|datetime-local]的格式
 			 */
 			strToStamp: function(str) {
-				var d = new Date(str);
-				return Math.floor(d.getTime() / 1000)
+				var time = str.replace("T", " ");
+				var timearr = time.split(" ");
+				var datearr = timearr[0].split("-");
+				var hourarr = timearr[1].split(":");
+				console.log(time)
+				var d = new Date(datearr[0], Number(datearr[1] - 1), datearr[2], hourarr[0], hourarr[1], hourarr[2]);
+				console.log(d)
+				var ts = d.getTime();
+				console.log(ts)
+				return Math.floor(ts / 1000)
 			}
 		},
 		/**
@@ -147,7 +155,7 @@
 					value = keyjson[key];
 				}
 				for(var p = 0; p < array.length; p++) {
-					var itemkey = eval("array[p]."+ Key)
+					var itemkey = eval("array[p]." + Key)
 					if(value == itemkey) return p;
 				}
 				return false;

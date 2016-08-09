@@ -73,7 +73,7 @@
 				var uploading;
 				var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
 				var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
-				var _doc = tempdata.event[eventsortid].content.house_quotation;
+				var _doc = tempdata.event[eventsortid].content.group_quotation;
 				mui.openWindow({
 					url: gServer + "uploads/files/" + _doc,
 					id: "sub_doc",
@@ -102,13 +102,11 @@
 					/**
 					 * 重新修改状态为0时，服务器会将此房屋下的所有套餐全部删除。更改状态时，同时更新list与content
 					 */
-					var watiting = plus.nativeUI.showWaiting("正在返回量房状态，请稍后...")
-					mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
-						data: {
-							'status': 0,
-						},
+					var watiting = plus.nativeUI.showWaiting("正在返回量房状态，请稍后...");
+					var house_group_id = tempdata.event[eventsortid].content.house_group_id;
+					mui.ajax(gAPIServer + 'house-group-package/batch-delete?filter=house_group_id:'+ house_group_id +'&access-token=' + User("access_token"), {
 						dataType: 'json',
-						type: 'PUT',
+						type: 'DELETE',
 						timeout: 6000,
 						success: function(data) {
 							if(data.success == true) {

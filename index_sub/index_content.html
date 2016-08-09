@@ -415,7 +415,6 @@
 				var newdate = (e.value.split("T")[0] + ' ' + e.value.split("T")[1]).split(":33")[0];
 				mui.confirm('是否将预约上门时间从' + olddate + '修改为' + newdate + '？', gAppName, ['否', '是'], function(f) {
 					if(f.index == 1) {
-						
 						//TODO：放入同步队列
 						mui.ajax(gAPIServer + 'house-appointments/' + vueContent.event.id + '?access-token=' + User("access_token"), {
 							data: {
