@@ -240,10 +240,12 @@
 			mui.plusReady(function() {
 				//推送监听
 				plus.push.addEventListener("click", function(msg) {
-					fRefreshData(msg.payload.house_appointment_id.split("|")); //刷新局部数据
+					var ids = msg.payload.house_appointment_id.toString();//当只有一个数字时会无法使用split，因此转换为字符串
+					fRefreshData(ids.split("|")); //刷新局部数据
 				}, false);
 				plus.push.addEventListener("receive", function(msg) {
-					fRefreshData(msg.payload.house_appointment_id.split("|")); //刷新局部数据
+					var ids = msg.payload.house_appointment_id.toString();
+					fRefreshData(ids.split("|")); //刷新局部数据
 				}, false);
 				//推送监听end
 
@@ -485,7 +487,7 @@
 									myStorage.setItem("data", JSON.stringify(tempdata));
 									console.log(myStorage.getItem("data"));
 								} else {
-									tempdata.push(toinsertdata)
+									tempdata.event.push(toinsertdata)
 									myStorage.setItem("data", JSON.stringify(tempdata));
 									console.log(myStorage.getItem("data"))
 								}

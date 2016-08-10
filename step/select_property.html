@@ -247,10 +247,7 @@
 								if(data.success == true) { //取出排期内容
 									var houseinfo = data.data;
 									console.log(JSON.stringify(houseinfo))
-									mui.ajax(gAPIServer + 'house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + eventid + '&access-token=' + User("access_token"), {
-										data: {
-											'house_id': eventid
-										},
+									mui.ajax(gAPIServer + 'house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + house_group_id + '&access-token=' + User("access_token"), {
 										dataType: 'json',
 										type: 'GET',
 										timeout: 6000,

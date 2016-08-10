@@ -1,10 +1,421 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.css" rel="stylesheet" />
 	</head>
+	<style>
+		.content {
+			position: relative;
+			background-color: #fff;
+			z-index: 998;
+			margin: 0 auto;
+			width: 100%;
+			font-size: 18px;
+			height: auto;
+		}
+		
+		.content-text {
+			line-height: 28px;
+		}
+		
+		.content-text span {
+			display: inline-block;
+			color: #62DA73;
+			margin: 0 5px 0 -9px;
+			font-weight: bold;
+		}
+		
+		.blank {
+			height: 480px;
+		}
+		
+		.package-title {
+			display: block;
+			font-size: 20px;
+			font-weight: bold;
+			height: 45px;
+			padding-left: 30px;
+			line-height: 45px;
+			margin-left: -30px;
+			width: 100%;
+			background-color: rgba(0, 0, 0, .1)
+		}
+		
+		.package-title span {
+			display: inline-block;
+			color: #62DA73;
+			margin: 0 5px 0 -9px;
+			font-weight: bold;
+		}
+		
+		.line {
+			margin: 23px 0 25px -30px;
+			height: 10px;
+			width: 660px;
+			background-color: rgba(0, 0, 0, .1);
+		}
+		
+		#mask {
+			position: fixed;
+			height: 100%;
+			width: 100%;
+			z-index: 9999999;
+			background-color: #fff;
+			opacity: 1;
+			transition: 0.5s;
+		}
+		/*商品选择*/
+		
+		.product {
+			position: relative;
+			height: 180px;
+			width: 100%;
+		}
+		
+		.product i {
+			display: none;
+		}
+		
+		.product-img {
+			margin-left: 30px;
+			width: 242px;
+			height: 152px;
+		}
+		
+		.product-img img {
+			width: 100%;
+			height: 100%;
+		}
+		
+		.product-name {
+			position: absolute;
+			top: 0px;
+			left: 300px;
+			font-size: 18px;
+		}
+		
+		.product-brand {
+			position: absolute;
+			display: inline-block;
+			top: 45px;
+			left: 300px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.product-brand span {
+			display: inline-block;
+			padding-right: 25px;
+		}
+		
+		.product-model {
+			position: absolute;
+			top: 90px;
+			left: 300px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.product-model span {
+			display: inline-block;
+			padding-right: 25px;
+		}
+		
+		.product-size {
+			position: absolute;
+			top: 135px;
+			left: 300px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.product-size span {
+			display: inline-block;
+			padding-right: 25px;
+		}
+		
+		.product-color {
+			position: absolute;
+			top: 180px;
+			left: 300px;
+			font-size: 18px;
+			color: #8a8d8c;
+		}
+		
+		.selected {
+			color: #62da73!important;
+		}
+		
+		.selected-color {
+			border: 3px solid #62DA73!important;
+		}
+		
+		.color-block {
+			display: inline-block;
+			height: 28px;
+			width: 28px;
+			margin-right: 28px;
+			vertical-align: middle;
+			text-indent: -9999px;
+		}
+		/*end*/
+		/*文字伸缩模块*/
+		
+		.detail-text {
+			overflow: hidden;
+			height: 38px;
+			transition: 0.8s;
+			will-change: height;
+		}
+		
+		.detail-text p {
+			color: #888;
+			font-size: 16px;
+			line-height: 28px;
+		}
+		
+		.text-control {
+			text-align: center;
+			color: #62DA73;
+		}
+		/*end*/
+		
+		.header {
+			position: fixed;
+			top: 0;
+			left: 0;
+			height: 110px;
+			width: 100%;
+			border-bottom: 1px solid #eee;
+			background-color: #fff;
+			z-index: 1000;
+			text-align: center;
+			line-height: 130px;
+			font-size: 18px;
+		}
+		
+		.blank-30 {
+			height: 30px;
+		}
+		
+		.mask-line {
+			position: absolute;
+			display: block;
+			top: 0;
+			left:0;
+			height: 50px;
+			width: 100%;
+			background-color: #ffffff;
+			z-index: 999;
+		}
+	</style>
+
 	<body>
-		this is the page for selection detail;
+		<div id="mask"></div>
+		<div id="detail">
+			<div class="mask-line"><!--用来遮住第一条线。懒得写--></div>
+			<div class="content">
+				<div v-for="product in detail.group_products" v-bind:data-id="product.product_brands[0].skus[0].sku_id" v-if="product.is_selectable=='1'">
+					<div class="line"></div>
+					<!--商品选择模块-->
+					<div class="product">
+						<i>{{$index}}</i>
+						<div class="product-img"><img v-bind:src="product.showimage|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
+						<div class="product-name">{{product.name}}</div>
+						<div class="product-brand">品牌：&nbsp;
+							<span v-for="brand in product.product_brands" v-on:tap="Change($event)" v-bind:value="$index">{{brand.brand_name}}&nbsp;&nbsp;</span></div>
+						<div class="product-model">型号：&nbsp;
+							<span v-for="model in product.product_brands[product.selectbrand].tree" v-on:tap="Change($event)" v-bind:value="$index">{{model.name}}&nbsp;&nbsp;</span></div>
+						<div class="product-size">尺寸：&nbsp;
+							<span v-for="size in product.product_brands[product.selectbrand].tree[product.product_brands[product.selectbrand].selectmodel].size" v-on:tap="Change($event)">{{size.name}}&nbsp;&nbsp;</span>
+						</div>
+
+					</div>
+
+					<!--end-->
+
+					<!--文字阅读折叠模块-->
+					<div v-if="product.showtext" class="text-toggle" v-on:tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
+						<div class="detail-text">
+							<p>{{product.showtext}}
+							</p>
+						</div>
+						<div class="text-control" data-id="0"><span class="mui-icon mui-icon-arrowdown"></span></div>
+					</div>
+					<!--end-->
+
+				</div>
+
+			</div>
+		</div>
+		<script type="text/javascript" src="../../js/lsvih.js"></script>
+		<script src="../../js/mui.js"></script>
+		<script type="text/javascript" src="../../js/storage.js"></script>
+		<script type="text/javascript" src="../../js/common.js"></script>
+		<script type="text/javascript" src="../../js/vue.js"></script>
+		<script type="text/javascript" src="../../js/cache.js"></script>
+		<script>
+			var loading;
+			mui.init();
+			var eventid;
+
+			function __fGetCurrentGroup(packageinfo, groupid) {
+				for(var k = 0; k < packageinfo.length; k++) {
+					if(lsvih.array.getSubByKey({
+							"group_id": groupid
+						}, packageinfo[k].package_groups) !== false) {
+						package_id = packageinfo[k].package_id;
+						return lsvih.array.getObjByKey({
+							"group_id": groupid
+						}, packageinfo[k].package_groups);
+					}
+				}
+			}
+			mui.plusReady(function() {
+				eventid = plus.webview.currentWebview().eventid;
+				var tempdata = JSON.parse(myStorage.getItem("data"));
+				var thisevent = tempdata.event[lsvih.array.getSubByKey({
+					"id": eventid
+				}, tempdata.event)];
+				var house_group_id = thisevent.content.house_group_id;
+				var group_id = thisevent.content.group_id;
+				var package_id;
+				var vueContent;
+				var temppackage = JSON.parse(myStorage.getItem("packageinfo")).packageinfo;
+				var thisgroup = __fGetCurrentGroup(temppackage, group_id)
+				loading = plus.nativeUI.showWaiting("正在加载，请稍后...");
+				fAddVueCacheFilter();
+				var detailinfo = plus.webview.currentWebview().detail;
+				vueContent = new Vue({
+					el: "#detail",
+					data: {
+						detail: fDetailPipe(thisgroup),
+					},
+					ready: function() {
+						loading.close();
+						document.getElementById("mask").style.opacity = 0;
+						document.getElementById("mask").style.zIndex = 0;
+						fSelectDefault();
+					},
+					methods: {
+						cache: function(value) {
+							return fCache(value);
+						},
+						previewimage: function(thisobj) { //查看单张图片大图
+							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
+								images: thisobj.currentTarget.parentNode.innerHTML,
+								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.getElementsByTagName("img")),
+								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+							}), "fade-in", 200);
+						},
+						previewimages: function(thisobj) { //查看多张图片大图
+							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
+								images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
+								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
+								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+							}), "fade-in", 200);
+						},
+						Change: function(thisevent) {
+							var thisobj = thisevent.currentTarget;
+							if(lsvih.dom.hasClass(thisobj, "selected") || lsvih.dom.hasClass(thisobj, "selected-color")) return false;
+							var parent = thisobj.parentNode;
+							var productsortid = parent.parentNode.getElementsByTagName("i")[0].innerHTML;
+							var type = parent.className.split("product-")[1];
+							var items = parent.getElementsByTagName("span");
+							for(var k = 0; k < items.length; k++) {
+								lsvih.dom.removeClass(items[k], "selected");
+							}
+							lsvih.dom.addClass(thisobj, "selected");
+							if(type == "brand") {
+								var brandsortid = thisobj.getAttribute("value");
+								this.detail.group_products[productsortid].selectbrand = brandsortid;
+								setTimeout(function() {
+									mui.trigger(parent.parentNode.getElementsByClassName("product-model")[0].getElementsByTagName("span")[0], "tap");
+								}, 1);
+							}
+							if(type == "model") {
+								var brandsortid = this.detail.group_products[productsortid].selectbrand;
+								var modelsortid = thisobj.getAttribute("value");
+								this.detail.group_products[productsortid].product_brands[brandsortid].selectmodel = modelsortid;
+								mui.trigger(parent.parentNode.getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "tap");
+								var modelName = thisobj.innerText.replace(/\s+/g, "");
+								var skus = this.detail.group_products[productsortid].product_brands[brandsortid].skus;
+								var sku = lsvih.array.getObjByKey({
+									"model": modelName
+								}, skus);
+								var sku_id = sku.sku_id;
+								parent.parentNode.parentNode.setAttribute("data-id", sku_id);
+								this.detail.group_products[productsortid].showimage = sku.img;
+								this.detail.group_products[productsortid].showtext = sku.text;
+							}
+
+						},
+						//文字展开
+						toggle: function(a, o, e) {
+							if(a == "1") { //收缩
+								o.style.height = "38px";
+								setTimeout(function() {
+									e.innerHTML = "<span class='mui-icon mui-icon-arrowdown'></span>";
+									e.setAttribute("data-id", 0);
+								}, 500);
+							} else { //展开
+								o.style.height = "150px";
+								setTimeout(function() {
+									e.innerHTML = "<span class='mui-icon mui-icon-arrowup'></span>";
+									e.setAttribute("data-id", 1);
+								}, 500);
+							}
+						},
+					}
+				});
+
+			});
+			/**
+			 * 运行时选择所有项的第一个
+			 */
+			function fSelectDefault() {
+				var products = document.getElementsByClassName("product");
+				for(var i = 0; i < products.length; i++) {
+					mui.trigger(products[i].getElementsByClassName("product-brand")[0].getElementsByTagName("span")[0], "tap");
+				}
+			}
+			/**
+			 * 详情处理中间件，将详情中的每个商品都加上属性树
+			 * @param {Object} DetailGroup 
+			 */
+			function fDetailPipe(DetailGroup) {
+				for(var b = 0; b < DetailGroup.group_products.length; b++) {
+					DetailGroup.group_products[b].showtext = DetailGroup.group_products[b].product_brands[0].skus[0].text;
+					DetailGroup.group_products[b].showimage = DetailGroup.group_products[b].product_brands[0].skus[0].img;
+					DetailGroup.group_products[b].selectbrand = 0;
+					for(var c = 0; c < DetailGroup.group_products[b].product_brands.length; c++) {
+						DetailGroup.group_products[b].product_brands[c].tree = fCreateProductBrandTree(DetailGroup.group_products[b].product_brands[c].skus);
+						DetailGroup.group_products[b].product_brands[c].selectmodel = 0;
+					}
+				}
+				return DetailGroup;
+			}
+			/**
+			 * 根据初始型号生成品牌的属性树
+			 * @param {Array} Brand 品牌下的sku信息
+			 */
+			function fCreateProductBrandTree(Brand) {
+				var TreeArray = [];
+				for(var c = 0; c < Brand.length; c++) {
+					TreeArray.push({
+						"name": Brand[c].model, //型号名称
+						"size": [{
+								"name": Brand[c].size
+							}] //尺寸，需求为一对一关系
+					});
+				}
+				return TreeArray;
+			}
+		</script>
 	</body>
+
 </html>

@@ -42,7 +42,14 @@
 				z-index: 98;
 				color: #00B06C;
 			}
-			
+			.page-close-btn {
+				position: fixed;
+				top:48px;
+				color: #00B06C;
+				left: 103px;
+				font-size: 35px;
+				z-index: 100;
+			}
 			.header {
 				position: fixed;
 				top: 0;
@@ -52,16 +59,16 @@
 				background-color: #fff;
 				z-index: 0;
 			}
-
 		</style>
 
 	</head>
+	<div class=" page-close-btn mui-icon mui-icon-closeempty"></div>
 	<div class="circle-btn close-btn mui-icon mui-icon-arrowleft"></div>
 	<!--<div class="circle-btn next-btn">选材</div>-->
 	<div class="header"></div>
 
 	<body>
-		<script type="text/javascript" src="../js/lsvih.js" ></script>
+		<script type="text/javascript" src="../js/lsvih.js"></script>
 		<script src="../js/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
@@ -72,7 +79,9 @@
 				var tempdata = JSON.parse(myStorage.getItem("data"));
 				var uploading;
 				var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
-				var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
+				var eventsortid = lsvih.array.getSubByKey({
+					"id": eventid
+				}, tempdata.event);
 				var _doc = tempdata.event[eventsortid].content.group_contract;
 				mui.openWindow({
 					url: gServer + "uploads/files/" + _doc,
@@ -91,15 +100,20 @@
 						autoShow: false,
 					}
 				});
-				mui("body").on("tap", ".close-btn", function() {
+				mui("body").on("tap", ".mui-icon-arrowleft", function() {
 					plus.webview.close("sub_doc");
 					mui.back();
 				});
-//				mui("body").on("tap", ".next-btn", function() {
-//					plus.webview.currentWebview().loadURL("../step/schedule.html?eventid=" + eventid);
-//				})
-				
+				//				mui("body").on("tap", ".next-btn", function() {
+				//					plus.webview.currentWebview().loadURL("../step/schedule.html?eventid=" + eventid);
+				//				})
+
 			})
+
+			mui("body").on("tap", ".mui-icon-closeempty", function() {
+				plus.webview.close("sub_doc");
+				plus.webview.close(plus.webview.currentWebview());
+			});
 		</script>
 	</body>
 
