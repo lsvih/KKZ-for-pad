@@ -3655,7 +3655,7 @@ function fInstallTestData() {
 function refresh() {
 	myStorage.removeItem("data");
 	var loading = plus.nativeUI.showWaiting("正在刷新数据");
-	mui.ajax(gAPIServer + 'house-appointments?filter=inspector_id:' + User("id") + '&expand=houseGroups.houseGroupSchedules,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
+	mui.ajax(gAPIServer + 'house-appointments?filter=inspector_id:' + User("id") + '&expand=houseGroups.houseGroupSchedules.sku.productBrand.product,houseGroups.houseGroupSchedules.process,houseGroups.houseGroupSchedules.check.checkStandards,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
 		dataType: 'json',
 		type: 'get',
 		timeout: 6000,
@@ -3687,6 +3687,7 @@ function refresh() {
 							} : {
 								"house_group_id": appoint.houseGroups[0].id,
 								"schedule": appoint.houseGroups[0].houseGroupSchedules,
+								"group_id": appoint.houseGroups[0].group_id,
 								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
 								"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
 								"price": appoint.houseGroups[0].group_amount,

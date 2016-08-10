@@ -166,6 +166,7 @@
 			var successcount = 0;
 			var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
 			var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
+			var house_group_id = tempdata.event[eventsortid].content.house_group_id;
 			var uploaddata;
 			mui.plusReady(function() {
 					uploaddata = JSON.parse(myStorage.getItem("tempproperty"));
@@ -185,7 +186,7 @@
 						var isholidaywork = document.getElementById("isholidaywork").getElementsByTagName("input")[0].checked ? 1 : 0;
 						uploading = plus.nativeUI.showWaiting("正在上传物业信息，请稍后...");
 						//将物业信息上传
-						mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
+						mui.ajax(gAPIServer + 'house-groups/' + house_group_id + '?access-token=' + User("access_token"), {
 							data: {
 								'start_at': startat,
 								'time_period': from + "-" + to,
@@ -198,6 +199,7 @@
 								if(data.success == true) {
 									fUploaddata();
 								} else {
+								console.log(1);
 									mui.alert(data.message, gAppName);
 									uploading.close();
 								}
@@ -234,7 +236,7 @@
 						clearInterval(uploadtimeController);
 						myStorage.removeItem("tempproperty");
 						//更新状态以获得排期
-						mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
+						mui.ajax(gAPIServer + 'house-groups/' + house_group_id + '?access-token=' + User("access_token"), {
 							data: {
 								'status': 2
 							},
@@ -243,8 +245,9 @@
 							timeout: 6000,
 							success: function(data) {
 								if(data.success == true) { //取出排期内容
-									var houseinfo = data.data
-									mui.ajax(gAPIServer + 'house-schedules?sort=schedule_at&expand=packageProcess,sku.product,packageCheck.packageCheckStandards&max-per-page=100&per-page=100&filter=house_id:' + eventid + '&access-token=' + User("access_token"), {
+									var houseinfo = data.data;
+									console.log(JSON.stringify(houseinfo))
+									mui.ajax(gAPIServer + 'house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + eventid + '&access-token=' + User("access_token"), {
 										data: {
 											'house_id': eventid
 										},
@@ -285,6 +288,7 @@
 									});
 
 								} else {
+								console.log(2);
 									mui.alert(data.message, gAppName);
 									uploading.close();
 								}
@@ -303,7 +307,7 @@
 			}
 
 			function __fUploadSKU(data) {
-				mui.ajax(gAPIServer + 'house-package-skus?access-token=' + User("access_token"), {
+				mui.ajax(gAPIServer + 'house-group-skus?access-token=' + User("access_token"), {
 					data: data,
 					dataType: 'json',
 					type: 'POST',

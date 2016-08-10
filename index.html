@@ -428,7 +428,7 @@
 				loading = plus.nativeUI.showWaiting("正在更新数据，请稍后");
 				for(var a = 0; a < eventids.length; a++) {
 					var thiseventid = eventids[a];
-					mui.ajax(gAPIServer + 'house-appointments/' + thiseventid + '?expand=houseGroups.houseGroupSchedules,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
+					mui.ajax(gAPIServer + 'house-appointments/' + thiseventid + '?expand=houseGroups.houseGroupSchedules.sku.productBrand.product,houseGroups.houseGroupSchedules.process,houseGroups.houseGroupSchedules.check.checkStandards,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
 						dataType: 'json',
 						type: 'get',
 						timeout: 6000,
@@ -456,6 +456,7 @@
 										} : {
 											"house_group_id": appoint.houseGroups[0].id,
 											"schedule": appoint.houseGroups[0].houseGroupSchedules,
+											"group_id": appoint.houseGroups[0].group_id,
 											"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
 											"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
 											"price": appoint.houseGroups[0].group_amount,
@@ -474,12 +475,21 @@
 
 								var tempdata = JSON.parse(myStorage.getItem("data"));
 								console.log(appoint.id)
-								var tempeventsortid = lsvih.array.getSubByKey({
-									"id": appoint.id
-								}, tempdata.event);
-								tempdata.event[tempeventsortid] = toinsertdata;
-								myStorage.setItem("data", JSON.stringify(tempdata));
-								console.log(myStorage.getItem("data"))
+								if(lsvih.array.getSubByKey({
+										"id": appoint.id
+									}, tempdata.event) !== false) {
+									var tempeventsortid = lsvih.array.getSubByKey({
+										"id": appoint.id
+									}, tempdata.event);
+									tempdata.event[tempeventsortid] = toinsertdata;
+									myStorage.setItem("data", JSON.stringify(tempdata));
+									console.log(myStorage.getItem("data"));
+								} else {
+									tempdata.push(toinsertdata)
+									myStorage.setItem("data", JSON.stringify(tempdata));
+									console.log(myStorage.getItem("data"))
+								}
+								//如果之前没有这个appointment id，则创建一条新纪录
 								successCount++;
 
 								/**

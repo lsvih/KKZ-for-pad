@@ -80,12 +80,9 @@
 				var time = str.replace("T", " ");
 				var timearr = time.split(" ");
 				var datearr = timearr[0].split("-");
-				var hourarr = timearr[1].split(":");
-				console.log(time)
+				var hourarr = timearr[1]!==undefined?timearr[1].split(":"):[0,0,0];
 				var d = new Date(datearr[0], Number(datearr[1] - 1), datearr[2], hourarr[0], hourarr[1], hourarr[2]);
-				console.log(d)
 				var ts = d.getTime();
-				console.log(ts)
 				return Math.floor(ts / 1000)
 			}
 		},

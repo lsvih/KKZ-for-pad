@@ -160,7 +160,7 @@
 	<div class="header"></div>
 	<div class="content">
 		<div id="timeline">
-			<img src="../images/schedule-bigger.png">
+			<img src="../../images/schedule-bigger.png">
 			<span class="scheduleinfo">每周{{events.is_holiday_work?7:5}}天，{{events.time_period}}<br />总计{{events.duration}}天
 			</span>
 			<div id="line"></div>
@@ -169,18 +169,18 @@
 				<span class="time" v-bind:class="{'hide':!fIsFirstDate($index)}">{{__fTimeStampToDate(event.schedule_at)}}</span>
 
 				<span class="event-name">
-					<!--当前事件为单品-->
-					<span v-if="event.sku_id">{{event.sku.product.name}}</span>
+				<!--当前事件为单品-->
+				<span v-if="event.sku_id">{{event.sku.productBrand.product.name}}</span>
 				<!--当前事件为工序-->
-				<span v-if="event.package_process_id">{{event.packageProcess.process_name}}</span>
+				<span v-if="event.process_id">{{event.process.process_name}}</span>
 				<!--当前事件为验收-->
-				<span v-if="event.package_check_id">{{event.packageCheck.check_name}}</span>
+				<span v-if="event.check_id">{{event.check.check_name}}</span>
 				</span>
 				</span>
 				<div class="event-detail" v-if="!event.sku_id">
-					<span v-if="event.package_process_id">{{event.packageProcess.process_content}}</span>
-					<span v-if="event.package_check_id">
-					<span v-for="check in event.packageCheck.packageCheckStandards">{{check.content}}</span>
+					<span v-if="event.process_id">{{event.process.process_content}}</span>
+					<span v-if="event.check_id">
+					<span v-for="check in event.check.checkStandards">{{check.description}}</span>
 					</span>
 				</div>
 			</div>
@@ -199,6 +199,7 @@
 			var tempdata = JSON.parse(myStorage.getItem("data"));
 			var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
 			var vueContent;
+			console.log(JSON.stringify(tempdata.event[eventsortid].content))
 			mui.plusReady(function() {
 				vueContent = new Vue({
 					el: "#timeline",

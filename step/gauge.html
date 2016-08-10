@@ -467,6 +467,7 @@
 									if(data.success == true) {
 										console.log(JSON.stringify(data.data));
 										var tempdata = JSON.parse(myStorage.getItem("data"));
+										tempdata.event[eventsortid].content.group_id = group_id;
 										tempdata.event[eventsortid].content.house_group_id = data.data.id;
 										myStorage.setItem("data", JSON.stringify(tempdata));
 										uploading.setTitle("正在上传量房信息，请稍后...");
