@@ -114,9 +114,11 @@
 			var tempdata = JSON.parse(myStorage.getItem("data"));
 			var tempobj = tempdata.event;
 			var uploading;
+			var house_id;
 			mui.plusReady(function() {
 				eventid = plus.webview.currentWebview().eventid;
 				eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempobj);
+				house_id = tempdata.event[eventsortid].house_id;
 				vueContent = new Vue({
 					el: '#userinfo',
 					data: {
@@ -162,7 +164,7 @@
 								tempdata.event[eventsortid].phone = phonenum;
 								myStorage.setItem("data", JSON.stringify(tempdata)); //将已经修改成功的数据在本地修改
 								//修改房屋地址部分
-								mui.ajax(gAPIServer + 'houses/' + eventid + '?access-token=' + User("access_token"), {
+								mui.ajax(gAPIServer + 'houses/' + house_id + '?access-token=' + User("access_token"), {
 									data: {
 										'street': street,
 										'address': address

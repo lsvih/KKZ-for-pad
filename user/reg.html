@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<link rel="stylesheet" href="../css/mui.css" />
+	<style>
+		.close {
+			position: fixed;
+			top: 0;
+			right: 0;
+			font-size: 55px;
+		}
+		
+		.mui-content {
+			padding: 100px;
+		}
+	</style>
+
+	<body>
+		<span class="close mui-icon mui-icon-closeempty"></span>
+		<div class="mui-content">
+
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>客户手机号</label>
+					<input id="username" type="text" class="mui-input-clear" placeholder="请输入正确的客户手机号">
+				</div>
+				<div class="mui-input-row mui-password">
+					<label>短信验证码</label>
+					<input id="password" type="text" class="mui-input-clear" placeholder="请输入客户收到的短信验证码">
+				</div>
+				<div class="mui-button-row">
+					<button type="button" class="mui-btn mui-btn-primary" id="login">注册</button>&nbsp;&nbsp;
+				</div>
+			</form>
+
+		</div>
+	</body>
+	<script type="text/javascript" src="../js/lsvih.js"></script>
+	<script type="text/javascript" src="../js/mui.js"></script>
+	<script type="text/javascript" src="../js/common.js"></script>
+	<script>
+		mui.init();
+		var loading;
+		mui.plusReady(function() {
+			mui(".mui-input-group").on("tap", "#login", function() {
+				var phonenum = document.getElementById("username").value;
+				if(!/^(13[0-9]|14[0-9]|15[0-9]|18[0-9])\d{8}$/i.test(phonenum)) {
+					mui.toast("请正确填写客户手机号");
+					return false;
+				}
+				loading = plus.nativeUI.showWaiting("正在注册用户，请稍后...");
+				mui.ajax(gAPIServer + 'users/signup', {
+					data: {
+						'SignupForm[mobile]': phonenum,
+						'SignupForm[password]': '123456'
+					},
+					dataType: 'json',
+					type: 'post',
+					timeout: 6000,
+					success: function(data) {
+						if(data.success == true) {
+							mui.toast("用户注册成功！请添加用户信息与房屋信息");
+							var id = data.data.id;
+							loading.close();
+							location.href = "userinfo.html?id=" + id + "&type=new&phonenum="+ phonenum;
+						} else {
+							if(data.status == 400) {
+								mui.toast("用户已经存在，请查看用户信息与房屋信息");
+								//查询用户的id
+								mui.ajax(gAPIServer + 'users?filter=mobile:' + phonenum, {
+									dataType: 'json',
+									type: 'get',
+									timeout: 6000,
+									success: function(data) {
+										if(data.success == true) {
+											var id = data.data.items[0].id;
+											loading.close();
+											location.href = "userinfo.html?id=" + id + "&type=old";
+										} else {
+											mui.alert(data.message, gAppName);
+											console.log(JSON.stringify(data));
+											loading.close();
+										}
+									},
+									error: function(xhr, textStatus, errorThrown) {
+										mui.alert("网络连接失败，请稍后重试", gAppName);
+										loading.close();
+									}
+								});
+
+							} else {
+								mui.alert(data.message, gAppName);
+								console.log(JSON.stringify(data));
+								loading.close();
+							}
+						}
+					},
+					error: function(xhr, textStatus, errorThrown) {
+						mui.alert("网络连接失败，请稍后重试", gAppName);
+						loading.close();
+					}
+				});
+			})
+
+			mui("body").on("tap", ".close", function() {
+				plus.webview.close(plus.webview.currentWebview());
+				plus.webview.currentWebview().opener().setStyle({
+					"mask": "none"
+				});
+			});
+
+		})
+	</script>
+
+</html>

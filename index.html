@@ -140,7 +140,8 @@
 		</span>
 		<span class="flow-weixin flow-icon"><span class="flow-name">微信</span></span>
 		</span>
-		<span class="mui-pull-right" style="height: 50px;background-color: #06b26f;color:#06b26f;z-index: 99999;" ontouchstart="refresh();">安装测试数据</span>
+		<span class="mui-icon mui-icon-plusempty mui-pull-right" style="font-size: 45px;margin-top: -10px;"></span>
+		<!--<span class="mui-pull-right" style="height: 50px;background-color: #06b26f;color:#06b26f;z-index: 99999;" ontouchstart="refresh();">安装测试数据</span>-->
 	</header>
 	<!--<div class="cutoff-line"></div>-->
 
@@ -152,6 +153,7 @@
 		<script src="js/data.js"></script>
 		<script src="js/vue.js"></script>
 		<script src="js/mui.js"></script>
+		<script type="text/javascript" src="js/alias_plus.js"></script>
 		<script type="text/javascript" src="js/storage.js"></script>
 		<script src="js/common.js"></script>
 		<script src="js/sync.js"></script>
@@ -238,9 +240,21 @@
 				swipeBack: false
 			});
 			mui.plusReady(function() {
-				//推送监听
+
+				window.addEventListener('addhouse', function(event) { //接收别的webview发出的刷新指令
+					var ids = event.detail.toString();
+					fRefreshData(ids.split("|"));
+				});
+				//				plus.jgpush.JGPushFunction("qnmlgb", "sb", "nmb", "s",
+				//						function(e) {
+				//							alert(JSON.stringify(a))
+				//						},
+				//						function(e) {
+				//							alert(JSON.stringify(a))
+				//						})
+				//					//推送监听				
 				plus.push.addEventListener("click", function(msg) {
-					var ids = msg.payload.house_appointment_id.toString();//当只有一个数字时会无法使用split，因此转换为字符串
+					var ids = msg.payload.house_appointment_id.toString(); //当只有一个数字时会无法使用split，因此转换为字符串
 					fRefreshData(ids.split("|")); //刷新局部数据
 				}, false);
 				plus.push.addEventListener("receive", function(msg) {
@@ -418,7 +432,27 @@
 				var obj = new UIA.sharedApplication();
 				if(obj.canOpenURL(NSURL.URLWithString('weixin://')))(mui.alert("您尚未安装微信", gAppName), plus.ios.deleteObject(obj));
 			});
-
+			mui("header").on("tap", ".mui-icon-plusempty", function() {
+				main.setStyle({
+					mask: 'rgba(0,0,0,0.4)',
+				});
+				mui.openWindow({
+					url: "user/reg.html",
+					id: "login",
+					styles: {
+						top: "69px",
+						bottom: "69px",
+						right: "100px",
+						left: "100px"
+					},
+					show: {
+						aniShow: "slide-in-top"
+					},
+					waiting: {
+						autoShow: false,
+					}
+				});
+			});
 			/**
 			 * 刷新指定eventid的局部数据
 			 * @param {Array} eventids
@@ -476,7 +510,6 @@
 								}
 
 								var tempdata = JSON.parse(myStorage.getItem("data"));
-								console.log(appoint.id)
 								if(lsvih.array.getSubByKey({
 										"id": appoint.id
 									}, tempdata.event) !== false) {

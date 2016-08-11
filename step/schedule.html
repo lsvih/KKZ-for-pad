@@ -381,6 +381,7 @@
 			mui.plusReady(function() {
 				loading = plus.nativeUI.showWaiting("正在加载，请稍后...");
 				plus.navigator.setFullscreen(true);
+				plus.webview.close("sub_doc");
 				fAddVueCacheFilter();
 				var detailinfo = plus.webview.currentWebview().detail;
 				vueContent = new Vue({
