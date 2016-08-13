@@ -17,11 +17,11 @@
 			position: fixed;
 			top: 0;
 			left: 0;
-			height: 83px;
+			height: 93px;
 			width: 100%;
 			background-color: #fff;
 			border-bottom: 1px solid #eee;
-			z-index: 0;
+			z-index: 19;
 		}
 		
 		.mui-content {
@@ -183,13 +183,28 @@
 			height: 100%;
 			width: 100%;
 		}
+		
+		.pick-again {
+			position: fixed;
+			top: 43px;
+			right: 80px;
+			height: 30px;
+			width: 190px;
+			font-size: 20px;
+			z-index: 98;
+			color: #00B06C;
+		}
+		#rate{
+			width: 70px;
+		}
 	</style>
 
 	<body>
 		<div id="mask"></div>
+		<div class="header"></div>
 		<div class="circle-btn close-btn mui-action-back mui-icon mui-icon-arrowleft"></div>
 		<div class="circle-btn next-btn mui-icon mui-icon-arrowright"></div>
-
+		<div class="pick-again">远程费率:<input id="rate" type="number" value="0" onfocus="this.value = ''" onblur="if(this.value == ''){this.value=0;}"/>%</div>
 		<div class="mui-content">
 			<div id="package">
 				<div v-for="packageitem in event.content.package" class="package-item">
@@ -198,7 +213,7 @@
 						<div class="mui-content-padded" style="margin: 5px 10px;">
 							<div class="mui-input-row">
 								<label>{{$index|GetPackageName}}</label>
-								<input type="number" placeholder="请输入面积" v-model="packageitem.size"><span>米²</span>
+								<input type="number" placeholder="请输入面积" v-model="packageitem.size"><span>{{packageitem.name!=="内门工程"?"米²":"个"}}</span>
 							</div>
 							<div class="picture-area">
 								<div class="packagesort" v-bind:data-id="$index">
@@ -215,7 +230,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="header"></div>
+		
 		<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
 			<ul class="mui-table-view">
 				<li class="mui-table-view-cell">
@@ -385,6 +400,11 @@
 				return true;
 			}
 			mui("body").on("tap", ".mui-icon-arrowright", function() {
+				var rate = document.getElementById("rate").value;
+				if(!/^[+]?[\d]+(([\.]{1}[\d]+)|([\d]*))$/.test(rate)||rate > 100){
+					mui.toast("请输入正确的远程费率！");
+					return false;
+				}
 				tempdata.event[eventsortid] = vueContent.event;
 				myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
 				if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.package)) {
@@ -511,16 +531,16 @@
 				var thispackages = tempdata.event[eventsortid].content.package;
 				var house_group_id = tempdata.event[eventsortid].content.house_group_id;
 				var successCount = 0;
-				
+
 				for(var i = 0; i < thispackages.length; i++) {
 					mui.ajax(gAPIServer + 'house-group-packages?access-token=' + User("access_token"), {
 						data: {
-							'house_group_id':house_group_id,
-							'package_id':thispackages[i].package_id,
+							'house_group_id': house_group_id,
+							'package_id': thispackages[i].package_id,
 							'measure_t_imgs': myStorage.getItem("tempimg")[i],
-							'plan_t_img':thispackages[i].diagram,
-							'area':thispackages[i].size,
-							'num':1
+							'plan_t_img': thispackages[i].diagram,
+							'area': thispackages[i].size,
+							'num': 1
 						},
 						dataType: 'json',
 						type: 'POST',
@@ -569,7 +589,7 @@
 				mui.ajax(gAPIServer + 'house-groups/' + house_group_id + '?access-token=' + User("access_token"), {
 					data: {
 						'status': 1,
-						'distance_rate': 0
+						'distance_rate': document.getElementById("rate").value
 					},
 					dataType: 'json',
 					type: 'PUT',
@@ -579,7 +599,7 @@
 							console.log(JSON.stringify(data.data))
 							var temp = JSON.parse(myStorage.getItem("data"));
 							temp.event[eventsortid].content.group_quotation = data.data.group_quotation;
-							temp.event[eventsortid].content.price = data.data.package_amount;
+							temp.event[eventsortid].content.price = data.data.group_amount;
 							temp.event[eventsortid].content.clear_amount = data.data.clear_amount;
 							temp.event[eventsortid].content.taxes_amount = data.data.taxes_amount;
 							temp.event[eventsortid].status = 1;

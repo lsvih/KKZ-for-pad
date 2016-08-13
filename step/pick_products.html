@@ -144,6 +144,10 @@
 			background-color: transparent!important;
 			width: 16px!important;
 		}
+		.packages{
+			text-align: left;
+			margin-left: 27px;
+		}
 	</style>
 
 	<body>
@@ -154,6 +158,7 @@
 		<div class="mui-content">
 			<div id="package">
 				<div class="package-title">选择套餐</div>
+				<div class="packages">
 				<div class="package-item-container" v-for="package in packageinfo">
 					<div class="edit-num" v-bind:class="{'edit-num-active' : __fGetpackageNum(package.package_id)}">
 						<div class="mui-numbox" data-numbox-min='0' data-numbox-max='9'>
@@ -165,6 +170,7 @@
 					<div class="check-mask" v-show="__fGetpackageNum(package.package_id)" v-on:tap="__fCancelSelect(package.package_id,$event.currentTarget)"></div>
 					<img v-bind:src="package.cover|cache" v-on:tap="__fSelectThisPackage(package.package_id,$event.currentTarget,$index)">
 					<span class="package-item-title" v-show="!__fGetpackageNum(package.package_id)">{{package.name}}</span></div>
+			</div>
 			</div>
 		</div>
 		<script type="text/javascript" src="../js/lsvih.js"></script>

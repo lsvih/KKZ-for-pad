@@ -160,7 +160,7 @@
 	<div class="header"></div>
 	<div class="content">
 		<div id="timeline">
-			<img src="../images/schedule-bigger.png">
+			<img src="../images/schedule-bigger.png" width="81px">
 			<span class="scheduleinfo">每周{{events.is_holiday_work?7:5}}天，{{events.time_period}}<br />总计{{events.duration}}天
 			</span>
 			<div id="line"></div>
@@ -199,7 +199,6 @@
 			var tempdata = JSON.parse(myStorage.getItem("data"));
 			var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
 			var vueContent;
-//			console.log(JSON.stringify(tempdata.event[eventsortid].content))
 			mui.plusReady(function() {
 				vueContent = new Vue({
 					el: "#timeline",
@@ -208,7 +207,8 @@
 					},
 					methods: {
 						__fTimeStampToDate: function(timestamp) {
-							var datearr = lsvih.time.stampToStr(timestamp,"date").split("-");
+							console.log(timestamp)
+							var datearr = lsvih.time.stampToStr(timestamp*1000,"date").split("-");
 							return datearr[1] + "月" + datearr[2] + "日";
 						},
 						fIsFirstDate:function(sort){//如果不是第一次出现这个时间，即这个时间和上一个节点的时间一样，则不显示
@@ -222,6 +222,7 @@
 						}
 					},
 					ready: function() {
+						console.log(JSON.stringify(tempdata.event[eventsortid].content))
 						var namearr = document.getElementsByClassName("event-name");
 						var lastItem = namearr[namearr.length - 1];
 						document.getElementById("line").style.height = lastItem.offsetTop - 98 + "px";
