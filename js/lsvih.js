@@ -143,7 +143,7 @@
 					return false;
 				}
 				if(!array.length) {
-					warn("请输入正确的数组");
+					warn("数组长度为零");
 					return false;
 				}
 				var Key, value;
