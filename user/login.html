@@ -155,7 +155,7 @@
 									myStorage.setItem("packageinfo", JSON.stringify({
 										"packageinfo": packageinfo
 									}));
-									console.log(myStorage.getItem("packageinfo"))
+//									console.log(myStorage.getItem("packageinfo"))
 									mui('body').progressbar({
 										progress: 0,
 										color: 'success'
@@ -233,7 +233,7 @@
 						timeout: 6000,
 						success: function(data) {
 							if(data.success == true) {
-								window.plus.bridge.execSync("JGpushplugin","PluginSetTagsFunctionSync",["","","",String(data.data.id)]);
+								window.plus.bridge.execSync("JGpushplugin", "PluginSetTagsFunctionSync", ["", "", "", String(data.data.id)]);
 								localStorage.user = JSON.stringify({
 									"id": data.data.id,
 									"username": data.data.username,
@@ -242,7 +242,7 @@
 									"access_token": data.data.access_token
 								});
 								loading.setTitle("正在加载用户数据，请稍后");
-								mui.ajax(gAPIServer + 'house-appointments?filter=inspector_id:' + User("id") + '&expand=houseGroups.houseGroupSchedules.sku.productBrand.product,houseGroups.houseGroupSchedules.process,houseGroups.houseGroupSchedules.check.checkStandards,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
+								mui.ajax(gAPIServer + 'house-appointments?filter=inspector_id:' + User("id") + '&expand=houseGroups.houseGroupSchedules.sku.productBrand.product,houseGroups.houseGroupSchedules.process,houseGroups.houseGroupSchedules.check.checkStandards,houseGroups.houseGroupPackages.package,houseGroups.houseGroupSkus,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
 									dataType: 'json',
 									type: 'get',
 									timeout: 6000,
@@ -269,13 +269,14 @@
 														"phone": appoint.user.mobile,
 														"content": appoint.houseGroups.length == 0 ? {
 															"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
-															"package":[]
+															"package": []
 														} : {
 															"house_group_id": appoint.houseGroups[0].id,
 															"schedule": appoint.houseGroups[0].houseGroupSchedules,
 															"group_id": appoint.houseGroups[0].group_id,
 															"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
 															"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
+															"skus": appoint.houseGroups[0].houseGroupSkus,
 															"price": appoint.houseGroups[0].group_amount,
 															"clear_amount": appoint.houseGroups[0].clear_amount,
 															"distance_rate": appoint.houseGroups[0].distance_rate,
