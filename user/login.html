@@ -233,6 +233,7 @@
 						timeout: 6000,
 						success: function(data) {
 							if(data.success == true) {
+								window.plus.bridge.execSync("JGpushplugin","PluginSetTagsFunctionSync",["","","",String(data.data.id)]);
 								localStorage.user = JSON.stringify({
 									"id": data.data.id,
 									"username": data.data.username,
