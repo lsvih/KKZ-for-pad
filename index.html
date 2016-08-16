@@ -132,7 +132,8 @@
 		<div id="preload-05"></div>
 	</div>
 	<header class="mui-bar mui-bar-nav">
-		<span class="mui-icon mui-icon-bars mui-pull-left"></span>
+		<!--<span class="mui-icon mui-icon-bars mui-pull-left"></span>-->
+		<span class="mui-icon mui-icon-home mui-pull-left" style="font-size: 35px;margin-top: -8px;"></span>
 		<span id="flow"><span class="flow-{{flow.icon}} flow-icon flow" v-for="flow in flow" id="flow-{{flow.id}}">
 			<span class="mui-badge mui-badge-danger" v-if="flow.num > 0">{{flow.num}}</span>
 		<span class="flow-name">{{flow.name}}</span>
@@ -156,7 +157,6 @@
 		<script type="text/javascript" src="js/alias_plus.js"></script>
 		<script type="text/javascript" src="js/storage.js"></script>
 		<script src="js/common.js"></script>
-		<script src="js/sync.js"></script>
 		<script type="text/javascript">
 			"use strick"
 			var menu = null,
@@ -405,13 +405,13 @@
 				}
 			}
 			//点击左上角侧滑图标，打开侧滑菜单；
-			document.querySelector('.mui-icon-bars').addEventListener('tap', function(e) {
-				if(bShowMenu) {
-					fCloseMenu();
-				} else {
-					fOpenMenu();
-				}
-			});
+//			document.querySelector('.mui-icon-bars').addEventListener('tap', function(e) {
+//				if(bShowMenu) {
+//					fCloseMenu();
+//				} else {
+//					fOpenMenu();
+//				}
+//			});
 			//敲击顶部导航，内容区回到顶部
 			document.querySelector('header').addEventListener('doubletap', function() {
 				main.children()[0].evalJS('mui.scrollTo(0, 100)');
@@ -424,15 +424,31 @@
 					fOpenMenu();
 				}
 			}
-			mui('header').on('tap', '.mui-icon-weixin', function() {
-				location.href = "weixin://"; //调用微信
-				//[[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"weixin://"]];
-				var NSURL = plus.ios.import('NSURL');
-				var UIA = plus.ios.import('UIApplication');
-				var obj = new UIA.sharedApplication();
-				if(obj.canOpenURL(NSURL.URLWithString('weixin://')))(mui.alert("您尚未安装微信", gAppName), plus.ios.deleteObject(obj));
+			mui('.mui-bar').on('tap', '.mui-icon-home', function() {
+				mui.openWindow({
+					url: "step/intro.html",
+					id: "intro",
+					styles: {
+						top: 0,
+						bottom: 0
+					},
+					show: {
+						aniShow: false
+					},
+					waiting: {
+						autoShow: false,
+					}
+				});
 			});
-			mui("header").on("tap", ".mui-icon-plusempty", function() {
+//			mui('header').on('tap', '.mui-icon-weixin', function() {
+//				location.href = "weixin://"; //调用微信
+//				//[[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"weixin://"]];
+//				var NSURL = plus.ios.import('NSURL');
+//				var UIA = plus.ios.import('UIApplication');
+//				var obj = new UIA.sharedApplication();
+//				if(obj.canOpenURL(NSURL.URLWithString('weixin://')))(mui.alert("您尚未安装微信", gAppName), plus.ios.deleteObject(obj));
+//			});
+			mui(".mui-bar").on("tap", ".mui-icon-plusempty", function() {
 				main.setStyle({
 					mask: 'rgba(0,0,0,0.4)',
 				});

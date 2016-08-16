@@ -1,9 +1,9 @@
 "use strick"
 //全局变量
-var gVersion = "0.02";
+var gVersion = "1.3";
 var gAppName = "快块装";
 var gTopbarHeight = 20; //状态栏高度，沉浸式使用
-var gServer = "http://123.56.200.45/kkz2/"
+var gServer = "http://123.56.200.45/kkz/"
 var gAPIServer = gServer + "api/web/" //api接口目录
 
 //判断是否存在队列对象，如果不存在则创建

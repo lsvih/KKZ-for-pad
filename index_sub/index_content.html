@@ -56,7 +56,6 @@
 					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
 				</div>
 				<div class="btns block">
-					<span class="event-btn intro" @tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span>
 					<span class="event-btn gauge" @tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
 
 			</template>
@@ -76,7 +75,6 @@
 					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
 				</div>
 				<div class="btns block">
-					<span class="event-btn intro" @tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span>
 					<span class="event-btn gauge" @tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
 
 			</template>
@@ -251,23 +249,6 @@
 							fCloseSubPage();
 						}
 
-					},
-					//打开产品介绍
-					__fIntro: function(eventid) {
-						mui.openWindow({
-							url: "../step/intro.html?eventid=" + eventid,
-							id: "intro",
-							styles: {
-								top: 0,
-								bottom: 0
-							},
-							show: {
-								aniShow: false
-							},
-							waiting: {
-								autoShow: false,
-							}
-						})
 					},
 					//打开量房页面
 					__fGauge: function(eventid) {
