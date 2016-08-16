@@ -146,7 +146,7 @@
 	<!--<div class="cutoff-line"></div>-->
 
 	<body>
-		<script type="text/javascript" src="js/initdata.js"></script>
+		<!--<script type="text/javascript" src="js/initdata.js"></script>-->
 
 		<!--加载测试数据-->
 		<script type="text/javascript" src="js/lsvih.js"></script>
@@ -318,7 +318,7 @@
 				data: gFlow,
 				ready: function() {
 					lsvih.dom.addClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
-					mui('#flow').on('tap', '.flow', function() {
+					mui('#flow').on('touchstart', '.flow', function() {
 						if(!lsvih.dom.hasClass(this, "mui-active")) { //重复点击不进行切换
 							lsvih.dom.removeClass(document.getElementById("flow-" + nActiveMenu), "mui-active");
 							lsvih.dom.addClass(this, "mui-active");
@@ -567,6 +567,7 @@
 						mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
 						mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
 						loading.close();
+						plus.runtime.setBadgeNumber(0);
 						mui.toast("更新数据成功！");
 					}
 				}, 50)

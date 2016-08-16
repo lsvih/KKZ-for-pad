@@ -16,7 +16,7 @@
 			<template v-if="event.status==5">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
-					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br />
+					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" @tap="__fEditUser(event.id)"></i>编辑</span><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
 					<span>合同号：{{event.contractid}}</span>
 				</div>
@@ -29,9 +29,9 @@
 						<h5>您还可以添加<span id="imgcount">{{10 - event.content.property.img.length }}</span>张图片</h5>
 					</div>
 					<div id="pictures">
-						<div class="picture" v-for="images in event.content.property.img"><img v-bind:src="images" class="adds" data-preview-src data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
+						<div class="picture" v-for="images in event.content.property.img"><img v-bind:src="images" class="adds" data-preview-src data-preview-group='1' @tap="__fEditPictures($event)" /></div>
 					</div>
-					<div id="add-picture" v-show="event.content.property.img.length < 10" v-on:tap="__fAddPic()">+</div>
+					<div id="add-picture" v-show="event.content.property.img.length < 10" @tap="__fAddPic()">+</div>
 				</div>
 				<button class="mui-btn mui-btn-block mui-btn-green submit-button">提交</button>
 			</template>
@@ -40,7 +40,7 @@
 			<template v-if="event.status==6">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
-					<span class="user-info-edit" v-on:tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br />
+					<span class="user-info-edit" @tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
 					<span>合同号：{{event.contractid}}</span>
 				</div>
@@ -48,13 +48,13 @@
 					<span>选材信息</span><br/>
 					<span>{{event.content.selection.content}}</span>
 					<div v-if="event.content.selection.check" class="status-7-checked">已确认√</div>
-					<div v-if="!event.content.selection.check" class="status-7-pal"><span class="status-7-modify">修改</span><span class="status-7-check" v-on:tap="__fCheck('selection')">确认</span></div>
+					<div v-if="!event.content.selection.check" class="status-7-pal"><span class="status-7-modify">修改</span><span class="status-7-check" @tap="__fCheck('selection')">确认</span></div>
 				</div>
 				<div class="block">
 					<span>排期信息</span><br/>
 					<span>{{event.content.schedule.content}}</span>
 					<div v-if="event.content.schedule.check" class="status-7-checked">已确认√</div>
-					<div v-if="!event.content.schedule.check" class="status-7-pal"><span class="status-7-modify">修改</span><span class="status-7-check" v-on:tap="__fCheck('schedule')">确认</span></div>
+					<div v-if="!event.content.schedule.check" class="status-7-pal"><span class="status-7-modify">修改</span><span class="status-7-check" @tap="__fCheck('schedule')">确认</span></div>
 				</div>
 			</template>
 
@@ -62,7 +62,7 @@
 			<template v-if="event.status==7">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
-					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" v-on:tap="__fEditUser(event.id)"></i>编辑</span><br />
+					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" @tap="__fEditUser(event.id)"></i>编辑</span><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
 					<span>合同号：{{event.contractid}}</span>
 				</div>
@@ -75,9 +75,9 @@
 						<h5>您还可以添加<span id="imgcount">{{10 - event.content.pending_construction.img.length }}</span>张图片</h5>
 					</div>
 					<div id="pictures">
-						<div class="picture" v-for="images in event.content.pending_construction.img"><img v-bind:src="images" class="adds" data-preview-src data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
+						<div class="picture" v-for="images in event.content.pending_construction.img"><img v-bind:src="images" class="adds" data-preview-src data-preview-group='1' @tap="__fEditPictures($event)" /></div>
 					</div>
-					<div id="add-picture" v-show="event.content.pending_construction.img.length < 10" v-on:tap="__fAddPic()">+</div>
+					<div id="add-picture" v-show="event.content.pending_construction.img.length < 10" @tap="__fAddPic()">+</div>
 				</div>
 				<button class="mui-btn mui-btn-block mui-btn-green submit-button">确认开工</button>
 			</template>

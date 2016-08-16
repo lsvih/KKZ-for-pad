@@ -194,8 +194,25 @@
 			z-index: 98;
 			color: #00B06C;
 		}
-		#rate{
+		
+		#rate {
 			width: 70px;
+		}
+		
+		.trash-handling-fee {
+			position: fixed;
+			top: 47px;
+			right:300px;
+			font-size: 20px;
+			color:#00B06C;
+			z-index: 99;
+		}
+		.trash-handling-fee div{
+			display: inline-block;
+			margin-bottom: 2px;
+			vertical-align: middle;
+		}
+		.trash-handling-fee span{
 		}
 	</style>
 
@@ -204,7 +221,13 @@
 		<div class="header"></div>
 		<div class="circle-btn close-btn mui-action-back mui-icon mui-icon-arrowleft"></div>
 		<div class="circle-btn next-btn mui-icon mui-icon-arrowright"></div>
-		<div class="pick-again">远程费率:<input id="rate" type="number" value="0" onfocus="this.value = ''" onblur="if(this.value == ''){this.value=0;}"/>%</div>
+		<div class="pick-again">远程费率:<input id="rate" type="number" value="0" onfocus="this.value = ''" onblur="if(this.value == ''){this.value=0;}" />%</div>
+		<div class="trash-handling-fee">
+			<span>垃圾清运费:</span>
+			<div class="mui-switch mui-switch-mini mui-active">
+				<div class="mui-switch-handle"></div>
+			</div>
+		</div>
 		<div class="mui-content">
 			<div id="package">
 				<div v-for="packageitem in event.content.package" class="package-item">
@@ -217,20 +240,20 @@
 							</div>
 							<div class="picture-area">
 								<div class="packagesort" v-bind:data-id="$index">
-									<div class="picture" v-for="image in packageitem.images" track-by="$index"><img v-bind:src="image" class="adds" data-preview-src data-preview-group='1' v-on:tap="__fEditPictures($event)" /></div>
+									<div class="picture" v-for="image in packageitem.images" track-by="$index"><img v-bind:src="image" class="adds" data-preview-src data-preview-group='1' @tap="__fEditPictures($event)" /></div>
 								</div>
-								<div class="add-picture" v-show="(packageitem.images.length < 10)" v-on:tap="__fAddPic($index)">+</div>
+								<div class="add-picture" v-show="(packageitem.images.length < 10)" @tap="__fAddPic($index)">+</div>
 							</div>
 						</div>
 					</div>
 					<div class="diagram-area">
-						<div class="add-diagram" v-if="!packageitem.diagram" v-on:tap="__fAddDiagram($index)"><img src="../images/pencil.png"></div>
-						<div class="diagram" v-if="packageitem.diagram" v-on:tap="__fAddDiagram($index,packageitem.diagram)"><img v-bind:src="packageitem.diagram"></div>
+						<div class="add-diagram" v-if="!packageitem.diagram" @tap="__fAddDiagram($index)"><img src="../images/pencil.png"></div>
+						<div class="diagram" v-if="packageitem.diagram" @tap="__fAddDiagram($index,packageitem.diagram)"><img v-bind:src="packageitem.diagram"></div>
 					</div>
 				</div>
 			</div>
 		</div>
-		
+
 		<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
 			<ul class="mui-table-view">
 				<li class="mui-table-view-cell">
@@ -401,7 +424,7 @@
 			}
 			mui("body").on("tap", ".mui-icon-arrowright", function() {
 				var rate = document.getElementById("rate").value;
-				if(!/^[+]?[\d]+(([\.]{1}[\d]+)|([\d]*))$/.test(rate)||rate > 100){
+				if(!/^[+]?[\d]+(([\.]{1}[\d]+)|([\d]*))$/.test(rate) || rate > 100) {
 					mui.toast("请输入正确的远程费率！");
 					return false;
 				}

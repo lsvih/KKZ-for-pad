@@ -225,7 +225,7 @@
 					<div class="line"></div>
 					<!--商品选择模块-->
 					<div class="product">
-						<div class="product-img"><img v-bind:src="product.sku.img|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
+						<div class="product-img"><img v-bind:src="product.sku.img|cache" @tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
 						<div class="product-name">{{product.name}}</div>
 						<div class="product-brand">品牌：&nbsp;
 							<span>{{product.brand}}&nbsp;&nbsp;</span></div>
@@ -240,7 +240,7 @@
 					<!--end-->
 
 					<!--文字阅读折叠模块-->
-					<div v-if="product.showtext" class="text-toggle" v-on:tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
+					<div v-if="product.showtext" class="text-toggle" @tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
 						<div class="detail-text">
 							<p>{{product.showtext}}
 							</p>

@@ -163,12 +163,12 @@
 					<div class="edit-num" v-bind:class="{'edit-num-active' : __fGetpackageNum(package.package_id)}">
 						<div class="mui-numbox" data-numbox-min='0' data-numbox-max='9'>
 							<button class="mui-btn mui-btn-numbox-minus mui-icon mui-icon-minus" type="button"></button>
-							<input class="mui-input-numbox" type="number" v-bind:value="__fGetpackageNum(package.package_id)" v-bind:data-id="__fGetpackageNum(package.package_id)" v-on:change="__fEditNum($event.currentTarget)" disabled/>
+							<input class="mui-input-numbox" type="number" v-bind:value="__fGetpackageNum(package.package_id)" v-bind:data-id="__fGetpackageNum(package.package_id)" @change="__fEditNum($event.currentTarget)" disabled/>
 							<button class="mui-btn mui-btn-numbox-plus mui-icon mui-icon-plus" type="button"></button>
 						</div>
 					</div>
-					<div class="check-mask" v-show="__fGetpackageNum(package.package_id)" v-on:tap="__fCancelSelect(package.package_id,$event.currentTarget)"></div>
-					<img v-bind:src="package.cover|cache" v-on:tap="__fSelectThisPackage(package.package_id,$event.currentTarget,$index)">
+					<div class="check-mask" v-show="__fGetpackageNum(package.package_id)" @tap="__fCancelSelect(package.package_id,$event.currentTarget)"></div>
+					<img v-bind:src="package.cover|cache" @tap="__fSelectThisPackage(package.package_id,$event.currentTarget,$index)">
 					<span class="package-item-title" v-show="!__fGetpackageNum(package.package_id)">{{package.name}}</span></div>
 			</div>
 			</div>

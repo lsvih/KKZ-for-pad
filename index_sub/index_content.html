@@ -45,7 +45,7 @@
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon"></span>
-					<div class="click-area user-info-edit" v-on:tap="__fEditUser(event.id)"></div><br />
+					<div class="click-area user-info-edit" @tap="__fEditUser(event.id)"></div><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
 				</div>
 				<div class="block">
@@ -56,8 +56,8 @@
 					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
 				</div>
 				<div class="btns block">
-					<span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span>
-					<span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
+					<span class="event-btn intro" @tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span>
+					<span class="event-btn gauge" @tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
 
 			</template>
 			<!--待量房-->
@@ -65,7 +65,7 @@
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon"></span>
-					<div class="click-area user-info-edit" v-on:tap="__fEditUser(event.id)"></div><br />
+					<div class="click-area user-info-edit" @tap="__fEditUser(event.id)"></div><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
 				</div>
 				<div class="block">
@@ -76,8 +76,8 @@
 					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
 				</div>
 				<div class="btns block">
-					<span class="event-btn intro" v-on:tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span>
-					<span class="event-btn gauge" v-on:tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
+					<span class="event-btn intro" @tap="__fIntro(event.id)"><i class="intro-icon"></i>产品介绍</span>
+					<span class="event-btn gauge" @tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
 
 			</template>
 			<!--待排期-->
@@ -85,7 +85,7 @@
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon"></span>
-					<div class="click-area user-info-edit" v-on:tap="__fEditUser(event.id)"></div><br />
+					<div class="click-area user-info-edit" @tap="__fEditUser(event.id)"></div><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
 					<!--<span>合同号：{{event.contractid}}</span>-->
 					<!--这个步骤此时还没有产生合同-->
@@ -95,16 +95,16 @@
 					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.size}}米²</span><br /></span>
 					<span>总价:{{event.content.price}}元</span>
 					<span class="user-info-edit"><span class="mui-icon mui-icon-arrowright"></span></span>
-					<div class="click-area user-info-edit" v-on:tap="__fDetail(event.id,'gauge')"></div>
+					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'gauge')"></div>
 				</div>
-				<div class="btns block"><span class="mui-pull-left intro" v-on:tap="__fSchedule(event.id)"><i class="schedule-icon"></i>去排期</span></div>
+				<div class="btns block"><span class="mui-pull-left intro" @tap="__fSchedule(event.id)"><i class="schedule-icon"></i>去排期</span></div>
 			</template>
 
 			<!--待签约-->
 			<template v-if="event.status==2">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
-					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br />
+					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="rendering block" v-if="event.content.renderings&&event.content.renderings.length">
@@ -112,7 +112,7 @@
 					<span class="iteminner">
 						<span class="img-contain">
 					<span class="lineimg" >
-						<span class="item" v-for="img_src in event.content.renderings" track-by="$index"><img class="rendering-images" v-bind:src="img_src|cache"   v-on:tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
+						<span class="item" v-for="img_src in event.content.renderings" track-by="$index"><img class="rendering-images" v-bind:src="img_src|cache"   @tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
 					</span>
 					</span>
 					</span>
@@ -123,26 +123,26 @@
 					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.size}}米</span><br /></span>
 					<span>总价:{{event.content.price}}元</span>
 					<span class="user-info-edit"><span class="mui-icon mui-icon-arrowright"></span></span>
-					<div class="click-area user-info-edit" v-on:tap="__fDetail(event.id,'gauge')"></div>
+					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'gauge')"></div>
 				</div>
 				<div class="block">
 					<span>选材信息</span>
 					<span class="user-info-edit center"><span class="mui-icon mui-icon-arrowright"></span></span>
-					<div class="click-area user-info-edit" v-on:tap="__fDetail(event.id,'selection')"></div>
+					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'selection')"></div>
 				</div>
 				<div class="block">
 					<span>排期信息</span>
 					<span class="user-info-edit center"><span class="mui-icon mui-icon-arrowright"></span></span>
-					<div class="click-area user-info-edit" v-on:tap="__fDetail(event.id,'schedule')"></div>
+					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'schedule')"></div>
 				</div>
-				<div class="btns block"><span class="contract-btn" v-on:tap="__fDetail(event.id,'contract')">查看合同</span></div>
+				<div class="btns block"><span class="contract-btn" @tap="__fDetail(event.id,'contract')">查看合同</span></div>
 			</template>
 
 			<!--待支付-->
 			<template v-if="event.status==3">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
-					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
 					<span>已交定金</span><br/><span class="check-time">预约开工日期：{{event.content.expected_start_date}}</span>
@@ -156,7 +156,7 @@
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span>
 					<span class="user-phone">{{event.phone}}</span>
-					<span class="user-info-edit edit-icon" v-on:tap="__fEditUser(event.id)"></span><br />
+					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
 				</div>
 				<div class="block">
@@ -388,7 +388,6 @@
 					}
 				},
 				ready: function() {
-					console.log(this.event)
 					plus.navigator.closeSplashscreen();
 				}
 			});

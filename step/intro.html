@@ -111,7 +111,7 @@
 			<div id="package">
 				<div class="package-title">套餐</div>
 				<div class="packages">
-					<div class="package-item-container" v-for="package in packageinfo" v-on:tap="__fdetail($index)"><img v-bind:src="package.cover|cache"><span class="package-item-title">{{package.name}}</span></div>
+					<div class="package-item-container" v-for="package in packageinfo" @tap="__fdetail($index)"><img v-bind:src="package.cover|cache"><span class="package-item-title">{{package.name}}</span></div>
 					</div>
 			</div>
 			<!--<div class="package-title" style="margin-top: 30px;">单品</div>

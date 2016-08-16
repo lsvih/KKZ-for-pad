@@ -69,7 +69,7 @@
 
 		<ul class="mui-table-view mui-table-view-striped mui-table-view-condensed" id="event-list">
 			<!--加入mui-disabled来屏蔽mui-table-view-cell:active的变色-->
-			<li class="mui-table-view-cell mui-disabled" v-bind:class="{'list-selected':$index==nSelectSort}" v-for="event in list" v-on:tap="changecontent($index,$event,event.status)" v-on:longtap="changecontent($index,$event,event.status)">
+			<li class="mui-table-view-cell mui-disabled" v-bind:class="{'list-selected':$index==nSelectSort}" v-for="event in list" @tap="changecontent($index,$event,event.status)" @longtap="changecontent($index,$event,event.status)">
 				<div class="mui-table">
 					<div class="mui-table-cell mui-col-xs-10">
 						<h4>{{event.name}} {{event.sex?"女士":"先生"}} {{event.phone}}</h4>

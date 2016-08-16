@@ -281,7 +281,7 @@
 						<span class="iteminner">
 						<span class="img-contain">
 					<span class="lineimg" >
-						<span class="item" v-for="img_src in detail.images" track-by="$index"><img class="rendering-images" v-bind:src="img_src|cache" v-on:tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
+						<span class="item" v-for="img_src in detail.images" track-by="$index"><img class="rendering-images" v-bind:src="img_src|cache" @tap="previewimages($event,$index)" data-preview-src="" data-preview-group="1" /></span>
 						</span>
 						</span>
 						</span>
@@ -292,14 +292,14 @@
 
 							<div class="product">
 								<i>{{$index}}</i>
-								<div class="product-img"><img v-bind:src="product.showimage|cache" v-on:tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
+								<div class="product-img"><img v-bind:src="product.showimage|cache" @tap="previewimage($event,0)" data-preview-src data-preview-group='1' /></div>
 								<div class="product-name">{{product.name}}</div>
 								<div class="product-brand">品牌：&nbsp;
-									<span v-for="brand in product.product_brands" v-on:tap="Change($event)" v-bind:value="$index">{{brand.brand_name}}&nbsp;&nbsp;</span></div>
+									<span v-for="brand in product.product_brands" @tap="Change($event)" v-bind:value="$index">{{brand.brand_name}}&nbsp;&nbsp;</span></div>
 								<div class="product-model">型号：&nbsp;
-									<span v-for="model in product.product_brands[product.selectbrand].tree" v-on:tap="Change($event)" v-bind:value="$index">{{model.name}}&nbsp;&nbsp;</span></div>
+									<span v-for="model in product.product_brands[product.selectbrand].tree" @tap="Change($event)" v-bind:value="$index">{{model.name}}&nbsp;&nbsp;</span></div>
 								<div class="product-size">尺寸：&nbsp;
-									<span v-for="size in product.product_brands[product.selectbrand].tree[product.product_brands[product.selectbrand].selectmodel].size" v-on:tap="Change($event)">{{size.name}}&nbsp;&nbsp;</span>
+									<span v-for="size in product.product_brands[product.selectbrand].tree[product.product_brands[product.selectbrand].selectmodel].size" @tap="Change($event)">{{size.name}}&nbsp;&nbsp;</span>
 								</div>
 
 							</div>
@@ -307,7 +307,7 @@
 							<!--end-->
 
 							<!--文字阅读折叠模块-->
-							<div v-if="product.showtext" class="text-toggle" v-on:tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
+							<div v-if="product.showtext" class="text-toggle" @tap="toggle($event.currentTarget.getElementsByClassName('text-control')[0].getAttribute('data-id'),$event.currentTarget.getElementsByClassName('detail-text')[0], $event.currentTarget.getElementsByClassName('text-control')[0])">
 								<div class="detail-text">
 									<p>{{product.showtext}}
 									</p>
