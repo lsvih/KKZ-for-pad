@@ -556,9 +556,8 @@
 			document.getElementById("content").innerHTML = (self.images);
 			var initimage = document.getElementsByTagName("img")[self.indexid];
 			mui.trigger(initimage, 'tap');
-			if(self.deletemode == "true"){
+			if(self.deletemode == true){
 				document.getElementsByClassName("delete")[0].style.display = "block";
-				
 				mui(".mui-preview-header").on("tap",".delete",function(){
 					var activeId = PreviewImage.indicator.innerText.split("/")[0];
 					var TotolCount = PreviewImage.indicator.innerText.split("/")[1];

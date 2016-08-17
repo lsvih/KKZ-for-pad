@@ -411,14 +411,14 @@
 							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
 								images: thisobj.currentTarget.parentNode.innerHTML,
 								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.getElementsByTagName("img")),
-								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds")
 							}), "fade-in", 200);
 						},
 						previewimages: function(thisobj) { //查看多张图片大图
 							plus.webview.show(plus.webview.create("../module/preview_image.html", "preview_image", {}, {
 								images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
 								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
-								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds") ? "true" : "false"
+								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds")
 							}), "fade-in", 200);
 						},
 						Change: function(thisevent) {

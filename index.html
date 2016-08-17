@@ -412,10 +412,6 @@
 //					fOpenMenu();
 //				}
 //			});
-			//敲击顶部导航，内容区回到顶部
-			document.querySelector('header').addEventListener('doubletap', function() {
-				main.children()[0].evalJS('mui.scrollTo(0, 100)');
-			});
 
 			mui.menu = function() {
 				if(bShowMenu) {
