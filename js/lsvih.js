@@ -164,6 +164,13 @@
 			 */
 			getObjByKey: function(keyjson, array) {
 				return array[this.getSubByKey(keyjson, array)];
+			},
+			getArrByCondition: function(condition, array){
+				var arr = [];
+				array.map(function(obj){
+					eval('if(obj.'+ condition +'){arr.push({obj})}');
+				});
+				return arr;
 			}
 		},
 		/**

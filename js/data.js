@@ -69,81 +69,92 @@ gStatus = {
 	}]
 };
 
-gRoomType = [{
+localStorage.RoomType = JSON.stringify([{
 	"name": "厨房",
 	"room_id": 1,
 	"default": 1,
 	"images":[],
 	"diagram":"",
-	"size":""
+	"size":"",
+	"alias":""
 }, {
 	"name": "卫生间",
 	"room_id": 2,
 	"default": 1,
 	"images":[],
 	"diagram":"",
-	"size":""
+	"size":"",
+	"alias":""
 }, {
 	"name": "卧室",
 	"room_id": 3,
 	"default": 1,
 	"images":[],
 	"diagram":"",
-	"size":""
+	"size":"",
+	"alias":""
 }, {
 	"name": "客厅",
 	"room_id": 4,
 	"default": 1,
 	"images":[],
 	"diagram":"",
-	"size":""
+	"size":"",
+	"alias":""
 }, {
 	"name": "餐厅",
 	"room_id": 5,
 	"default": 0,
 	"images":[],
 	"diagram":"",
-	"size":""
+	"size":"",
+	"alias":""
 }, {
 	"name": "阳台",
 	"room_id": 6,
 	"default": 0,
 	"images":[],
 	"diagram":"",
-	"size":""
+	"size":"",
+	"alias":""
 }, {
 	"name": "书房",
 	"room_id": 7,
 	"default": 0,
 	"images":[],
 	"diagram":"",
-	"size":""
+	"size":"",
+	"alias":""
 }, {
 	"name": "儿童房",
 	"room_id": 8,
 	"default": 0,
 	"images":[],
 	"diagram":"",
-	"size":""
+	"size":"",
+	"alias":""
 }, {
 	"name": "储物间",
 	"room_id": 9,
 	"default": 0,
 	"images":[],
 	"diagram":"",
-	"size":"" 
+	"size":"",
+	"alias":""
 }, {
 	"name": "衣帽间",
 	"room_id": 10,
 	"default": 0,
 	"images":[],
 	"diagram":"",
-	"size":""
+	"size":"",
+	"alias":""
 }, {
 	"name": "门厅",
 	"room_id": 11,
 	"default": 0,
 	"images":[],
 	"diagram":"",
-	"size":""
-}]
+	"size":"",
+	"alias":""
+}])

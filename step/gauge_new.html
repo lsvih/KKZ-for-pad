@@ -225,11 +225,15 @@
 		}
 		
 		.mui-popover {
-			height: 300px;
+			height: 473px;
 		}
 		
 		.mui-table-view-cell> a:not(.mui-btn) {
 			color: #000;
+		}
+		
+		.mui-popover .mui-scroll-wrapper {
+			margin: 0;
 		}
 	</style>
 
@@ -243,7 +247,7 @@
 				<div v-for="room in event.content.room" class="package-item" track-by="$index">
 					<div class="room-name">{{room.name}}</div>
 					<div class="add-same" @tap="__fAddSameTypeRoomAfter($index)"><img src="../images/guage_plus.png"></div>
-					<div class="room-alias"><input type="text" v-bind:value="room.alias" placeholder="添加备注"></div>
+					<div class="room-alias"><input type="text" v-model="room.alias" placeholder="添加备注"></div>
 					<div class="package-text-image">
 						<div class="mui-content-padded" style="margin: 5px 10px;">
 							<div class="mui-input-row">
@@ -272,7 +276,7 @@
 						<div class="mui-scroll">
 							<ul class="mui-table-view">
 								<li class="mui-table-view-cell" v-for="type in type">
-									<a href="#">{{type.name}}</a>
+									<a @tap="__fAddRoom(type.room_id)">{{type.name}}</a>
 								</li>
 							</ul>
 						</div>
@@ -314,15 +318,15 @@
 		}, tempdata.event);
 		if(tempdata.event[eventsortid].content.room >> 0 == 0 || tempdata.event[eventsortid].content.room.length == 0) {
 			tempdata.event[eventsortid].content.room = [];
-			for(var s = 0; s < gRoomType.length; s++) {
-				if(gRoomType[s].default == 1) tempdata.event[eventsortid].content.room.push(gRoomType[s]);
+			for(var s = 0; s < JSON.parse(localStorage.getItem("RoomType")).length; s++) {
+				if(JSON.parse(localStorage.getItem("RoomType"))[s].default == 1) tempdata.event[eventsortid].content.room.push(JSON.parse(localStorage.getItem("RoomType"))[s]);
 			}
 		}
 		vueContent = new Vue({
 			el: "#room",
 			data: {
 				"event": tempdata.event[eventsortid],
-				"type": gRoomType
+				"type": JSON.parse(localStorage.getItem("RoomType"))
 			},
 			ready: function() {
 				document.getElementById("mask").style.opacity = 0;
@@ -336,9 +340,17 @@
 					mui("#picture").popover('toggle');
 				},
 				__fAddSameTypeRoomAfter: function(index) {
-					tempdata.event[eventsortid].content.room.splice(index, 0, lsvih.array.getObjByKey({
+					console.log(JSON.stringify(JSON.parse(localStorage.getItem("RoomType"))))
+					var newobj = lsvih.array.getObjByKey({
 						"room_id": tempdata.event[eventsortid].content.room[index].room_id
-					}, gRoomType));
+					}, JSON.parse(localStorage.getItem("RoomType")));
+					tempdata.event[eventsortid].content.room.splice(index, 0, newobj);
+				},
+				__fAddRoom: function(roomId) {
+					tempdata.event[eventsortid].content.room.push(lsvih.array.getObjByKey({
+						"room_id": roomId
+					}, JSON.parse(localStorage.getItem("RoomType"))));
+					mui('.mui-popover').popover('hide');
 				},
 				__fEditPictures: function(thisobj) { //编辑图片
 					iRoomSortId = thisobj.currentTarget.parentNode.parentNode.getAttribute("data-id");
@@ -427,91 +439,134 @@
 			function __fIsSizeImagesDiagramEmpty(arr) {
 				for(var i = 0; i < arr.length; i++) {
 					//					if(!arr[i].size || !arr[i].diagram || !arr[i].images.length) return false;
-					if(!arr[i].size) return false; //根据需求，只需要填好面积即可
+					if(arr[i].size) return true; //根据需求，只需要填好面积即可
 				}
-				return true;
+				return false;
+			}
+			/**
+			 * 删除size为空的项
+			 * @param {Array} arr
+			 */
+			function __fDeleteSizeImagesDiagramEmpty(arr) {
+				for(var i = arr.length - 1; i >= 0; i--) {
+					if(!arr[i].size) {
+						arr.$remove(arr[i]);
+					}
+				}
+			}
+			/**
+			 * 根据逻辑设置备注
+			 * @param {Array} arr
+			 */
+			function __fSetAlias(arr) {
+				var emptyalias = [];
+				for(var i = 0; i < arr.length; i++) {
+					if(!arr[i].alias) {
+						emptyalias.push({
+							"room_id": arr[i].room_id,
+							"index": i
+						})
+					}
+				}
+				if(__fIsEmptyAliasTypeDuplicate(emptyalias)) {
+					mui.toast("请为相同类型的不同房间添加备注");
+					uploading.close();
+					return false;
+				} else {
+					for(var d = 0; d < emptyalias.length; d++) {
+						arr[emptyalias[d].index].alias = arr[emptyalias[d].index].name;
+					}
+					fUploadImages(); //上传图片
+				}
+
+				function __fIsEmptyAliasTypeDuplicate(arr) {
+					for(var s = 0; s < arr.length; s++) {
+						if(lsvih.array.getArrByCondition('room_id==' + arr[s].room_id, arr).length > 1) return true;
+					}
+					return false;
+				}
 			}
 			mui("#room").on("tap", ".mui-icon-plusempty", function() {})
 			mui("body").on("tap", ".mui-icon-arrowright", function() {
-				var rate = document.getElementById("rate").value;
-				if(!/^[+]?[\d]+(([\.]{1}[\d]+)|([\d]*))$/.test(rate) || rate > 100) {
-					mui.toast("请输入正确的远程费率！");
-					return false;
-				}
 				tempdata.event[eventsortid] = vueContent.event;
 				myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
 				if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.room)) {
-					mui('body').progressbar({
-						progress: 0
-					}).show();
 					uploading = plus.nativeUI.showWaiting("正在上传量房信息，请耐心等待...");
-					fUploadImages(); //上传图片
+					//过滤空数据
+					__fDeleteSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.room);
+					//进入备注逻辑
+					__fSetAlias(tempdata.event[eventsortid].content.room);
+					console.log(JSON.stringify(tempdata.event[eventsortid].content.room));
 				} else {
-					mui.toast("您尚未填写完成所有信息，请仔细填写");
+					mui.toast("请完成量房数据填写");
 				}
-				//
-				//				//			location.href = "gauge.html?eventid=" + eventid;
+				//location.href = "gauge.html?eventid=" + eventid;
+			});
 
-				function fUploadImages() {
-					var grouplength = thispackages.length;
-					var imagesarr = new Array(grouplength);
-					for(var s = 0; s < imagesarr.length; s++) {
-						imagesarr[s] = new Array(thispackages[s].images.length);
-					} //构建存储图片的数组
-					_fGroupImages(grouplength);
+			function fUploadImages() {
+				var roomlength = tempdata.event[eventsortid].content.room.length;
+				var imagesarr = new Array(roomlength);
+				for(var s = 0; s < imagesarr.length; s++) {
+					imagesarr[s] = new Array(tempdata.event[eventsortid].content.room[s].images.length);
+				} //构建存储图片的数组
+				_fGroupImages(roomlength);
 
-					function _fGroupImages(grouptosuccess) {
-						if(grouptosuccess == 0) { //所有组全部改写base64完毕
-							//success
-							myStorage.setItem("tempimg", imagesarr);
-							fUploadStatus();
-						} else {
-							var tempimgarr = thispackages[grouplength - grouptosuccess].images; //当前组的下标
-							var thisGroupCount = tempimgarr.length;
-							_fImg2Base64(thisGroupCount); //开始组内图片递归
-							function _fImg2Base64(tosuccess) {
-								if(tosuccess == 0) { //这个组里的所有图片改写base64完毕
-									_fGroupImages(grouptosuccess - 1); //组递归
-								} else {
-									var bitmap = new plus.nativeObj.Bitmap(uuid());
-									// 从本地加载Bitmap图片
-									bitmap.load(thispackages[grouplength - grouptosuccess].images[thisGroupCount - tosuccess], function() {
-										var base64 = bitmap.toBase64Data();
-										imagesarr[grouplength - grouptosuccess][thisGroupCount - tosuccess] = base64;
-										_fImg2Base64(tosuccess - 1); //递归开始下一张图片
-									}, function(e) {
-										console.log('加载图片失败：' + JSON.stringify(e));
-									});
-								}
+				function _fGroupImages(grouptosuccess) {
+					if(grouptosuccess == 0) { //所有组全部改写base64完毕
+						//success
+						myStorage.setItem("tempimg", imagesarr);
+						fUploadStatus();
+					} else {
+						var tempimgarr = tempdata.event[eventsortid].content.room[roomlength - grouptosuccess].images; //当前组的下标
+						var thisGroupCount = tempimgarr.length;
+						_fImg2Base64(thisGroupCount); //开始组内图片递归
+						function _fImg2Base64(tosuccess) {
+							if(tosuccess == 0) { //这个组里的所有图片改写base64完毕
+								_fGroupImages(grouptosuccess - 1); //组递归
+							} else {
+								var bitmap = new plus.nativeObj.Bitmap(uuid());
+								// 从本地加载Bitmap图片
+								bitmap.load(tempdata.event[eventsortid].content.room[roomlength - grouptosuccess].images[thisGroupCount - tosuccess], function() {
+									var base64 = bitmap.toBase64Data();
+									imagesarr[roomlength - grouptosuccess][thisGroupCount - tosuccess] = base64;
+									_fImg2Base64(tosuccess - 1); //递归开始下一张图片
+								}, function(e) {
+									console.log('加载图片失败：' + JSON.stringify(e));
+								});
 							}
 						}
-
 					}
 
 				}
-			});
+
+			}
 			/**
 			 * 当所有图片都存好后，开始更新状态与上传信息的过程
 			 */
 			function fUploadStatus() {
-				var group_id_arr = [];
-				for(var a = 0; a < thispackages.length; a++) {
-					group_id_arr.push(thispackages[a].package_id);
-				}
-				mui.ajax(gAPIServer + 'groups/group-by-package?package_ids=[' + group_id_arr + ']&access-token=' + User("access_token"), {
-					type: 'GET',
+				//先将服务器上已经有的信息删除
+				mui.ajax(gAPIServer + 'house-room/batch-delete?filter=house_id:' + tempdata.event[eventsortid].house_id + '&access-token=' + User("access_token"), {
+					type: 'DELETE',
 					dataType: 'json',
 					timeout: 6000,
 					success: function(data) {
 						if(data.success == true) {
-							var house_appointment_id = tempdata.event[eventsortid].id;
-							var house_id = tempdata.event[eventsortid].house_id;
-							var group_id = data.data.group_id;
-							mui.ajax(gAPIServer + 'house-groups?access-token=' + User("access_token"), {
+							//构造批量上传数据
+							var data = [];
+							for(var a = 0; a < tempdata.event[eventsortid].content.room.length; a++) {
+								data.push({
+									"house_id": tempdata.event[eventsortid].house_id,
+									"room_id": tempdata.event[eventsortid].content.room[a].room_id,
+									"alias": tempdata.event[eventsortid].content.room[a].alias,
+									"area": tempdata.event[eventsortid].content.room[a].size,
+									"plan_t_img": tempdata.event[eventsortid].content.room[a].diagram,
+									"measure_t_imgs": myStorage.getItem("tempimg")[a]
+								})
+							}
+							console.log(JSON.stringify(data))
+							mui.ajax(gAPIServer + 'house-room/batch-create?access-token=' + User("access_token"), {
 								data: {
-									'house_appointment_id': house_appointment_id,
-									'house_id': house_id,
-									'group_id': group_id
+									"items": JSON.stringify(data)
 								},
 								type: 'POST',
 								dataType: 'json',
@@ -519,12 +574,7 @@
 								success: function(data) {
 									if(data.success == true) {
 										console.log(JSON.stringify(data.data));
-										var tempdata = JSON.parse(myStorage.getItem("data"));
-										tempdata.event[eventsortid].content.group_id = group_id;
-										tempdata.event[eventsortid].content.house_group_id = data.data.id;
-										myStorage.setItem("data", JSON.stringify(tempdata));
-										uploading.setTitle("正在上传量房信息，请稍后...");
-										fPostHouseGroupPackage();
+										uploading.close()
 									} else {
 										mui.alert(data.message, gAppName);
 										uploading.close();
@@ -532,14 +582,13 @@
 								},
 								error: function(xhr, textStatus, errorThrown) {
 									console.log(JSON.stringify(xhr));
-									mui.alert("新增房屋套餐组失败，请稍后重试", gAppName, "确认", function() {
+									mui.alert("上传量房信息失败，请稍后重试", gAppName, "确认", function() {
 										uploading.close();
 										plus.webview.currentWebview().reload();
 									});
 
 								}
 							});
-							//拿到group_id，创建一个house_group
 
 						} else {
 							mui.alert(data.message, gAppName);
@@ -555,6 +604,7 @@
 
 					}
 				});
+
 			}
 		});
 	</script>
