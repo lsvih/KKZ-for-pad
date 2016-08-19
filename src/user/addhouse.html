@@ -56,7 +56,7 @@
 		mui.init();
 		var loading;
 		var userid = GetRequest()["userid"];
-		_init_area();
+		addressInit('s_province', 's_city', 's_county');
 		mui.plusReady(function() {
 
 			mui("body").on("tap", ".close", function() {

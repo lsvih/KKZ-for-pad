@@ -500,12 +500,14 @@
 										"phone": appoint.user.mobile,
 										"content": appoint.houseGroups.length == 0 ? {
 											"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
-											"package": []
+											"package": [],
+											"room":[]
 										} : {
 											"house_group_id": appoint.houseGroups[0].id,
 											"schedule": appoint.houseGroups[0].houseGroupSchedules,
 											"group_id": appoint.houseGroups[0].group_id,
 											"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
+											"room":[],
 											"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
 											"price": appoint.houseGroups[0].group_amount,
 											"clear_amount": appoint.houseGroups[0].clear_amount,

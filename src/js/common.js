@@ -217,3 +217,4 @@ function User(e) {
 	var userdata = JSON.parse(localStorage.user);
 	return userdata[e];
 }
+

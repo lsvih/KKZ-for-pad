@@ -269,7 +269,8 @@
 														"phone": appoint.user.mobile,
 														"content": appoint.houseGroups.length == 0 ? {
 															"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
-															"package": []
+															"package": [],
+															"room":[]
 														} : {
 															"house_group_id": appoint.houseGroups[0].id,
 															"room":[],

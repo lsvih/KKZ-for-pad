@@ -38,14 +38,18 @@ gulp.task("css", function() {
 });
 
 gulp.task("javascripts", function() {
-	gulp.src("./src/js/*.js")
-//		.pipe(replace("let ", "var ")) //DCloud基座与微信不支持let用法因此换成var
-//		.pipe(replace('"use strict ";', '')) //微信不支持不支持严格模式
+	gulp.src(["./src/js/*.js", "./src/js/*/*.js"])
+		.pipe(replace("let ", "var ")) //DCloud基座与微信不支持let用法因此换成var
+		//		.pipe(replace('"use strict ";', '')) //微信不支持不支持严格模式
 		//		.pipe(rename({
 		//			suffix: ".min"
 		//		}))
-		//		.pipe(uglify())
-		.pipe(babel())
+		.pipe(babel({
+			presets: ['es2015']
+		}))
+		.pipe(uglify().on('error', function(e) {
+			console.log(e);
+		}))
 		.pipe(gulp.dest("./dist/js"))
 });
 
@@ -61,8 +65,8 @@ gulp.task("html", function() {
 		minifyCSS: true //压缩页面CSS
 	};
 	gulp.src(["./src/*.html", "./src/*/*.html", "./src/*/*/*.html"])
-//		.pipe(replace("let ", "var ")) //微信不支持let用法因此换成var
-//		.pipe(replace('"use strict";', '')) //微信不支持严格模式
+		//		.pipe(replace("let ", "var ")) //微信不支持let用法因此换成var
+		//		.pipe(replace('"use strict";', '')) //微信不支持严格模式
 		//		.pipe(replace(".css", ".min.css")); //将html引用的资源从css与js变成min.css与min.js
 		//		.pipe(replace(".js", ".min.js"));
 		.pipe(htmlmin(options))
@@ -92,7 +96,7 @@ gulp.task("build", function() {
 gulp.task("default", function() {
 	gulp.run("build");
 	console.log("Done!")
-	gulp.watch(["./src/less/*.less", "./src/js/*.js", "./src/css/*.css", "./src/*.html", "./src/images/*.*", "./src/images/*/*.*"], function() {
+	gulp.watch(["./src/*.*", "./src/*/*.*", "./src/*/*/*.*"], function() {
 		gulp.run("build");
 	});
 });
