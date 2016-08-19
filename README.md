@@ -2,6 +2,12 @@
 
 Powered by mui,vuejs
 
+##Build
+sudo npm install --global gulp
+npm install gulp --save-dev
+npm install gulp-uglify gulp-minify-css gulp-sourcemaps gulp-less gulp-concat gulp-rename gulp-imagemin gulp-replace gulp-htmlmin --save-dev
+
+
 ###字典
 
 *  量房 gauge

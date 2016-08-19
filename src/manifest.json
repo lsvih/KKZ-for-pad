@@ -14,7 +14,7 @@
 	"icons": {
 		"72": "icon.png"
 	},
-	"launch_path": "dist/index.html",
+	"launch_path": "index.html",
 	"developer": {
 		"name": "",
 		"email": "",
