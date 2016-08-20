@@ -36,7 +36,7 @@ mui.plusReady(function() {
 				var newobj = lsvih.array.getObjByKey({
 					"room_id": tempdata.event[eventsortid].content.room[index].room_id
 				}, JSON.parse(localStorage.getItem("RoomType")));
-				tempdata.event[eventsortid].content.room.splice(index, 0, newobj);
+				vueContent.content.room.splice(index, 0, newobj);
 			},
 			__fAddRoom: function(roomId) {
 				tempdata.event[eventsortid].content.room.push(lsvih.array.getObjByKey({
@@ -178,14 +178,16 @@ mui.plusReady(function() {
 		}
 	}
 	mui("body").on("tap", ".mui-icon-arrowright", function() {
+		uploading = plus.nativeUI.showWaiting("请稍后...");
 		if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.room)) {
-			uploading = plus.nativeUI.showWaiting("正在上传量房信息，请耐心等待...");
+			uploading.setTitle("正在上传量房信息，请耐心等待...");
 			//过滤空数据
 			__fDeleteSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.room);
 			//进入备注逻辑
 			__fSetAlias(tempdata.event[eventsortid].content.room);
 		} else {
 			mui.toast("请完成量房数据填写");
+			uploading.close();
 		}
 
 	});
