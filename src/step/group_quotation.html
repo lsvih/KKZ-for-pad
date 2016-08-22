@@ -62,7 +62,7 @@
 
 	<body>
 		<script type="text/javascript" src="../js/lsvih.js"></script>
-		<script src="../js/mui.js"></script>
+		<script src="../js/lib/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript">
@@ -77,7 +77,7 @@
 				}, tempdata.event);
 				var _doc = tempdata.event[eventsortid].content.group_quotation;
 				mui.openWindow({
-					url: gServer + "uploads/files/" + _doc,
+					url: common.server + "uploads/files/" + _doc,
 					id: "sub_doc",
 					styles: {
 						top: "110px",
@@ -106,57 +106,25 @@
 					 */
 					var watiting = plus.nativeUI.showWaiting("正在返回量房状态，请稍后...");
 					var house_group_id = tempdata.event[eventsortid].content.house_group_id;
-					mui.ajax(gAPIServer + 'house-group-package/batch-delete?filter=house_group_id:' + house_group_id + '&access-token=' + User("access_token"), {
-						dataType: 'json',
-						type: 'DELETE',
-						timeout: 6000,
-						success: function(data) {
-							if(data.success == true) {
-								mui.ajax(gAPIServer + 'house-groups/' + house_group_id + '?access-token=' + User("access_token"), {
-									data: {
-										'status': 0,
-									},
-									dataType: 'json',
-									type: 'PUT',
-									timeout: 6000,
-									success: function(data) {
-										if(data.success == true) {
-											watiting.close();
-											var tempdata = JSON.parse(myStorage.getItem("data"));
-											tempdata.event[eventsortid].status = 0;
-											myStorage.setItem("data", JSON.stringify(tempdata))
-											plus.webview.close("sub_doc");
-											mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-											mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
-											plus.webview.currentWebview().loadURL("../step/pick_products.html?eventid=" + eventid);
-										} else {
-											mui.alert(data.message, gAppName);
-											watiting.close();
-										}
-									},
-									error: function(xhr, textStatus, errorThrown) {
-										console.log(JSON.stringify(xhr))
-										mui.alert("回退状态失败，请稍候再试", gAppName, "确认", function() {
-											watiting.close();
-											plus.webview.currentWebview().reload();
-										});
-
-									}
-								});
-
-							} else {
-								mui.alert(data.message, gAppName);
-								watiting.close();
-							}
-						},
-						error: function(xhr, textStatus, errorThrown) {
-							console.log(JSON.stringify(xhr))
-							mui.alert("状态修改失败，请稍候再试", gAppName, "确认", function() {
-								watiting.close();
-								plus.webview.currentWebview().reload();
-							});
-
-						}
+					common.ajax('house-group-package/batch-delete?filter=house_group_id:' + house_group_id, {}, "DELETE", function(data) {
+						common.ajax('house-groups/' + house_group_id, {
+							'status': 0,
+						}, "PUT", function(data) {
+							watiting.close();
+							var tempdata = JSON.parse(myStorage.getItem("data"));
+							tempdata.event[eventsortid].status = 0;
+							myStorage.setItem("data", JSON.stringify(tempdata))
+							plus.webview.close("sub_doc");
+							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+							plus.webview.currentWebview().loadURL("../step/pick_packages.html?eventid=" + eventid);
+						}, "", {
+							closeObj: watiting,
+							isReload: true
+						});
+					}, "", {
+						closeObj: watiting,
+						isReload: true
 					});
 				});
 			});

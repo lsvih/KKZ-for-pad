@@ -172,12 +172,12 @@
 
 	</body>
 	<script type="text/javascript" src="../js/lsvih.js" ></script>
-	<script src="../js/mui.js"></script>
+	<script src="../js/lib/mui.js"></script>
 	<script type="text/javascript" src="../js/storage.js"></script>
 	<script src="../js/common.js"></script>
 	<script src="../js/data.js"></script>
 	<script type="text/javascript" src="../js/cache.js"></script>
-	<script src="../js/vue.js"></script>
+	<script src="../js/lib/vue.js"></script>
 	<script>
 		"use strick";
 
@@ -253,8 +253,7 @@
 					//打开量房页面
 					__fGauge: function(eventid) {
 						mui.openWindow({
-							url: "../step/gauge_new.html?eventid=" +eventid,
-//							url: "../step/pick_products.html?eventid=" + eventid,
+							url: "../step/gauge.html?eventid=" +eventid,
 							id: "intro",
 							styles: {
 								top: 0,
@@ -301,7 +300,7 @@
 							url: "index_frame.html",
 							id: "sub_detail",
 							styles: {
-								top: 60 + gTopbarHeight + 'px',
+								top: 60 + common.topBarHeight + 'px',
 								bottom: 0,
 								left: "38.7%",
 								height: "100%",
@@ -394,10 +393,10 @@
 			if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
 				var olddate = (e.getAttribute("init-time").split("T")[0] + ' ' + e.getAttribute("init-time").split("T")[1]).split(":33")[0];
 				var newdate = (e.value.split("T")[0] + ' ' + e.value.split("T")[1]).split(":33")[0];
-				mui.confirm('是否将预约上门时间从' + olddate + '修改为' + newdate + '？', gAppName, ['否', '是'], function(f) {
+				mui.confirm('是否将预约上门时间从' + olddate + '修改为' + newdate + '？', common.appName, ['否', '是'], function(f) {
 					if(f.index == 1) {
 						//TODO：放入同步队列
-						mui.ajax(gAPIServer + 'house-appointments/' + vueContent.event.id + '?access-token=' + User("access_token"), {
+						mui.ajax(common.apiServer + 'house-appointments/' + vueContent.event.id + '?access-token=' + User("access_token"), {
 							data: {
 								"appointment_at": lsvih.time.strToStamp(e.value)
 							},
@@ -412,14 +411,14 @@
 									vueContent.event.content.ordertime = e.value;
 									myStorage.setItem("data", JSON.stringify(tempobj)); //初版在远程修改时间成功后再在本地存储修改时间
 								} else {
-									mui.alert(data.message, gAppName);
+									mui.alert(data.message, common.appName);
 									console.log(JSON.stringify(data));
 									e.value = e.getAttribute("init-time");
 								}
 							},
 							error: function(xhr, textStatus, errorThrown) {
 								console.log(JSON.stringify(xhr))
-								mui.alert("修改时间失败，请稍候再试", gAppName);
+								mui.alert("修改时间失败，请稍候再试", common.appName);
 								e.value = e.getAttribute("init-time");
 							}
 						});
@@ -436,7 +435,7 @@
 				return false;
 			}
 			var newdate = e.value;
-			mui.confirm('是否将开工日期修改为' + newdate + '？', gAppName, ['否', '是'], function(f) {
+			mui.confirm('是否将开工日期修改为' + newdate + '？', common.appName, ['否', '是'], function(f) {
 				if(f.index == 1) {
 					alert("此时运行修改开工日期函数")
 						//TODO

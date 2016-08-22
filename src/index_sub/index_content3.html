@@ -99,13 +99,13 @@
 			</div>
 		</article>
 		<script type="text/javascript" src="../js/lsvih.js" ></script>
-		<script src="../js/mui.js"></script>
+		<script src="../js/lib/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/data.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
-		<script type="text/javascript" src="../js/vue.js"></script>
+		<script type="text/javascript" src="../js/lib/vue.js"></script>
 		<script type="text/javascript">
-			"use strick"
+			"use strict";
 			mui.init({
 				gestureConfig: {
 					doubletap: false,
@@ -200,7 +200,7 @@
 						},
 						__fCheck: function(type) {
 							if(type == "selection") {
-								mui.confirm('是否确认以上选材信息？确认后将无法修改选材信息。', gAppName, ['否', '是'], function(f) {
+								mui.confirm('是否确认以上选材信息？确认后将无法修改选材信息。', common.appName, ['否', '是'], function(f) {
 									if(f.index == 1) {
 										vueContent.event.content.selection.check = true;
 									} else {
@@ -208,7 +208,7 @@
 									}
 								});
 							} else {
-								mui.confirm('是否确认以上排期信息？确认后将无法修改排期信息。', gAppName, ['否', '是'], function(f) {
+								mui.confirm('是否确认以上排期信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
 									if(f.index == 1) {
 										vueContent.event.content.schedule.check = true;
 									} else {
@@ -252,7 +252,7 @@
 			function fSaveTime(e) {
 				if(e.value == "") e.value = e.getAttribute("init-time"); //防止出现时间为空的情况
 				if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
-					mui.confirm('是否将预计开工时间从' + e.getAttribute("init-time") + '修改为' + e.value + '？', gAppName, ['否', '是'], function(f) {
+					mui.confirm('是否将预计开工时间从' + e.getAttribute("init-time") + '修改为' + e.value + '？', common.appName, ['否', '是'], function(f) {
 						if(f.index == 1) {
 							var tempobj1 = JSON.parse(myStorage.getItem("data"));
 							tempobj1.event[lsvih.array.getSubByKey({"id":vueContent.event.id}, tempobj1.event)].content.expected_start_date = e.value;

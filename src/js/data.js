@@ -1,5 +1,5 @@
 //工作流制定：
-gFlow = {
+var gFlow = {
 	"flow": [{
 		"id": 1,
 		"name": "待上门",
@@ -32,7 +32,7 @@ gFlow = {
 		"contain-event": [9]
 	}]
 };
-gStatus = {
+var gStatus = {
 	"status": [{
 		"id": -1,
 		"name": "待量房"

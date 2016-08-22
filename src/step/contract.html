@@ -69,7 +69,7 @@
 
 	<body>
 		<script type="text/javascript" src="../js/lsvih.js"></script>
-		<script src="../js/mui.js"></script>
+		<script src="../js/lib/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript">
@@ -84,7 +84,7 @@
 				}, tempdata.event);
 				var _doc = tempdata.event[eventsortid].content.group_contract;
 				mui.openWindow({
-					url: gServer + "uploads/files/" + _doc,
+					url: common.server + "uploads/files/" + _doc,
 					id: "sub_doc",
 					styles: {
 						top: "110px",

@@ -155,8 +155,8 @@
 	</div>
 
 	<body>
-		<script type="text/javascript" src="../js/lsvih.js" ></script>
-		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/lsvih.js"></script>
+		<script src="../js/lib/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
 		<script type="text/javascript">
@@ -166,7 +166,9 @@
 			var uploading;
 			var successcount = 0;
 			var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
-			var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
+			var eventsortid = lsvih.array.getSubByKey({
+				"id": eventid
+			}, tempdata.event);
 			var house_group_id = tempdata.event[eventsortid].content.house_group_id;
 			var uploaddata;
 			mui.plusReady(function() {
@@ -187,32 +189,13 @@
 						var isholidaywork = document.getElementById("isholidaywork").getElementsByTagName("input")[0].checked ? 1 : 0;
 						uploading = plus.nativeUI.showWaiting("正在上传物业信息，请稍后...");
 						//将物业信息上传
-						mui.ajax(gAPIServer + 'house-groups/' + house_group_id + '?access-token=' + User("access_token"), {
-							data: {
-								'start_at': startat,
-								'time_period': from + "-" + to,
-								'is_holiday_work': isholidaywork
-							},
-							dataType: 'json',
-							type: 'PUT',
-							timeout: 6000,
-							success: function(data) {
-								if(data.success == true) {
-									fUploaddata();
-								} else {
-								console.log(1);
-									mui.alert(data.message, gAppName);
-									uploading.close();
-								}
-							},
-							error: function(xhr, textStatus, errorThrown) {
-								console.log(JSON.stringify(xhr))
-								mui.alert("状态修改失败，请稍候再试", gAppName, "确认", function() {
-									uploading.close();
-									plus.webview.currentWebview().reload();
-								});
-
-							}
+						common.ajax('house-groups/' + house_group_id, {
+							'start_at': startat,
+							'time_period': from + "-" + to,
+							'is_holiday_work': isholidaywork
+						}, "PUT", fUploaddata(), "", {
+							closeObj: uploading,
+							isReload: true
 						});
 					}); //进入上传步骤
 				})
@@ -240,97 +223,44 @@
 						myStorage.setItem("data", JSON.stringify(temp));
 						myStorage.removeItem("tempproperty");
 						//更新状态以获得排期
-						mui.ajax(gAPIServer + 'house-groups/' + house_group_id + '?access-token=' + User("access_token"), {
-							data: {
-								'status': 2
-							},
-							dataType: 'json',
-							type: 'PUT',
-							timeout: 6000,
-							success: function(data) {
-								if(data.success == true) { //取出排期内容
-									var houseinfo = data.data;
-									console.log(JSON.stringify(houseinfo))
-									mui.ajax(gAPIServer + 'house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + house_group_id + '&access-token=' + User("access_token"), {
-										dataType: 'json',
-										type: 'GET',
-										timeout: 6000,
-										success: function(data) {
-											if(data.success == true) {
-												var temp = JSON.parse(myStorage.getItem("data"));
-												temp.event[eventsortid].content.schedule = data.data.items;
-												temp.event[eventsortid].content.group_contract = houseinfo.group_contract;
-												temp.event[eventsortid].contractid = houseinfo.group_contract.split(".")[0];
-												temp.event[eventsortid].content.start_at = houseinfo.start_at;
-												temp.event[eventsortid].content.is_holiday_work = houseinfo.is_holiday_work;
-												temp.event[eventsortid].content.time_period = houseinfo.time_period;
-												temp.event[eventsortid].content.duration = houseinfo.duration;
-												temp.event[eventsortid].status = 2;
-												myStorage.setItem("data", JSON.stringify(temp)); //将所有数据存入本地
-												uploading.close();
-												mui.fire(plus.webview.getLaunchWebview(), "fCaculateNumOfFlow");
-												mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-												mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
-												plus.webview.currentWebview().loadURL("../step/schedule_list.html?eventid=" + eventid);
-											} else {
-												mui.alert(data.message, gAppName, "确认", function() {
-													uploading.close();
-													plus.webview.currentWebview().reload();
-												});
-											}
-										},
-										error: function(xhr, textStatus, errorThrown) {
-											console.log(JSON.stringify(xhr))
-											mui.alert("获取排期信息失败，请稍候再试", gAppName, "确认", function() {
-												watuploadingiting.close();
-												plus.webview.currentWebview().reload();
-											});
-										}
-									});
-
-								} else {
-								console.log(2);
-									mui.alert(data.message, gAppName);
-									uploading.close();
-								}
-							},
-							error: function(xhr, textStatus, errorThrown) {
-								console.log(JSON.stringify(xhr))
-								mui.alert("状态修改失败，请稍候再试", gAppName, "确认", function() {
-									uploading.close();
-									plus.webview.currentWebview().reload();
-								});
-
-							}
+						common.ajax('house-groups/' + house_group_id, {
+							'status': 2
+						}, "PUT", function(data) {
+							var houseinfo = data;
+							common.ajax('house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + house_group_id, {}, "GET", function(data) {
+								var temp = JSON.parse(myStorage.getItem("data"));
+								temp.event[eventsortid].content.schedule = data.items;
+								temp.event[eventsortid].content.group_contract = houseinfo.group_contract;
+								temp.event[eventsortid].contractid = houseinfo.group_contract.split(".")[0];
+								temp.event[eventsortid].content.start_at = houseinfo.start_at;
+								temp.event[eventsortid].content.is_holiday_work = houseinfo.is_holiday_work;
+								temp.event[eventsortid].content.time_period = houseinfo.time_period;
+								temp.event[eventsortid].content.duration = houseinfo.duration;
+								temp.event[eventsortid].status = 2;
+								myStorage.setItem("data", JSON.stringify(temp)); //将所有数据存入本地
+								uploading.close();
+								mui.fire(plus.webview.getLaunchWebview(), "fCaculateNumOfFlow");
+								mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+								mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+								plus.webview.currentWebview().loadURL("../step/schedule_list.html?eventid=" + eventid);
+							}, "", {
+								closeObj: uploading,
+								isReload: true
+							});
+						}, "", {
+							closeObj: uploading,
+							isReload: true
 						});
 					}
 				}, 50)
 			}
 
 			function __fUploadSKU(data) {
-				mui.ajax(gAPIServer + 'house-group-skus?access-token=' + User("access_token"), {
-					data: data,
-					dataType: 'json',
-					type: 'POST',
-					timeout: 6000,
-					success: function(data) {
-						if(data.success == true) {
-							successcount++;
-						} else {
-							mui.alert(data.message, gAppName, "确认", function() {
-								uploading.close();
-								plus.webview.currentWebview().reload();
-							});
-						}
-					},
-					error: function(xhr, textStatus, errorThrown) {
-						console.log(JSON.stringify(xhr))
-						mui.alert("上传信息失败，请稍候再试", gAppName, "确认", function() {
-							watuploadingiting.close();
-							plus.webview.currentWebview().reload();
-						});
-
-					}
+				common.ajax('house-group-skus', data, "POST", function(data) {
+					successcount++;
+				}, "", {
+					closeObj: uploading,
+					isReload: true
 				});
 			}
 		</script>

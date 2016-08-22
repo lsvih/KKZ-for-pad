@@ -177,7 +177,7 @@
 
 		</section>
 	</body>
-	<script type="text/javascript" src="../js/mui.js"></script>
+	<script type="text/javascript" src="../js/lib/mui.js"></script>
 	<script type="text/javascript" src="../js/storage.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script>
@@ -354,7 +354,7 @@
 					e = window.event || e;
 					var x = e.pageX - this.offsetLeft;
 					var y = e.pageY - this.offsetTop;
-					mui.prompt('请输入填充的文字：', '', gAppName, ['取消', '确定'], function(f) {
+					mui.prompt('请输入填充的文字：', '', common.appName, ['取消', '确定'], function(f) {
 						if(f.index == 1) {
 							clearContext();
 							if(f.value !== null) {
@@ -374,7 +374,7 @@
 					e = window.event || e;
 					var x = e.pageX - this.offsetLeft;
 					var y = e.pageY - this.offsetTop;
-					mui.prompt('请输入填充的文字：', '', gAppName, ['取消', '确定'], function(f) {
+					mui.prompt('请输入填充的文字：', '', common.appName, ['取消', '确定'], function(f) {
 						if(f.index == 1) {
 							clearContext();
 							if(f.value !== null) {
@@ -394,7 +394,7 @@
 					e = window.event || e;
 					var x = e.pageX - this.offsetLeft;
 					var y = e.pageY - this.offsetTop;
-					mui.prompt('请输入填充的文字：', '', gAppName, ['取消', '确定'], function(f) {
+					mui.prompt('请输入填充的文字：', '', common.appName, ['取消', '确定'], function(f) {
 						if(f.index == 1) {
 							clearContext();
 							if(f.value !== null) {

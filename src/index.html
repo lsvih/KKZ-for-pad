@@ -147,14 +147,10 @@
 	<!--<div class="cutoff-line"></div>-->
 
 	<body>
-		<!--<script type="text/javascript" src="js/initdata.js"></script>-->
-
-		<!--加载测试数据-->
 		<script type="text/javascript" src="js/lsvih.js"></script>
 		<script src="js/data.js"></script>
-		<script src="js/vue.js"></script>
-		<script src="js/mui.js"></script>
-		<script type="text/javascript" src="js/alias_plus.js"></script>
+		<script src="js/lib/vue.js"></script>
+		<script src="js/lib/mui.js"></script>
 		<script type="text/javascript" src="js/storage.js"></script>
 		<script src="js/common.js"></script>
 		<script type="text/javascript">
@@ -173,7 +169,7 @@
 					id: 'list',
 					url: 'index_sub/list.html',
 					styles: {
-						top: 50 + gTopbarHeight + 'px',
+						top: 50 + common.topBarHeight + 'px',
 						bottom: 0,
 						left: 0,
 						width: '38.7%',
@@ -185,7 +181,7 @@
 					id: 'index_content',
 					url: 'index_sub/index_content.html',
 					styles: {
-						top: 50 + gTopbarHeight + 'px',
+						top: 50 + common.topBarHeight + 'px',
 						bottom: 0,
 						left: "38.6%",
 						width: '61.6%',
@@ -197,7 +193,7 @@
 					url: "index_sub/index_content3.html",
 					id: "plg_input",
 					styles: {
-						top: 50 + gTopbarHeight + 'px',
+						top: 50 + common.topBarHeight + 'px',
 						bottom: 0,
 						left: "38.6%",
 						width: '61.6%',
@@ -218,7 +214,7 @@
 					url: "index_sub/index_content4.html",
 					id: "plg_work",
 					styles: {
-						top: 50 + gTopbarHeight + 'px',
+						top: 50 + common.topBarHeight + 'px',
 						bottom: 0,
 						left: "38.6%",
 						width: '61.6%',
@@ -405,13 +401,13 @@
 				}
 			}
 			//点击左上角侧滑图标，打开侧滑菜单；
-//			document.querySelector('.mui-icon-bars').addEventListener('tap', function(e) {
-//				if(bShowMenu) {
-//					fCloseMenu();
-//				} else {
-//					fOpenMenu();
-//				}
-//			});
+			//			document.querySelector('.mui-icon-bars').addEventListener('tap', function(e) {
+			//				if(bShowMenu) {
+			//					fCloseMenu();
+			//				} else {
+			//					fOpenMenu();
+			//				}
+			//			});
 
 			mui.menu = function() {
 				if(bShowMenu) {
@@ -436,14 +432,14 @@
 					}
 				});
 			});
-//			mui('header').on('tap', '.mui-icon-weixin', function() {
-//				location.href = "weixin://"; //调用微信
-//				//[[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"weixin://"]];
-//				var NSURL = plus.ios.import('NSURL');
-//				var UIA = plus.ios.import('UIApplication');
-//				var obj = new UIA.sharedApplication();
-//				if(obj.canOpenURL(NSURL.URLWithString('weixin://')))(mui.alert("您尚未安装微信", gAppName), plus.ios.deleteObject(obj));
-//			});
+			//			mui('header').on('tap', '.mui-icon-weixin', function() {
+			//				location.href = "weixin://"; //调用微信
+			//				//[[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"weixin://"]];
+			//				var NSURL = plus.ios.import('NSURL');
+			//				var UIA = plus.ios.import('UIApplication');
+			//				var obj = new UIA.sharedApplication();
+			//				if(obj.canOpenURL(NSURL.URLWithString('weixin://')))(mui.alert("您尚未安装微信", common.appName), plus.ios.deleteObject(obj));
+			//			});
 			mui(".mui-bar").on("tap", ".mui-icon-plusempty", function() {
 				main.setStyle({
 					mask: 'rgba(0,0,0,0.4)',
@@ -476,102 +472,89 @@
 				loading = plus.nativeUI.showWaiting("正在更新数据，请稍后");
 				for(var a = 0; a < eventids.length; a++) {
 					var thiseventid = eventids[a];
-					mui.ajax(gAPIServer + 'house-appointments/' + thiseventid + '?expand=houseGroups.houseGroupSchedules.sku.productBrand.product,houseGroups.houseGroupSchedules.process,houseGroups.houseGroupSchedules.check.checkStandards,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at&access_token=' + User("access_token"), {
-						dataType: 'json',
-						type: 'get',
-						timeout: 6000,
-						success: function(data) {
-							if(data.success == true) {
-								var toinsertdata;
-								if(data.data !== null && data.data !== undefined && data.data.length !== 0) {
-									var appoint = data.data;
-									toinsertdata = {
-										"id": appoint.id,
-										"house_id": appoint.house.id,
-										"user_id": appoint.user_id,
-										"name": appoint.user.fullname,
-										"sex": appoint.user.sex,
-										"status": appoint.houseGroups.length !== 0 ? appoint.houseGroups[0].status : -1,
-										"province": appoint.house.province,
-										"city": appoint.house.city,
-										"district": appoint.house.county,
-										"street": appoint.house.street,
-										"address": appoint.house.address,
-										"phone": appoint.user.mobile,
-										"content": appoint.houseGroups.length == 0 ? {
-											"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
-											"package": [],
-											"room":[]
-										} : {
-											"house_group_id": appoint.houseGroups[0].id,
-											"schedule": appoint.houseGroups[0].houseGroupSchedules,
-											"group_id": appoint.houseGroups[0].group_id,
-											"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
-											"room":[],
-											"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
-											"price": appoint.houseGroups[0].group_amount,
-											"clear_amount": appoint.houseGroups[0].clear_amount,
-											"distance_rate": appoint.houseGroups[0].distance_rate,
-											"taxes_amount": appoint.houseGroups[0].taxes_amount,
-											"group_quotation": appoint.houseGroups[0].group_quotation,
-											"group_contract": appoint.houseGroups[0].group_contract,
-											"time_period": appoint.houseGroups[0].time_period,
-											"is_holiday_work": appoint.houseGroups[0].is_holiday_work,
-											"duration": appoint.houseGroups[0].duration,
-											"start_at": appoint.houseGroups[0].start_at
-										}
-									}
+					common.ajax('house-appointments/' + thiseventid + '?expand=houseGroups.houseGroupSchedules.sku.productBrand.product,houseGroups.houseGroupSchedules.process,houseGroups.houseGroupSchedules.check.checkStandards,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at', "", "GET", function(data) {
+						var toinsertdata;
+						if(data !== null && data !== undefined && data.length !== 0) {
+							var appoint = data;
+							toinsertdata = {
+								"id": appoint.id,
+								"house_id": appoint.house.id,
+								"user_id": appoint.user_id,
+								"name": appoint.user.fullname,
+								"sex": appoint.user.sex,
+								"status": appoint.houseGroups.length !== 0 ? appoint.houseGroups[0].status : -1,
+								"province": appoint.house.province,
+								"city": appoint.house.city,
+								"district": appoint.house.county,
+								"street": appoint.house.street,
+								"address": appoint.house.address,
+								"phone": appoint.user.mobile,
+								"content": appoint.houseGroups.length == 0 ? {
+									"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
+									"package": [],
+									"room": []
+								} : {
+									"house_group_id": appoint.houseGroups[0].id,
+									"schedule": appoint.houseGroups[0].houseGroupSchedules,
+									"group_id": appoint.houseGroups[0].group_id,
+									"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
+									"room": [],
+									"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
+									"price": appoint.houseGroups[0].group_amount,
+									"clear_amount": appoint.houseGroups[0].clear_amount,
+									"distance_rate": appoint.houseGroups[0].distance_rate,
+									"taxes_amount": appoint.houseGroups[0].taxes_amount,
+									"group_quotation": appoint.houseGroups[0].group_quotation,
+									"group_contract": appoint.houseGroups[0].group_contract,
+									"time_period": appoint.houseGroups[0].time_period,
+									"is_holiday_work": appoint.houseGroups[0].is_holiday_work,
+									"duration": appoint.houseGroups[0].duration,
+									"start_at": appoint.houseGroups[0].start_at
 								}
-
-								var tempdata = JSON.parse(myStorage.getItem("data"));
-								if(lsvih.array.getSubByKey({
-										"id": appoint.id
-									}, tempdata.event) !== false) {
-									var tempeventsortid = lsvih.array.getSubByKey({
-										"id": appoint.id
-									}, tempdata.event);
-									tempdata.event[tempeventsortid] = toinsertdata;
-									myStorage.setItem("data", JSON.stringify(tempdata));
-									console.log(myStorage.getItem("data"));
-								} else {
-									tempdata.event.push(toinsertdata)
-									myStorage.setItem("data", JSON.stringify(tempdata));
-									console.log(myStorage.getItem("data"))
-								}
-								//如果之前没有这个appointment id，则创建一条新纪录
-								successCount++;
-
-								/**
-								 * 将传入的packages数组转化为符合的格式
-								 */
-								function __fMapPackage(packagearr) {
-									if(packagearr !== null && packagearr !== undefined && packagearr.length !== 0) {
-										var __temparr = [];
-										for(var __i = 0; __i < packagearr.length; __i++) {
-											__temparr.push({
-												"house_group_id": packagearr[__i].house_group_id,
-												"package_id": packagearr[__i].package_id,
-												"name": packagearr[__i].package.name,
-												"size": packagearr[__i].area,
-												"images": packagearr[__i].measure_t_imgs,
-												"diagram": packagearr[__i].plan_t_img
-											})
-										}
-										return __temparr;
-									} else {
-										return [];
-									}
-								}
-							} else {
-								mui.alert(data.message, gAppName);
-								console.log(JSON.stringify(data));
-								loading.close();
 							}
-						},
-						error: function(xhr, textStatus, errorThrown) {
-							mui.alert("更新数据失败，请稍候再试", gAppName);
-							loading.close();
 						}
+
+						var tempdata = JSON.parse(myStorage.getItem("data"));
+						if(lsvih.array.getSubByKey({
+								"id": appoint.id
+							}, tempdata.event) !== false) {
+							var tempeventsortid = lsvih.array.getSubByKey({
+								"id": appoint.id
+							}, tempdata.event);
+							tempdata.event[tempeventsortid] = toinsertdata;
+							myStorage.setItem("data", JSON.stringify(tempdata));
+							console.log(myStorage.getItem("data"));
+						} else {
+							tempdata.event.push(toinsertdata)
+							myStorage.setItem("data", JSON.stringify(tempdata));
+							console.log(myStorage.getItem("data"))
+						}
+						//如果之前没有这个appointment id，则创建一条新纪录
+						successCount++;
+
+						/**
+						 * 将传入的packages数组转化为符合的格式
+						 */
+						function __fMapPackage(packagearr) {
+							if(packagearr !== null && packagearr !== undefined && packagearr.length !== 0) {
+								var __temparr = [];
+								for(var __i = 0; __i < packagearr.length; __i++) {
+									__temparr.push({
+										"house_group_id": packagearr[__i].house_group_id,
+										"package_id": packagearr[__i].package_id,
+										"name": packagearr[__i].package.name,
+										"size": packagearr[__i].area,
+										"images": packagearr[__i].measure_t_imgs,
+										"diagram": packagearr[__i].plan_t_img
+									})
+								}
+								return __temparr;
+							} else {
+								return [];
+							}
+						}
+					}, "", {
+						closeObj: loading
 					});
 				}
 				var loadController = setInterval(function() {

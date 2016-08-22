@@ -105,7 +105,7 @@
 	<body>
 		<div id="mask"></div>
 		<div class="circle-btn close-btn mui-icon mui-icon-closeempty"></div>
-		<div class="circle-btn next-btn mui-icon mui-icon-arrowright"></div>
+		<!--<div class="circle-btn next-btn mui-icon mui-icon-arrowright"></div>-->
 
 		<div class="mui-content">
 			<div id="package">
@@ -120,10 +120,10 @@
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>
 			<div class="package-item-container"><img src="../images/preview.png"><span class="package-item-title">厨房</span></div>-->
 		</div>
-		<script src="../js/mui.js"></script>
+		<script src="../js/lib/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
-		<script type="text/javascript" src="../js/vue.js"></script>
+		<script type="text/javascript" src="../js/lib/vue.js"></script>
 		<script type="text/javascript" src="../js/cache.js"></script>
 
 	</body>
@@ -170,9 +170,9 @@
 		mui("body").on("tap", ".close-btn", function() {
 			plus.webview.close(plus.webview.currentWebview())
 		})
-		mui("body").on("tap", ".mui-icon-arrowright", function() {
-			location.href = "pick_products.html?eventid=" + eventid;
-		})
+//		mui("body").on("tap", ".mui-icon-arrowright", function() {
+//			location.href = "pick_products.html?eventid=" + eventid;
+//		})
 	</script>
 
 </html>

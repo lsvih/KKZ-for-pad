@@ -9,10 +9,10 @@
 	</head>
 	<body>
 		<script type="text/javascript" src="../../js/lsvih.js" ></script>
-		<script src="../../js/mui.js"></script>
+		<script src="../../js/lib/mui.js"></script>
 		<script type="text/javascript" src="../../js/storage.js" ></script>
 		<script type="text/javascript" src="../../js/common.js"></script>
-		<script type="text/javascript" src="../../js/vue.js"></script>
+		<script type="text/javascript" src="../../js/lib/vue.js"></script>
 	</body>
 	<script>
 	mui.plusReady(function(){
@@ -20,7 +20,7 @@
 		var tempdata = JSON.parse(myStorage.getItem("data"));
 		var eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempdata.event);
 		var doc = tempdata.event[eventsortid].content.group_quotation;
-		location.href = gServer + "uploads/files/"+ doc;
+		location.href = common.server + "uploads/files/"+ doc;
 	})
 	</script>
 

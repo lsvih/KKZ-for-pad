@@ -102,11 +102,11 @@
 
 		</form>
 		<div class="save"><button class="mui-btn mui-btn-danger" id="save">保存</button></div>
-		<script type="text/javascript" src="../js/lsvih.js" ></script>
-		<script src="../js/mui.js"></script>
+		<script type="text/javascript" src="../js/lsvih.js"></script>
+		<script src="../js/lib/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
-		<script type="text/javascript" src="../js/vue.js"></script>
+		<script type="text/javascript" src="../js/lib/vue.js"></script>
 		<script type="text/javascript">
 			var eventid;
 			var eventsortid;
@@ -117,7 +117,9 @@
 			var house_id;
 			mui.plusReady(function() {
 				eventid = plus.webview.currentWebview().eventid;
-				eventsortid = lsvih.array.getSubByKey({"id":eventid}, tempobj);
+				eventsortid = lsvih.array.getSubByKey({
+					"id": eventid
+				}, tempobj);
 				house_id = tempdata.event[eventsortid].house_id;
 				vueContent = new Vue({
 					el: '#userinfo',
@@ -142,83 +144,46 @@
 						mui.toast("请正确填写客户姓名");
 						return false;
 					}
-					if(!/^(13[0-9]|14[0-9]|15[0-9]|18[0-9])\d{8}$/i.test(phonenum)) {
+					if(!/^(13[0-9]|14[0-9]|15[0-9]|17[0-9]|18[0-9])\d{8}$/i.test(phonenum)) {
 						mui.toast("请正确填写客户手机号");
 						return false;
 					}
 					//TODO:队列化之后不需要提示
-					uploading = plus.nativeUI.showWaiting("正在上传修改数据，请稍后...")
-					mui.ajax(gAPIServer + 'users/' + vueContent.event.user_id + '?access-token=' + User("access_token"), {
-						data: {
-							'fullname': name,
-							'sex': Number(sex),
-							'mobile': phonenum
-						},
-						dataType: 'json',
-						type: 'PUT',
-						timeout: 6000,
-						success: function(data) {
-							if(data.success == true) {
-								tempdata.event[eventsortid].name = name;
-								tempdata.event[eventsortid].sex = Number(sex);
-								tempdata.event[eventsortid].phone = phonenum;
-								myStorage.setItem("data", JSON.stringify(tempdata)); //将已经修改成功的数据在本地修改
-								//修改房屋地址部分
-								mui.ajax(gAPIServer + 'houses/' + house_id + '?access-token=' + User("access_token"), {
-									data: {
-										'street': street,
-										'address': address
-									},
-									dataType: 'json',
-									type: 'PUT',
-									timeout: 6000,
-									success: function(data) {
-										if(data.success == true) {
-											tempdata.event[eventsortid].street = street;
-											tempdata.event[eventsortid].address = address;
-											myStorage.setItem("data", JSON.stringify(tempdata)); //将已经修改成功的数据在本地修改
-											mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-											mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
-											//TODO:下面为成功回调
-											mui.toast("修改用户信息成功");
-											uploading.close();
-											//通知列表页面与内容页面刷新
-											mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-											mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
-											mui.fire(plus.webview.currentWebview().opener(), "sb", "");
-											plus.webview.close(plus.webview.currentWebview())
-										} else {
-											mui.alert(data.message, gAppName, "确认", function() {
-												uploading.close();
-												plus.webview.currentWebview().reload();
-											});
-										}
-									},
-									error: function(xhr, textStatus, errorThrown) {
-										console.log(JSON.stringify(xhr))
-										mui.alert("上传信息失败，请稍候再试", gAppName, "确认", function() {
-											watuploadingiting.close();
-											plus.webview.currentWebview().reload();
-											uploading.close();
-										});
-
-									}
-								});
-							} else {
-								mui.alert(data.message, gAppName, "确认", function() {
-									uploading.close();
-									plus.webview.currentWebview().reload();
-								});
-							}
-						},
-						error: function(xhr, textStatus, errorThrown) {
-							console.log(JSON.stringify(xhr))
-							mui.alert("上传信息失败，请稍候再试", gAppName, "确认", function() {
-								uploading.close();
-								plus.webview.currentWebview().reload();
-							});
-
-						}
+					uploading = plus.nativeUI.showWaiting("正在上传修改数据，请稍后...");
+					common.ajax('users/' + vueContent.event.user_id, {
+						'fullname': name,
+						'sex': Number(sex),
+						'mobile': phonenum
+					}, "PUT", function(data) {
+						tempdata.event[eventsortid].name = name;
+						tempdata.event[eventsortid].sex = Number(sex);
+						tempdata.event[eventsortid].phone = phonenum;
+						myStorage.setItem("data", JSON.stringify(tempdata)); //将已经修改成功的数据在本地修改
+						//修改房屋地址部分
+						common.ajax('houses/' + house_id, {
+							'street': street,
+							'address': address
+						}, "PUT", function(data) {
+							tempdata.event[eventsortid].street = street;
+							tempdata.event[eventsortid].address = address;
+							myStorage.setItem("data", JSON.stringify(tempdata)); //将已经修改成功的数据在本地修改
+							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+							//TODO:下面为成功回调
+							mui.toast("修改用户信息成功");
+							uploading.close();
+							//通知列表页面与内容页面刷新
+							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+							mui.fire(plus.webview.currentWebview().opener(), "sb", "");
+							plus.webview.close(plus.webview.currentWebview());
+						}, "", {
+							closeObj: "uploading",
+							isReload: true
+						});
+					}, "", {
+						closeObj: "uploading",
+						isReload: true
 					});
 				});
 			});

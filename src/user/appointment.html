@@ -39,9 +39,9 @@
 		</div>
 	</body>
 	<script type="text/javascript" src="../js/lsvih.js"></script>
-	<script type="text/javascript" src="../js/mui.js"></script>
+	<script type="text/javascript" src="../js/lib/mui.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
-	<script type="text/javascript" src="../js/vue.js"></script>
+	<script type="text/javascript" src="../js/lib/vue.js"></script>
 	<script>
 		mui.init();
 		var loading;
@@ -64,37 +64,22 @@
 				}
 				loading = plus.nativeUI.showWaiting("正在创建预约，请稍后...");
 				var appointTimeStamp = lsvih.time.strToStamp(appointtime);
-
-				mui.ajax(gAPIServer + 'house-appointments?access-token' + User("access_token"), {
-					data: {
-						"house_id": houseid,
-						"user_id": userid,
-						"inspector_id": User("id"),
-						"appointment_at": appointTimeStamp
-					},
-					dataType: 'json',
-					type: 'POST',
-					timeout: 6000,
-					success: function(data) {
-						if(data.success == true) {
-							mui.toast("预约成功！请在待上门工作步骤中查看！");
-							var appointment_id = data.data.id;
-							mui.fire(plus.webview.getLaunchWebview(), "addhouse", appointment_id);
-							loading.close();
-							plus.webview.close(plus.webview.currentWebview());
-							plus.webview.currentWebview().opener().setStyle({
-								"mask": "none"
-							});
-						} else {
-							mui.alert(data.message, gAppName);
-							console.log(JSON.stringify(data));
-							loading.close();
-						}
-					},
-					error: function(xhr, textStatus, errorThrown) {
-						mui.alert("网络连接失败，请稍后重试", gAppName);
-						loading.close();
-					}
+				common.ajax("house-appointments", {
+					"house_id": houseid,
+					"user_id": userid,
+					"inspector_id": User("id"),
+					"appointment_at": appointTimeStamp
+				}, "POST", function(data) {
+					mui.toast("预约成功！请在待上门工作步骤中查看！");
+					var appointment_id = data.id;
+					mui.fire(plus.webview.getLaunchWebview(), "addhouse", appointment_id);
+					loading.close();
+					plus.webview.close(plus.webview.currentWebview());
+					plus.webview.currentWebview().opener().setStyle({
+						"mask": "none"
+					});
+				}, "", {
+					closeObj: loading
 				});
 			})
 		});

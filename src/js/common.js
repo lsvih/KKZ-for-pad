@@ -1,10 +1,52 @@
-"use strick"
+"use strict";
+
 //全局变量
-var gVersion = "1.3";
-var gAppName = "快块装";
-var gTopbarHeight = 20; //状态栏高度，沉浸式使用
-var gServer = "http://123.56.200.45/kkz/"
-var gAPIServer = gServer + "api/web/" //api接口目录
+var common = {};
+common.version = "1.3";
+common.appName = "块块装";
+common.topBarHeight = 20;
+common.server = "http://123.56.200.45/kkz/";
+common.apiServer = common.server + "api/web/";
+/**
+ * 封装AJAX方法
+ * @param {String} apiUrl
+ * @param {Object} DATA
+ * @param {Object} Type PUT|DELETE|GET|POST
+ * @param {Function} successcallback 成功回调
+ * @param {Function} errcallback 失败回调
+ * @param {Object} option配置,包括closeObj,isReload
+ */
+common.ajax = function(apiUrl, DATA, Type, successcallback, errcallback, option) {
+	var closeObj = option.closeObj;
+	var isReload = !!option.isReload;
+	var errfunction = errcallback || function(xhr, textStatus, errorThrown) {
+			console.log(`Url:${apiUrl},${JSON.stringify(xhr)}`);
+			mui.alert("网络连接失败，请稍后重试", common.appName, "确认", function() {
+				if(closeObj) closeObj.close();
+				if(isReload) plus.webview.currentWebview().reload();
+			});
+		}
+		//TODO 自定义成功回调
+	var url = common.apiServer + apiUrl + (~apiUrl.indexOf("?") ? "&" : "?") + (User("access_token") == null ? '' : 'access-token=' + User("access_token"));
+	mui.ajax(url, {
+		data: DATA,
+		type: Type,
+		dataType: 'json',
+		timeout: 12000,
+		success: function(data) {
+			if(data.success == true) {
+				successcallback(data.data);
+			} else {
+				mui.alert(data.message, common.appName);
+				if(closeObj) eval(closeObj + '.close()');
+				if(isReload) plus.webview.currentWebview().reload();
+			}
+		},
+		error: function(xhr, textStatus, errorThrown) {
+			errfunction(xhr, textStatus, errorThrown);
+		}
+	});
+}
 
 //判断是否存在队列对象，如果不存在则创建
 if(!localStorage.FIFO) localStorage.FIFO = JSON.stringify([]);
@@ -12,13 +54,12 @@ if(!localStorage.FIFO) localStorage.FIFO = JSON.stringify([]);
 function uuid() {
 	var s = [];
 	var hexDigits = "0123456789abcdef";
-	for(var i = 0; i < 36; i++) {
+	for(let i = 0; i < 36; i++) {
 		s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
 	}
 	s[14] = "4"; // bits 12-15 of the time_hi_and_version field to 0010
 	s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
 	s[8] = s[13] = s[18] = s[23] = "-";
-
 	var uuid = s.join("");
 	return uuid;
 }
@@ -34,13 +75,13 @@ function fListAllFlowEvent(flowId) {
 	var aFlowEvent = new Array;
 	if(!myStorage.getItem("data")) return false;
 	var aEvent = JSON.parse(myStorage.getItem("data")).event;
-	for(var i = 0; i < gFlow.flow.length; i++) {
-		if(gFlow.flow[i].id == flowId) aEventList = gFlow.flow[i]["contain-event"];
+	for(let i = 0; i < gFlow.flow.length; i++) {
+		if(gFlow.flow[i].id == flowId) aEventList = gFlow.flow[i]["contain-event"]
 	}
 	if(aEventList == null) return false;
-	for(var j = 0; j < aEventList.length; j++) {
-		for(var k = 0; k < aEvent.length; k++) {
-			if(aEvent[k].status == aEventList[j]) aFlowEvent.push(aEvent[k]);
+	for(let eventListItem of aEventList) {
+		for(let eventItem of aEvent) {
+			if(eventItem.status == eventListItem) aFlowEvent.push(eventItem);
 		}
 	}
 	return aFlowEvent;
@@ -60,11 +101,10 @@ function fCloseSubPage(callback) {
  * 关闭当前所有打开的子页面（sub_开头id的页面）,并隐藏其父页面的遮罩
  */
 function fCloseSubOpenPage() {
-	var allwebview = plus.webview.all();
-	for(var i = 0; i < allwebview.length; i++) {
-		if(allwebview[i].id.split("_")[0] == "sub") {
-			var parentwebview = allwebview[i].opener();
-			plus.webview.close(allwebview[i]);
+	for(let webview of plus.webview.all()) {
+		if(webview.id.split("_")[0] == "sub") {
+			var parentwebview = webview.opener();
+			plus.webview.close(webview);
 		}
 	}
 }
@@ -75,7 +115,7 @@ function fCloseSubOpenPage() {
  * @param {Array} 元素集
  */
 function index(current, obj) {
-	for(var i = 0, length = obj.length; i < length; i++) {
+	for(let i = 0; i < obj.length; i++) {
 		if(obj[i].outerHTML == current.outerHTML) {
 			return i;
 		}
@@ -88,13 +128,12 @@ function index(current, obj) {
  * @param {String} maskoption 遮罩样式
  */
 function fSetSubPageMask(maskoption) {
-	var allwebview = plus.webview.all();
-	for(var i = 0; i < allwebview.length; i++) {
-		if(allwebview[i].id.split("_")[0] == "sub") {
-			allwebview[i].setStyle({
+	for(let webview of plus.webview.all()) {
+		if(webview.id.split("_")[0] == "sub") {
+			webview.setStyle({
 				mask: maskoption
 			});
-			allwebview[i].addEventListener("maskClick", function() {
+			webview.addEventListener("maskClick", function() {
 				mui.fire(plus.webview.getLaunchWebview(), "menu:close");
 			});
 		}
@@ -147,7 +186,7 @@ function galleryImg(targetJSON) {
 	// 从相册中选择图片
 	var inserTarget = eval("vueContent.event.content." + targetJSON);
 	plus.gallery.pick(function(path) {
-		for(var i in path.files) {
+		for(let i in path.files) {
 			inserTarget.push(path.files[i]);
 		}
 
@@ -170,7 +209,7 @@ function galleryImg(targetJSON) {
 function fGetSortIdByDate(date, JSON) {
 	var timeline = JSON.content.timeline;
 	if(timeline.length == 0) return false;
-	for(var i = 0; i < timeline.length; i++) {
+	for(let i = 0; i < timeline.length; i++) {
 		if(timeline[i].date == date) return i;
 	}
 	return false;
@@ -183,10 +222,9 @@ function GetRequest() {
 	var url = location.search;
 	var theRequest = new Object();
 	if(url.indexOf("?") != -1) {
-		var str = url.substr(1);
-		strs = str.split("&");
-		for(var i = 0; i < strs.length; i++) {
-			theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+		var strs = url.substr(1).split("&");
+		for(let str of strs) {
+			theRequest[str.split("=")[0]] = unescape(str.split("=")[1]);
 		}
 	}
 	return theRequest;
@@ -201,7 +239,7 @@ function fRemoveObecjtFormArray(arr, num) {
 	if(isNaN(num) || num >= arr.length) {
 		return false;
 	}
-	for(var i = 0, n = 0; i < arr.length; i++) {
+	for(let i = 0, n = 0; i < arr.length; i++) {
 		if(arr[i] != arr[num]) {
 			arr[n++] = arr[i];
 		}
@@ -214,7 +252,7 @@ function fRemoveObecjtFormArray(arr, num) {
  * @param {String} 字段名
  */
 function User(e) {
+	if(localStorage.user == undefined || localStorage.user == null) return null;
 	var userdata = JSON.parse(localStorage.user);
 	return userdata[e];
 }
-

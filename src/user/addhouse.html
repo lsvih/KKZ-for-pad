@@ -48,8 +48,8 @@
 			</form>
 		</div>
 	</body>
-	<script type="text/javascript" src="../js/lsvih.js"></script>
-	<script type="text/javascript" src="../js/mui.js"></script>
+	<script type="text/javascript" src="../js/lib/lsvih.js"></script>
+	<script type="text/javascript" src="../js/lib/mui.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script class="resources library" src="../js/area.js"></script>
 	<script>
@@ -80,35 +80,20 @@
 					return false;
 				}
 				loading = plus.nativeUI.showWaiting("正在上传用户数据");
-
-				mui.ajax(gAPIServer + 'houses?access-token=' + User("access_token"), {
-					data: {
-						"user_id": userid,
-						"zone_code": '000000',
-						"province": province,
-						"city": city,
-						"county": county,
-						"street": street,
-						"address": address
-					},
-					dataType: 'json',
-					type: 'POST',
-					timeout: 6000,
-					success: function(data) {
-						if(data.success == true) {
-							mui.toast("客户房屋录入完毕，请填写用户预约量房时间");
-							loading.close();
-							location.href = "appointment.html?userid=" + userid + "&house_id=" + data.data.id;
-						} else {
-							mui.alert(data.message, gAppName);
-							console.log(JSON.stringify(data));
-							loading.close();
-						}
-					},
-					error: function(xhr, textStatus, errorThrown) {
-						mui.alert("网络连接失败，请稍后重试", gAppName);
-						loading.close();
-					}
+				common.ajax("houses", {
+					"user_id": userid,
+					"zone_code": '000000',
+					"province": province,
+					"city": city,
+					"county": county,
+					"street": street,
+					"address": address
+				}, "POST", function(data) {
+					mui.toast("客户房屋录入完毕，请填写用户预约量房时间");
+					loading.close();
+					location.href = "appointment.html?userid=" + userid + "&house_id=" + data.id;
+				}, "", {
+					closeObj: loading
 				});
 
 			})

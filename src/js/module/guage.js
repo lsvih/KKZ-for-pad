@@ -1,3 +1,4 @@
+"use strict";
 var vueContent;
 var MAXIMAGECOUNT = 10;
 var eventid = GetRequest()["eventid"]; //获得eventid
@@ -8,7 +9,6 @@ var eventsortid = lsvih.array.getSubByKey({
 	"id": eventid
 }, tempdata.event);
 mui.plusReady(function() {
-	"use strict";
 	console.log(tempdata.event[eventsortid].content.room.length);
 	if(!tempdata.event[eventsortid].content.room.length) {
 		for(let room of JSON.parse(localStorage.getItem("RoomType"))) {
@@ -97,7 +97,7 @@ mui.plusReady(function() {
 	});
 
 	window.addEventListener('delete', function(event) {
-		var statustarget = "room[" + iRoomSortId + "].images";
+		var statustarget = `room[${iRoomSortId}].images`;
 		var deleteitem = vueContent.event.content.room[iRoomSortId].images[event.detail - 1];
 		vueContent.event.content.room[iRoomSortId].images.$remove(deleteitem);
 	});
@@ -109,7 +109,7 @@ mui.plusReady(function() {
 	});
 
 	mui('#picture').on('tap', '.mui-popover-action li>a', function() {
-		var statustarget = "room[" + iRoomSortId + "].images";
+		var statustarget = `room[${iRoomSortId}].images`;
 		switch(this.getAttribute("data")) {
 			case "1": //拍照
 				mui("#picture").popover('toggle');
@@ -150,8 +150,8 @@ mui.plusReady(function() {
 	 * @param {Array} arr
 	 */
 	function __fSetAlias(arr) {
-		var emptyalias = [];
-		for(var i = 0; i < arr.length; i++) {
+		const emptyalias = [];
+		for(let i = 0; i < arr.length; i++) {
 			if(!arr[i].alias) {
 				emptyalias.push({
 					"room_id": arr[i].room_id,
@@ -172,7 +172,7 @@ mui.plusReady(function() {
 
 		function __fIsEmptyAliasTypeDuplicate(arr) {
 			for(let arritem of arr) {
-				if(lsvih.array.getArrByCondition('room_id==' + arritem.room_id, arr).length > 1) return true;
+				if(lsvih.array.getArrByCondition(`room_id==${arritem.room_id}`, arr).length > 1) return true;
 			}
 			return false;
 		}
@@ -199,7 +199,7 @@ mui.plusReady(function() {
 	function fUploadImages() {
 		roomlength = tempdata.event[eventsortid].content.room.length;
 		imagesarr = new Array(roomlength);
-		for(var s = 0; s < imagesarr.length; s++) {
+		for(let s = 0; s < imagesarr.length; s++) {
 			imagesarr[s] = new Array(tempdata.event[eventsortid].content.room[s].images.length);
 		} //构建存储图片的数组
 		grouptosuccess = roomlength;
@@ -229,7 +229,7 @@ mui.plusReady(function() {
 				imagesarr[roomlength - grouptosuccess][thisGroupCount - tosuccess] = base64;
 				_fImg2Base64(--tosuccess); //递归开始下一张图片
 			}, function(e) {
-				console.log('加载图片失败：' + JSON.stringify(e));
+				console.log(`加载图片失败：${JSON.stringify(e)}`);
 			});
 		}
 	}
@@ -238,62 +238,29 @@ mui.plusReady(function() {
 	 */
 	function fUploadStatus() {
 		//先将服务器上已经有的信息删除
-		mui.ajax(gAPIServer + 'house-room/batch-delete?filter=house_id:' + tempdata.event[eventsortid].house_id + '&access-token=' + User("access_token"), {
-			type: 'DELETE',
-			dataType: 'json',
-			timeout: 6000,
-			success: function(data) {
-				if(data.success == true) {
-					//构造批量上传数据
-					var data = [];
-					for(var a = 0; a < tempdata.event[eventsortid].content.room.length; a++) {
-						data.push({
-							"house_id": tempdata.event[eventsortid].house_id,
-							"room_id": tempdata.event[eventsortid].content.room[a].room_id,
-							"alias": tempdata.event[eventsortid].content.room[a].alias,
-							"area": tempdata.event[eventsortid].content.room[a].size,
-							"plan_t_img": tempdata.event[eventsortid].content.room[a].diagram,
-							"measure_t_imgs": myStorage.getItem("tempimg")[a]
-						})
-					}
-					console.log(JSON.stringify(data))
-					mui.ajax(gAPIServer + 'house-room/batch-create?access-token=' + User("access_token"), {
-						data: {
-							"items": JSON.stringify(data)
-						},
-						type: 'POST',
-						dataType: 'json',
-						timeout: 6000,
-						success: function(data) {
-							if(data.success == true) {
-								console.log(JSON.stringify(data.data));
-								uploading.close()
-								myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
-								plus.webview.currentWebview().loadURL("pick_products.html?eventid=" + eventid);
-							} else {
-								mui.alert(data.message, gAppName);
-								uploading.close();
-							}
-						},
-						error: function(xhr, textStatus, errorThrown) {
-							console.log(JSON.stringify(xhr));
-							mui.alert("上传量房信息失败，请稍后重试", gAppName, "确认", function() {
-								uploading.close();
-							});
-
-						}
-					});
-				} else {
-					mui.alert(data.message, gAppName);
-					uploading.close();
-				}
-			},
-			error: function(xhr, textStatus, errorThrown) {
-				console.log(JSON.stringify(xhr));
-				mui.alert("更新状态失败，请稍后重试", gAppName, "确认", function() {
-					uploading.close();
-				});
+		common.ajax(`house-room/batch-delete?filter=house_id:${tempdata.event[eventsortid].house_id}`, {}, "DELETE", function(data) { //构造批量上传数据
+			var data = [];
+			for(let a = 0; a < tempdata.event[eventsortid].content.room.length; a++) {
+				data.push({
+					"house_id": tempdata.event[eventsortid].house_id,
+					"room_id": tempdata.event[eventsortid].content.room[a].room_id,
+					"alias": tempdata.event[eventsortid].content.room[a].alias,
+					"area": tempdata.event[eventsortid].content.room[a].size,
+					"plan_t_img": tempdata.event[eventsortid].content.room[a].diagram,
+					"measure_t_imgs": myStorage.getItem("tempimg")[a]
+				})
 			}
+			common.ajax("house-room/batch-create", {
+				"items": JSON.stringify(data)
+			}, "POST", function(data) {
+				uploading.close()
+				myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
+				plus.webview.currentWebview().loadURL(`pick_packages.html?eventid=${eventid}`);
+			}, "", {
+				closeObj: uploading
+			});
+		}, "", {
+			closeObj: uploading
 		});
 	}
 });

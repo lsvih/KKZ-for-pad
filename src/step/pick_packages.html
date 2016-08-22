@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../css/mui.css" rel="stylesheet" />
+	</head>
+	<style>
+		body {
+			background-color: #f0f0f0;
+		}
+		
+		.mui-content {
+			text-align: center;
+			margin-top: 62px;
+		}
+		
+		.package-title {
+			font-size: 24px;
+		}
+		
+		.package-item-container {
+			position: relative;
+			display: inline-block;
+			margin: 17px 7px 0;
+			height: 303px;
+			width: 470px;
+			background-color: #fff;
+			text-align: left;
+		}
+		
+		.package-item-container img {
+			height: 303px;
+			width: 470px;
+		}
+		
+		.package-item-title {
+			position: absolute;
+			bottom: 0;
+			display: block;
+			height: 38px;
+			width: 100%;
+			background-image: url(../images/picture-mask.png);
+			color: #fff;
+			padding-left: 18px;
+			line-height: 38px;
+		}
+		
+		.circle-btn {
+			position: fixed;
+			top: 43px;
+			height: 40px;
+			width: 40px;
+			background-color: #FFF;
+			border-radius: 20px;
+			color: #00b06c;
+			line-height: 42px;
+			text-align: center;
+			box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+		}
+		
+		.close-btn {
+			left: 33px;
+			font-size: 28px;
+			z-index: 100;
+		}
+		
+		.next-btn {
+			right: 33px;
+			font-size: 28px;
+			z-index: 98;
+		}
+		
+		#mask {
+			position: fixed;
+			top: 0;
+			height: 100%;
+			width: 100%;
+			z-index: 9999999;
+			background-color: #fff;
+			opacity: 1;
+			transition: 0.5s;
+		}
+		
+		.check-mask {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: 100%;
+			background-image: url(../images/check-mask.png);
+			background-position: 100% 100%;
+			z-index: 19;
+		}
+		
+		.edit-num {
+			position: absolute;
+			bottom: 0;
+			height: 0;
+			width: 100%;
+			overflow: hidden;
+			background-color: rgba(255, 255, 255, 0.65);
+			transition: 0.4s;
+			z-index: 20;
+		}
+		
+		.edit-num-active {
+			height: 39px;
+		}
+		/*数字选择器*/
+		
+		.mui-numbox .mui-btn {
+			height: 28px;
+			width: 28px;
+			border-radius: 12px;
+			border: none;
+			font-size: 28px;
+			line-height: 28px;
+			font-weight: bold;
+			background-color: transparent!important;
+		}
+		
+		.mui-numbox {
+			position: absolute;
+			bottom: 6px;
+			right: 13px;
+			border: none;
+			height: 28px;
+			width: 90px;
+			padding: 0 37px;
+			background-color: transparent!important;
+		}
+		
+		.mui-numbox input:disabled {
+			-webkit-text-fill-color: rgba(0, 0, 0, 1);
+			-webkit-opacity: 1;
+		}
+		
+		.mui-numbox .mui-input-numbox {
+			border-right: none!important;
+			border-left: none!important;
+			background-color: transparent!important;
+			width: 16px!important;
+		}
+		
+		.packages {
+			text-align: left;
+			margin-left: 27px;
+		}
+	</style>
+
+	<body>
+		<div id="mask"></div>
+		<div class="circle-btn close-btn mui-icon mui-icon-arrowleft mui-action-back"></div>
+		<div class="circle-btn next-btn mui-icon mui-icon-arrowright"></div>
+
+		<div class="mui-content">
+			<div id="package">
+				<div class="package-title">选择套餐</div>
+				<div class="packages">
+					<div class="package-item-container" v-for="package in packageinfo">
+						<div class="edit-num" v-bind:class="{'edit-num-active' : __fGetpackageNum(package.package_id)}">
+							<div class="mui-numbox" data-numbox-min='0' data-numbox-max='9'>
+								<button class="mui-btn mui-btn-numbox-minus mui-icon mui-icon-minus" type="button"></button>
+								<input class="mui-input-numbox" type="number" v-bind:value="__fGetpackageNum(package.package_id)" v-bind:data-id="__fGetpackageNum(package.package_id)" @change="__fEditNum($event.currentTarget)" disabled/>
+								<button class="mui-btn mui-btn-numbox-plus mui-icon mui-icon-plus" type="button"></button>
+							</div>
+						</div>
+						<div class="check-mask" v-show="__fGetpackageNum(package.package_id)" @tap="__fCancelSelect(package.package_id,$event.currentTarget)"></div>
+						<img v-bind:src="package.cover|cache" @tap="__fSelectThisPackage(package.package_id,$event.currentTarget,$index)">
+						<span class="package-item-title" v-show="!__fGetpackageNum(package.package_id)">{{package.name}}</span></div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="../js/lsvih.js"></script>
+		<script src="../js/lib/mui.js"></script>
+		<script type="text/javascript" src="../js/storage.js"></script>
+		<script type="text/javascript" src="../js/common.js"></script>
+		<script type="text/javascript" src="../js/lib/vue.js"></script>
+		<script type="text/javascript" src="../js/cache.js"></script>
+		<script type="text/javascript" src="../js/module/pick_pacakges.js"></script>
+	</body>
+
+</html>

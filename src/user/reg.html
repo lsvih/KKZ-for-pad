@@ -40,9 +40,10 @@
 		</div>
 	</body>
 	<script type="text/javascript" src="../js/lsvih.js"></script>
-	<script type="text/javascript" src="../js/mui.js"></script>
+	<script type="text/javascript" src="../js/lib/mui.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script>
+		"use strict";
 		mui.init();
 		var loading;
 		mui.plusReady(function() {
@@ -66,41 +67,26 @@
 							mui.toast("用户注册成功！请添加用户信息与房屋信息");
 							var id = data.data.id;
 							loading.close();
-							location.href = "userinfo.html?id=" + id + "&type=new&phonenum="+ phonenum;
+							location.href = "userinfo.html?id=" + id + "&type=new&phonenum=" + phonenum;
 						} else {
 							if(data.status == 400) {
 								mui.toast("用户已经存在，请查看用户信息与房屋信息");
 								//查询用户的id
-								mui.ajax(gAPIServer + 'users?filter=mobile:' + phonenum, {
-									dataType: 'json',
-									type: 'get',
-									timeout: 6000,
-									success: function(data) {
-										if(data.success == true) {
-											var id = data.data.items[0].id;
-											loading.close();
-											location.href = "userinfo.html?id=" + id + "&type=old";
-										} else {
-											mui.alert(data.message, gAppName);
-											console.log(JSON.stringify(data));
-											loading.close();
-										}
-									},
-									error: function(xhr, textStatus, errorThrown) {
-										mui.alert("网络连接失败，请稍后重试", gAppName);
-										loading.close();
-									}
-								});
+								common.ajax('users?filter=mobile:' + phonenum, {}, "GET", function(data) {
+									var id = data.items[0].id;
+									loading.close();
+									location.href = "userinfo.html?id=" + id + "&type=old";
+								},"",{closeObj:loading});
 
 							} else {
-								mui.alert(data.message, gAppName);
+								mui.alert(data.message, common.appName);
 								console.log(JSON.stringify(data));
 								loading.close();
 							}
 						}
 					},
 					error: function(xhr, textStatus, errorThrown) {
-						mui.alert("网络连接失败，请稍后重试", gAppName);
+						mui.alert("网络连接失败，请稍后重试", common.appName);
 						loading.close();
 					}
 				});

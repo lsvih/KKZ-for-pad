@@ -44,15 +44,6 @@ gulp.task("javascripts", function() {
 		//		.pipe(rename({
 		//			suffix: ".min"
 		//		}))
-		.pipe(uglify().on('error', function(e) {
-			console.log(e);
-		}))
-		.pipe(gulp.dest("./dist/js"))
-	gulp.run("ES6")
-});
-
-gulp.task("ES6", function() {
-	gulp.src("./src/js/*/*.js")
 		.pipe(babel({
 			presets: ['es2015']
 		}))
@@ -60,7 +51,17 @@ gulp.task("ES6", function() {
 			console.log(e);
 		}))
 		.pipe(gulp.dest("./dist/js"))
-})
+	gulp.src("./src/js/lib/*.js")
+		.pipe(gulp.dest("./dist/js/lib"))
+	gulp.src("./src/js/module/*.js")
+		.pipe(babel({
+			presets: ['es2015']
+		}))
+		.pipe(uglify().on('error', function(e) {
+			console.log(e);
+		}))
+		.pipe(gulp.dest("./dist/js/module"))
+});
 
 gulp.task("html", function() {
 	var options = {
@@ -106,6 +107,7 @@ gulp.task("default", function() {
 	gulp.run("build");
 	console.log("Done!")
 	gulp.watch(["./src/*.*", "./src/*/*.*", "./src/*/*/*.*"], function() {
-		gulp.run("build");
+		gulp.run("less", "css", "javascripts", "html");
+		console.log("Done!")
 	});
 });

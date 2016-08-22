@@ -117,14 +117,14 @@
 			</div>
 		</article>
 		<script type="text/javascript" src="../js/lsvih.js" ></script>
-		<script src="../js/mui.js"></script>
+		<script src="../js/lib/mui.js"></script>
 		<script type="text/javascript" src="../js/storage.js"></script>
 		<script type="text/javascript" src="../js/data.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
-		<script type="text/javascript" src="../js/vue.js"></script>
+		<script type="text/javascript" src="../js/lib/vue.js"></script>
 
 		<script type="text/javascript">
-			"use strick"
+			"use strict";
 			mui.init({
 				gestureConfig: {
 					doubletap: false,
@@ -239,7 +239,7 @@
 								url: "index_frame.html",
 								id: "sub_detail",
 								styles: {
-									top: 60 + gTopbarHeight + 'px',
+									top: 60 + common.topBarHeight + 'px',
 									bottom: 0,
 									left: "38.7%",
 									height: "100%",

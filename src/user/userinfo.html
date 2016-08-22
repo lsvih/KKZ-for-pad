@@ -49,9 +49,9 @@
 		</div>
 	</body>
 	<script type="text/javascript" src="../js/lsvih.js"></script>
-	<script type="text/javascript" src="../js/mui.js"></script>
+	<script type="text/javascript" src="../js/lib/mui.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
-	<script type="text/javascript" src="../js/vue.js"></script>
+	<script type="text/javascript" src="../js/lib/vue.js"></script>
 	<script>
 		mui.init();
 		var loading;
@@ -62,7 +62,7 @@
 		mui.plusReady(function() {
 			if(type == "old") {
 				loading = plus.nativeUI.showWaiting("正在加载用户数据，请稍后...");
-				mui.ajax(gAPIServer + 'users/' + userid + '?access-token='+ User("access_token"), {
+				mui.ajax(gAPIServer + 'users/' + userid + '?access-token=' + User("access_token"), {
 					dataType: 'json',
 					type: 'get',
 					timeout: 6000,
@@ -72,14 +72,14 @@
 							loadUserInfoVue(data.data);
 							loading.close();
 						} else {
-							mui.alert(data.message, gAppName);
+							mui.alert(data.message, common.appName);
 							console.log(JSON.stringify(data));
 							loading.close();
 							mui.trigger(document.getElementsByClassName("close")[0], "tap");
 						}
 					},
 					error: function(xhr, textStatus, errorThrown) {
-						mui.alert("网络连接失败，请稍后重试", gAppName);
+						mui.alert("网络连接失败，请稍后重试", common.appName);
 						loading.close();
 						mui.trigger(document.getElementsByClassName("close")[0], "tap");
 					}
@@ -111,60 +111,22 @@
 					return false;
 				}
 				loading = plus.nativeUI.showWaiting("正在上传用户数据");
-				if(wx == null||wx == undefined||wx == ""){
-					mui.ajax(gAPIServer + 'users/' + userid + '?access-token='+ User("access_token"), {
-					data: {
-						"fullname": fullname,
-						"sex": sex
-					},
-					dataType: 'json',
-					type: 'PUT',
-					timeout: 6000,
-					success: function(data) {
-						if(data.success == true) {
-							mui.toast("用户信息更新成功，请填写客户房屋信息");
-							loading.close();
-							location.href = "addhouse.html?userid=" + userid;
-						} else {
-							mui.alert(data.message, gAppName);
-							console.log(JSON.stringify(data));
-							loading.close();
-						}
-					},
-					error: function(xhr, textStatus, errorThrown) {
-						mui.alert("网络连接失败，请稍后重试", gAppName);
-						loading.close();
-					}
-				});
+				var userdata = (wx == "") ? {
+					"fullname": fullname,
+					"sex": sex
+				} : {
+					"fullname": fullname,
+					"sex": sex,
+					"weixin": wx
 				}
-				else{
-					mui.ajax(gAPIServer + 'users/' + userid + '?access-token='+ User("access_token"), {
-					data: {
-						"fullname": fullname,
-						"sex": sex,
-						"weixin": wx
-					},
-					dataType: 'json',
-					type: 'PUT',
-					timeout: 6000,
-					success: function(data) {
-						if(data.success == true) {
-							mui.toast("用户信息更新成功，请填写客户房屋信息");
-							loading.close();
-							location.href = "addhouse.html?userid=" + userid;
-						} else {
-							mui.alert(data.message, gAppName);
-							console.log(JSON.stringify(data));
-							loading.close();
-						}
-					},
-					error: function(xhr, textStatus, errorThrown) {
-						mui.alert("网络连接失败，请稍后重试", gAppName);
-						loading.close();
-					}
+				common.ajax('users/' + userid, userdata, "PUT", function(data) {
+					mui.toast("用户信息更新成功，请填写客户房屋信息");
+					loading.close();
+					location.href = "addhouse.html?userid=" + userid;
+				}, "", {
+					closeObj: loading
 				});
-				}
-				
+
 			})
 		});
 		/**
