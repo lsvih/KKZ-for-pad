@@ -62,7 +62,7 @@
 		mui.plusReady(function() {
 			if(type == "old") {
 				loading = plus.nativeUI.showWaiting("正在加载用户数据，请稍后...");
-				mui.ajax(gAPIServer + 'users/' + userid + '?access-token=' + User("access_token"), {
+				mui.ajax(common.apiServer + 'users/' + userid + '?access-token=' + User("access_token"), {
 					dataType: 'json',
 					type: 'get',
 					timeout: 6000,

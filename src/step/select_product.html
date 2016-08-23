@@ -172,7 +172,7 @@
 			position: relative;
 			height: 230px;
 			width: 100%;
-			padding-left:360px;
+			padding-left: 360px;
 		}
 		
 		.product i {
@@ -180,8 +180,8 @@
 		}
 		
 		.product-img {
-			position:absolute;
-			left:0px;
+			position: absolute;
+			left: 0px;
 			width: 325px;
 			height: 205px;
 		}
@@ -294,11 +294,12 @@
 		.blank-30 {
 			height: 30px;
 		}
+		
 		.mask-line {
 			position: absolute;
 			display: block;
 			top: 50px;
-			left:0;
+			left: 0;
 			height: 50px;
 			width: 100%;
 			background-color: #ffffff;
@@ -313,7 +314,9 @@
 		<div class="circle-btn next-btn">物业</div>
 		<div id="detail">
 			<div class="content">
-				<div class="mask-line"><!--用来遮住第一条线。懒得写--></div>
+				<div class="mask-line">
+					<!--用来遮住第一条线。懒得写-->
+				</div>
 				<div class="package-title">{{detail.group_name}}</div>
 				<div class="line"></div>
 				<div v-for="product in detail.group_products" v-bind:data-id="product.product_brands[0].skus[0].sku_id" v-show="product.is_selectable=='1'">
@@ -326,7 +329,7 @@
 							<span v-for="brand in product.product_brands" @tap="Change($event)" v-bind:value="$index">{{brand.brand_name}}&nbsp;&nbsp;</span></div>
 						<div class="product-model">型号：&nbsp;
 							<span v-for="model in product.product_brands[product.selectbrand].tree" @tap="Change($event)" v-bind:value="$index">{{model.name}}&nbsp;&nbsp;</span>
-							</div>
+						</div>
 						<div class="product-size">尺寸：&nbsp;
 							<span v-for="size in product.product_brands[product.selectbrand].tree[product.product_brands[product.selectbrand].selectmodel].size" @tap="Change($event)">{{size.name}}&nbsp;&nbsp;</span>
 						</div>
@@ -357,22 +360,19 @@
 		<script type="text/javascript" src="../js/cache.js"></script>
 		<script>
 			var loading;
-			mui.init({
-				beforeback: function() {
-					plus.navigator.setFullscreen(false);
-				}
-			});
+			mui.init();
 			var eventid = GetRequest()["eventid"];
 			var tempdata = JSON.parse(myStorage.getItem("data"));
-			var thisevent = tempdata.event[lsvih.array.getSubByKey({
+			var eventsortid = lsvih.array.getSubByKey({
 				"id": eventid
-			}, tempdata.event)];
+			}, tempdata.event);
+			var thisevent = tempdata.event[eventsortid];
 			var house_group_id = thisevent.content.house_group_id;
 			var group_id = thisevent.content.group_id;
 			var package_id;
 			var vueContent;
-			var temppackage = JSON.parse(myStorage.getItem("packageinfo")).packageinfo;
-			var thisgroup = __fGetCurrentGroup(temppackage, group_id)
+			var temppackage;
+			var thisgroup;
 
 			function __fGetCurrentGroup(packageinfo, groupid) {
 				for(var k = 0; k < packageinfo.length; k++) {
@@ -387,8 +387,9 @@
 				}
 			}
 			mui.plusReady(function() {
+				temppackage = JSON.parse(myStorage.getItem("packageinfo")).packageinfo;
+				thisgroup = __fGetCurrentGroup(temppackage, group_id)
 				loading = plus.nativeUI.showWaiting("正在加载，请稍后...");
-				plus.navigator.setFullscreen(true);
 				plus.webview.close("sub_doc");
 				fAddVueCacheFilter();
 				var detailinfo = plus.webview.currentWebview().detail;
@@ -443,7 +444,9 @@
 								var brandsortid = this.detail.group_products[productsortid].selectbrand;
 								var modelsortid = thisobj.getAttribute("value");
 								this.detail.group_products[productsortid].product_brands[brandsortid].selectmodel = modelsortid;
-								mui.trigger(parent.parentNode.getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "tap");
+								setTimeout(function() {
+									mui.trigger(parent.parentNode.getElementsByClassName("product-size")[0].getElementsByTagName("span")[0], "tap");
+								}, 1);
 								var modelName = thisobj.innerText.replace(/\s+/g, "");
 								var skus = this.detail.group_products[productsortid].product_brands[brandsortid].skus;
 								var sku = lsvih.array.getObjByKey({
@@ -536,31 +539,38 @@
 					var product_sort = products[s].getElementsByTagName("i")[0].innerText;
 					var product_id = vueContent.detail.group_products[product_sort].product_id;
 					var sku_id = products[s].parentNode.getAttribute("data-id");
-					fUploadSku({
+					uploadinfo.push({
 						"house_group_id": house_group_id,
 						"package_id": package_id,
 						"product_id": product_id,
 						"sku_id": sku_id
 					});
-
 				}
-
-				var uploadtimeController = setInterval(function() {
-					if(successcount == products.length) {
-						clearInterval(uploadtimeController);
+				console.log(JSON.stringify(uploadinfo))
+				common.ajax("house-group-sku/batch-create", {
+					"items": JSON.stringify(uploadinfo)
+				}, "POST", function(data) {
+					common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, {
+						'status': 2,
+					}, "PUT", function(data) {
+						tempdata.event[eventsortid].status = 2;
+						tempdata.event[eventsortid].content.group_quotation = data.group_quotation;
+						tempdata.event[eventsortid].content.price = data.group_amount;
+						tempdata.event[eventsortid].content.taxes_amount = data.taxes_amount;
+						myStorage.setItem("data", JSON.stringify(tempdata));
+						mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+						mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
 						uploading.close();
-						mui.toast("选材完毕，请选择物业信息。");
-						myStorage.setItem("tempproperty", JSON.stringify(uploadinfo));
-						console.log(myStorage.getItem("tempproperty"))
-						plus.webview.currentWebview().loadURL("../step/select_property.html?eventid=" + eventid);
-					}
-				}, 50)
+						mui.toast("选材完毕，报价清单已生成。");
+						plus.webview.currentWebview().loadURL("../step/group_quotation.html?eventid=" + eventid);
+					}, "", {
+						closeObj: uploading,
+						isReload: true
+					});
+				}, "", {
+					closeObj: uploading
+				});
 			});
-
-			function fUploadSku(data) {
-				uploadinfo.push(data);
-				successcount++;
-			}
 		</script>
 	</body>
 

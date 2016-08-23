@@ -54,7 +54,7 @@
 					return false;
 				}
 				loading = plus.nativeUI.showWaiting("正在注册用户，请稍后...");
-				mui.ajax(gAPIServer + 'users/signup', {
+				mui.ajax(common.apiServer + 'users/signup', {
 					data: {
 						'SignupForm[mobile]': phonenum,
 						'SignupForm[password]': '123456'

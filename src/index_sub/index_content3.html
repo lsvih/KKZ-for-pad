@@ -13,7 +13,7 @@
 		<div id="back-drop"></div>
 		<article id="event">
 			<!--确认物业-->
-			<template v-if="event.status==5">
+			<template v-if="event.status==6">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" @tap="__fEditUser(event.id)"></i>编辑</span><br />
@@ -37,7 +37,7 @@
 			</template>
 
 			<!--待确认-->
-			<template v-if="event.status==6">
+			<template v-if="event.status==7">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit" @tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br />
@@ -59,7 +59,7 @@
 			</template>
 
 			<!--待开工-->
-			<template v-if="event.status==7">
+			<template v-if="event.status==8">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" @tap="__fEditUser(event.id)"></i>编辑</span><br />

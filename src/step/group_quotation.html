@@ -57,7 +57,7 @@
 	</head>
 	<div class="circle-btn close-btn mui-icon mui-icon-closeempty"></div>
 	<div class="pick-again">再选一次</div>
-	<div class="circle-btn next-btn">选材</div>
+	<div class="circle-btn next-btn">排期</div>
 	<div class="header"></div>
 
 	<body>
@@ -98,26 +98,26 @@
 					plus.webview.close(plus.webview.currentWebview());
 				});
 				mui("body").on("tap", ".next-btn", function() {
-					plus.webview.currentWebview().loadURL("../step/schedule.html?eventid=" + eventid);
+					plus.webview.currentWebview().loadURL("../step/property.html?eventid=" + eventid);
 				})
 				mui("body").on("tap", ".pick-again", function() {
 					/**
 					 * 重新修改状态为0时，服务器会将此房屋下的所有套餐全部删除。更改状态时，同时更新list与content
 					 */
-					var watiting = plus.nativeUI.showWaiting("正在返回量房状态，请稍后...");
+					var watiting = plus.nativeUI.showWaiting("正在返回选材状态，请稍后...");
 					var house_group_id = tempdata.event[eventsortid].content.house_group_id;
-					common.ajax('house-group-package/batch-delete?filter=house_group_id:' + house_group_id, {}, "DELETE", function(data) {
+					common.ajax('house-group-sku/batch-delete?filter=house_group_id:' + house_group_id, {}, "DELETE", function(data) {
 						common.ajax('house-groups/' + house_group_id, {
-							'status': 0,
+							'status': 1,
 						}, "PUT", function(data) {
 							watiting.close();
 							var tempdata = JSON.parse(myStorage.getItem("data"));
-							tempdata.event[eventsortid].status = 0;
+							tempdata.event[eventsortid].status = 1;
 							myStorage.setItem("data", JSON.stringify(tempdata))
 							plus.webview.close("sub_doc");
 							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
 							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
-							plus.webview.currentWebview().loadURL("../step/pick_packages.html?eventid=" + eventid);
+							plus.webview.currentWebview().loadURL("../step/select_product.html?eventid=" + eventid);
 						}, "", {
 							closeObj: watiting,
 							isReload: true

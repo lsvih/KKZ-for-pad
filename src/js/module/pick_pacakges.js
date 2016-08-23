@@ -137,8 +137,8 @@ mui("body").on("tap", ".next-btn", function() {
 			mask: 'rgba(0,0,0,0.4)'
 		})
 		mui.openWindow({
-			url: "intro.html",
-			id: "sub_detail",
+			url: `./step_sub/filled_pick_package.html?eventid=${eventid}`,
+			id: "sub_form",
 			styles: {
 				top: 114 + common.topBarHeight + 'px',
 				left: "242px",
@@ -152,7 +152,5 @@ mui("body").on("tap", ".next-btn", function() {
 				autoShow: false,
 			}
 		});
-		//		location.href = `gauge.html?eventid=${eventid}`;
-		//TODO 打开套餐-量房填充页面弹出层
 	}
 });

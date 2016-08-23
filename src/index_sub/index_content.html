@@ -23,16 +23,17 @@
 			background-color: #FFF;
 			z-index: -1;
 		}
-		.contract-btn{
+		
+		.contract-btn {
 			display: inline-block;
 			height: 34px;
 			width: 100px;
 			text-align: center;
 			line-height: 34px;
 			font-size: 14px;
-			border-radius:4px;
+			border-radius: 4px;
 			background-color: #00b06c;
-			color:#fff;
+			color: #fff;
 		}
 	</style>
 
@@ -78,7 +79,7 @@
 					<span class="event-btn gauge" @tap="__fGauge(event.id)"><i class="gauge-icon"></i>直接量房</span></div>
 
 			</template>
-			<!--待排期-->
+			<!--待选材-->
 			<template v-if="event.status==1">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
@@ -88,8 +89,27 @@
 					<!--<span>合同号：{{event.contractid}}</span>-->
 					<!--这个步骤此时还没有产生合同-->
 				</div>
-				<div class="block">
+				<!--<div class="block">
 					<span>量房报价信息</span><br/>
+					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.size}}米²</span><br /></span>
+					<span>总价:{{event.content.price}}元</span>
+					<span class="user-info-edit"><span class="mui-icon mui-icon-arrowright"></span></span>
+					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'gauge')"></div>
+				</div>-->
+				<div class="btns block"><span class="mui-pull-left intro" @tap="__fSelectProduct(event.id)"><i class="schedule-icon"></i>去选材</span></div>
+			</template>
+			<!--待排期-->
+			<template v-if="event.status==2">
+				<div class="user-info block">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit edit-icon"></span>
+					<div class="click-area user-info-edit" @tap="__fEditUser(event.id)"></div><br />
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
+					<!--<span>合同号：{{event.contractid}}</span>-->
+					<!--这个步骤此时还没有产生合同-->
+				</div>
+				<div class="block">
+					<span>量房信息</span><br/>
 					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.size}}米²</span><br /></span>
 					<span>总价:{{event.content.price}}元</span>
 					<span class="user-info-edit"><span class="mui-icon mui-icon-arrowright"></span></span>
@@ -99,7 +119,7 @@
 			</template>
 
 			<!--待签约-->
-			<template v-if="event.status==2">
+			<template v-if="event.status==3">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br />
@@ -137,7 +157,7 @@
 			</template>
 
 			<!--待支付-->
-			<template v-if="event.status==3">
+			<template v-if="event.status==4">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
@@ -150,7 +170,7 @@
 			</template>
 
 			<!--待改期-->
-			<template v-if="event.status==4">
+			<template v-if="event.status==5">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span>
 					<span class="user-phone">{{event.phone}}</span>
@@ -165,13 +185,13 @@
 			</template>
 
 			<!--待评价-->
-			<template v-if="event.status==9">
+			<template v-if="event.status==13">
 				<button class="mui-btn mui-btn-block mui-btn-green remind-user-evaluate">提醒用户评价</button>
 			</template>
 		</article>
 
 	</body>
-	<script type="text/javascript" src="../js/lsvih.js" ></script>
+	<script type="text/javascript" src="../js/lsvih.js"></script>
 	<script src="../js/lib/mui.js"></script>
 	<script type="text/javascript" src="../js/storage.js"></script>
 	<script src="../js/common.js"></script>
@@ -200,7 +220,7 @@
 		var thisevent = fListAllFlowEvent(1)[0]; //从myStorage里获取信息
 		var MAXIMAGECOUNT = 10;
 		mui.plusReady(function() {
-			
+
 			window.addEventListener('refreshvue', function(event) {
 				var aShow = event.detail.split(",");
 				vueContent.refresh(aShow[0], aShow[1]);
@@ -213,7 +233,9 @@
 			});
 			fAddVueCacheFilter()
 			Vue.filter('statusNumtoString', function(value) {
-				return lsvih.array.getObjByKey({"id":value}, gStatus.status).name;
+				return lsvih.array.getObjByKey({
+					"id": value
+				}, gStatus.status).name;
 			});
 			console.log(JSON.stringify(thisevent))
 			vueContent = new Vue({
@@ -253,7 +275,7 @@
 					//打开量房页面
 					__fGauge: function(eventid) {
 						mui.openWindow({
-							url: "../step/gauge.html?eventid=" +eventid,
+							url: "../step/gauge.html?eventid=" + eventid,
 							id: "intro",
 							styles: {
 								top: 0,
@@ -270,10 +292,27 @@
 							}
 						})
 					},
+					//打开选材页面，将房屋id传过去~
+					__fSelectProduct: function(eventid) {
+						mui.openWindow({
+							url: "../step/select_product.html?eventid=" + eventid,
+							id: "select_product",
+							styles: {
+								top: 0,
+								bottom: 0
+							},
+							show: {
+								aniShow: false
+							},
+							waiting: {
+								autoShow: false,
+							}
+						})
+					},
 					//打开排期页面，将房屋id传过去~
 					__fSchedule: function(eventid) {
 						mui.openWindow({
-							url: "../step/schedule.html?eventid=" + eventid,
+							url: "../step/property.html?eventid=" + eventid,
 							id: "schedule",
 							styles: {
 								top: 0,
@@ -407,7 +446,9 @@
 								if(data.success == true) {
 									mui.toast("预约时间修改成功")
 									var tempobj = JSON.parse(myStorage.getItem("data"));
-									tempobj.event[lsvih.array.getSubByKey({"id":thisevent.id}, tempobj.event)].content.ordertime = e.value;
+									tempobj.event[lsvih.array.getSubByKey({
+										"id": thisevent.id
+									}, tempobj.event)].content.ordertime = e.value;
 									vueContent.event.content.ordertime = e.value;
 									myStorage.setItem("data", JSON.stringify(tempobj)); //初版在远程修改时间成功后再在本地存储修改时间
 								} else {

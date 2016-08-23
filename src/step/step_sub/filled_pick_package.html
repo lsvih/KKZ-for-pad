@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<link rel="stylesheet" href="../../css/mui.css" />
+	<style>
+		body {
+			background-color: #fff;
+		}
+		
+		header {
+			height: 40px;
+			padding: 20px 30px 0;
+		}
+		
+		.submit-btn {
+			width: 100px;
+			background-color: #00b06c
+		}
+		
+		.mui-icon-closeempty {
+			font-size: 38px
+		}
+		
+		.mui-scroll-wrapper {
+			margin-top: 60px;
+			padding: 0 70px;
+		}
+		
+		.mui-input-row {
+			margin-top: 30px;
+			height: 60px;
+			border-bottom: 1px solid #eee;
+		}
+		
+		.mui-input-row label~select {
+			border: 1px solid #00B06C!important;
+			width: 45%;
+			float: left;
+			padding-left: 5px
+		}
+	</style>
+
+	<body>
+		<header>
+			<span class="mui-pull-left mui-icon mui-icon-closeempty"></span>
+			<span class="mui-pull-right"><button class="mui-btn-green submit-btn">确认</button></span>
+		</header>
+		<div class="mui-scroll-wrapper">
+			<div class="mui-scroll" id="select-gauge">
+				<div class="mui-input-row" v-for="package in packages">
+					<label>{{package.name}}</label>
+					<select v-bind:id="$index">
+						<option>请选择量房数据</option>
+						<option v-for="gauge_data in gauge" v-bind:value="$index">{{gauge_data.name}}({{gauge_data.alias}}):{{gauge_data.size}}㎡</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../js/lsvih.js"></script>
+	<script type="text/javascript" src="../../js/lib/vue.js"></script>
+	<script type="text/javascript" src="../../js/lib/mui.js"></script>
+	<script type="text/javascript" src="../../js/storage.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../js/module/fill_pick_package.js"></script>
+</html>

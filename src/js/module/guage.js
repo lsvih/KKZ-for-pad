@@ -254,6 +254,12 @@ mui.plusReady(function() {
 				"items": JSON.stringify(data)
 			}, "POST", function(data) {
 				uploading.close()
+				console.log(JSON.stringify(data));
+				for(let i = 0; i < data.items.length; i++) {
+					tempdata.event[eventsortid].content.room[i].id = data.items[i].id;
+					tempdata.event[eventsortid].content.room[i].remote_plan_t_img = data.items[i].plan_t_img;
+					tempdata.event[eventsortid].content.room[i].remote_measure_t_imgs = data.items[i].measure_t_imgs;
+				}
 				myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
 				plus.webview.currentWebview().loadURL(`pick_packages.html?eventid=${eventid}`);
 			}, "", {
