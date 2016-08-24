@@ -11,25 +11,25 @@ var gFlow = {
 		"name": "待支付",
 		"icon": "2",
 		"num": 0,
-		"contain-event": [3, 4, 5]
+		"contain-event": [3, 4, 5, 6]
 	}, {
 		"id": 3,
 		"name": "待开工",
 		"icon": "3",
 		"num": 0,
-		"contain-event": [6, 7, 8]
+		"contain-event": [7, 8, 9]
 	}, {
 		"id": 4,
 		"name": "施工中",
 		"icon": "4",
 		"num": 0,
-		"contain-event": [9, 10, 11, 12]
+		"contain-event": [10, 11, 12, 13]
 	}, {
 		"id": 5,
 		"name": "待评价",
 		"icon": "5",
 		"num": 0,
-		"contain-event": [13]
+		"contain-event": [14]
 	}]
 };
 var gStatus = {
@@ -53,30 +53,33 @@ var gStatus = {
 		"name": "待付款"
 	}, {
 		"id": 5,
-		"name": "待改期"
+		"name": "已逾期"
 	}, {
 		"id": 6,
-		"name": "待确认物业"
+		"name": "待改期"
 	}, {
 		"id": 7,
-		"name": "待确认"
+		"name": "待确认物业"
 	}, {
 		"id": 8,
-		"name": "待开工"
+		"name": "待确认"
 	}, {
 		"id": 9,
-		"name": "施工中"
+		"name": "待开工"
 	}, {
 		"id": 10,
-		"name": "提报竣工"
+		"name": "施工中"
 	}, {
 		"id": 11,
-		"name": "竣工验收"
+		"name": "提报竣工"
 	}, {
 		"id": 12,
-		"name": "财务验收"
+		"name": "竣工验收"
 	}, {
 		"id": 13,
+		"name": "财务验收"
+	}, {
+		"id": 14,
 		"name": "待评价"
 	}]
 };

@@ -13,19 +13,18 @@
 		<div id="back-drop"></div>
 		<article id="event">
 			<!--确认物业-->
-			<template v-if="event.status==6">
+			<template v-if="event.status==7">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" @tap="__fEditUser(event.id)"></i>编辑</span><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
-					<span>合同号：{{event.contractid}}</span>
+					<span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
 				</div>
 				<div class="block">
 					<span>物业交割信息</span>
 				</div>
 				<div class="mui-content-padded" style="margin: 5px 10px;">
 					<div class="mui-input-row" style="margin: 10px 0;">
-						<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.property.text">{{event.content.property.text}}</textarea>
 						<h5>您还可以添加<span id="imgcount">{{10 - event.content.property.img.length }}</span>张图片</h5>
 					</div>
 					<div id="pictures">
@@ -33,16 +32,16 @@
 					</div>
 					<div id="add-picture" v-show="event.content.property.img.length < 10" @tap="__fAddPic()">+</div>
 				</div>
-				<button class="mui-btn mui-btn-block mui-btn-green submit-button">提交</button>
+				<button class="mui-btn mui-btn-block mui-btn-green submit-button submit-property">提交</button>
 			</template>
 
 			<!--待确认-->
-			<template v-if="event.status==7">
+			<template v-if="event.status==8">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit" @tap="__fEditUser(event.id)"><i class="mui-icon mui-icon-compose"></i>编辑</span><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
-					<span>合同号：{{event.contractid}}</span>
+					<span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
 				</div>
 				<div class="block">
 					<span>选材信息</span><br/>
@@ -59,12 +58,12 @@
 			</template>
 
 			<!--待开工-->
-			<template v-if="event.status==8">
+			<template v-if="event.status==9">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit"><i class="mui-icon mui-icon-compose" @tap="__fEditUser(event.id)"></i>编辑</span><br />
 					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
-					<span>合同号：{{event.contractid}}</span>
+					<span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
 				</div>
 				<div class="block">
 					<span class="check-time">预计开工时间：<span><input type="date" id="select-time"  v-bind:value="event.content.expected_start_date" init-time="{{event.content.expected_start_date}}" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)"></span></span><span class="user-info-edit edit-time"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
@@ -98,175 +97,13 @@
 				</ul>
 			</div>
 		</article>
-		<script type="text/javascript" src="../js/lsvih.js" ></script>
-		<script src="../js/lib/mui.js"></script>
-		<script type="text/javascript" src="../js/storage.js"></script>
-		<script type="text/javascript" src="../js/data.js"></script>
-		<script type="text/javascript" src="../js/common.js"></script>
-		<script type="text/javascript" src="../js/lib/vue.js"></script>
-		<script type="text/javascript">
-			"use strict";
-			mui.init({
-				gestureConfig: {
-					doubletap: false,
-					longtap: false
-				},
-				swipeBack: false
-			});
-			var MAXIMAGECOUNT = 10;
-			var vueContent;
-			mui.plusReady(function() {
-				window.addEventListener('refreshvue', function(event) {
-					var aShow = event.detail.split(",");
-					vueContent.refresh(aShow[0], aShow[1]);
-				});
-				window.addEventListener('delete', function(event) {
-					var statustarget = vueContent.event.status == "5" ? "property" : "pending_construction";
-					var deleteitem = vueContent.event.content[statustarget].img[event.detail - 1];
-					vueContent.event.content[statustarget].img.$remove(deleteitem);
-				});
-				window.addEventListener('sb', function(event) { //纯展示用
-					document.getElementById("back-drop").style.display = "none";
-				});
-				vueContent = new Vue({
-					el: "#event",
-					data: {
-						"event": fListAllFlowEvent(myStorage.getItem("thisflow"))[myStorage.getItem("thiseventsort")]
-					},
-					methods: {
-						refresh: function(a, b) {
-							document.getElementById("back-drop").style.display = "none";
-							plus.webview.close("sub_edituser"); //再切换时将阴影去掉，同时关闭打开的子页面（为了下一次打开子页面动画正常播放）
-							if(vueContent.event !== undefined && vueContent.event !== null) {
-								var tempobj = JSON.parse(myStorage.getItem("data"));
-								tempobj.event[lsvih.array.getSubByKey({"id":vueContent.event.id}, tempobj.event)] = vueContent.event;
-								myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改
-							}
-
-							vueContent.event = fListAllFlowEvent(a)[b];
-							myStorage.setItem("thisstatus", vueContent.event.status);
-						},
-						//编辑用户信息
-						__fEditUser: function(eventid) {
-							document.getElementById("back-drop").style.display = "block";
-							mui.openWindow({
-								url: "../index_sub/edituser.html",
-								id: "sub_edituser",
-								styles: {
-									top: "15%",
-									bottom: 0,
-									right: "6.8%",
-									width: "48%",
-									height: "244px"
-								},
-								extras: {
-									eventid: eventid
-								},
-								show: {
-									aniShow: "fade-in"
-								},
-								waiting: {
-									autoShow: false,
-								}
-							});
-						},
-						__fAddPic: function() {
-							document.activeElement.blur();
-							mui("#picture").popover('toggle');
-						},
-						__fEditPictures: function(thisobj) { //编辑图片
-							mui.openWindow({
-								url: "../module/preview_image.html",
-								id: "preview_image",
-								styles: {
-									top: 0,
-									bottom: 0,
-									right: 0,
-									width: "100%",
-									height: "100%"
-								},
-								extras: {
-									images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
-									indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
-									deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds")
-								},
-								show: {
-									aniShow: "fade-in"
-								},
-								waiting: {
-									autoShow: false,
-								}
-							});
-						},
-						__fCheck: function(type) {
-							if(type == "selection") {
-								mui.confirm('是否确认以上选材信息？确认后将无法修改选材信息。', common.appName, ['否', '是'], function(f) {
-									if(f.index == 1) {
-										vueContent.event.content.selection.check = true;
-									} else {
-
-									}
-								});
-							} else {
-								mui.confirm('是否确认以上排期信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
-									if(f.index == 1) {
-										vueContent.event.content.schedule.check = true;
-									} else {
-
-									}
-								});
-							}
-						}
-					}
-				});
-			});
-			document.getElementById("back-drop").addEventListener("tap", function() {
-				document.getElementById("back-drop").style.display = "none";
-				plus.webview.close("sub_edituser");
-			})
-			mui('#picture').on('tap', '.mui-popover-action li>a', function() {
-				var statustarget = vueContent.event.status == "5" ? "property.img" : "pending_construction.img";
-				switch(this.getAttribute("data")) {
-					case "1": //拍照
-						mui("#picture").popover('toggle');
-						getImage(statustarget);
-						break;
-					case "2": //从相册选择
-						mui("#picture").popover('toggle');
-						galleryImg(statustarget);
-						break;
-					default:
-						break;
-				}
-			});
-
-			mui("#event").on("tap", ".edit-time", function() {
-				document.getElementById("select-time").focus();
-			});
-
-			function fSelecetTimeChange(e) {
-				var inittime = e.getAttribute("init-time");
-				if(!e.value)(e.value = inittime, e.blur()); //点击"清除"重新设定时间并关闭时间设定
-			}
-
-			function fSaveTime(e) {
-				if(e.value == "") e.value = e.getAttribute("init-time"); //防止出现时间为空的情况
-				if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
-					mui.confirm('是否将预计开工时间从' + e.getAttribute("init-time") + '修改为' + e.value + '？', common.appName, ['否', '是'], function(f) {
-						if(f.index == 1) {
-							var tempobj1 = JSON.parse(myStorage.getItem("data"));
-							tempobj1.event[lsvih.array.getSubByKey({"id":vueContent.event.id}, tempobj1.event)].content.expected_start_date = e.value;
-							vueContent.event.content.expected_start_date = e.value;
-							myStorage.setItem("data", JSON.stringify(tempobj1)); //在本地存储修改时间
-							//TODO:将修改时间存入队列等待同步
-						} else {
-							e.value = e.getAttribute("init-time");
-						}
-					});
-
-				}
-			}
-		</script>
 	</body>
+	<script type="text/javascript" src="../js/lsvih.js"></script>
+	<script src="../js/lib/mui.js"></script>
+	<script type="text/javascript" src="../js/storage.js"></script>
+	<script type="text/javascript" src="../js/data.js"></script>
+	<script type="text/javascript" src="../js/common.js"></script>
+	<script type="text/javascript" src="../js/lib/vue.js"></script>
+	<script type="text/javascript" src="../js/module/index_content3.js" ></script>
 
 </html>

@@ -109,11 +109,13 @@
 		mui.plusReady(function() {
 			localStorage.setItem("thiseventsort", 0)
 			index_content = plus.webview.getWebviewById("index_content");
-			window.addEventListener('refreshvue', function(event) {//接收别的webview发出的刷新指令
+			window.addEventListener('refreshvue', function(event) { //接收别的webview发出的刷新指令
 				vueList.refresh(nFlowID = event.detail);
 			});
 			Vue.filter('statusNumtoString', function(value) {
-				return lsvih.array.getObjByKey({"id":value}, gStatus.status).name;
+				return lsvih.array.getObjByKey({
+					"id": value
+				}, gStatus.status).name;
 			})
 			var vueList = new Vue({
 				el: '#event-list',
@@ -130,21 +132,26 @@
 						if(status !== null && status !== undefined) { //判断列表为空的情况
 							if(!lsvih.dom.hasClass(thisObject.currentTarget, "list-selected")) { //重复点击不进行切换
 								this.nSelectSort = sortId;
-								localStorage.setItem("thiseventsort", sortId)
-								if(status == 5 || status == 7) {
-									mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", nFlowID + "," + sortId);
-									plus.webview.hide("plg_work", "fade-out");
-									plus.webview.show("plg_input", "fade-in");
-								} else if(status == 8) {
-									mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", nFlowID + "," + sortId);
-									//									plus.webveiw.hide("plg_input", "fade-out");
-									plus.webview.show("plg_work", "fade-in");
-								} else {
-									mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", nFlowID + "," + sortId);
-									//									plus.webveiw.hide("plg_input", "fade-out");
-									plus.webview.hide("plg_work", "fade-out");
+								localStorage.setItem("thiseventsort", sortId);
+								switch(status) {
+									case 7:
+									case 8:
+									case 9:
+										mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", nFlowID + "," + sortId);
+										plus.webview.hide("plg_work", "fade-out");
+										plus.webview.show("plg_input", "fade-in");
+										break;
+									case 10:
+										mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", nFlowID + "," + sortId);
+										//									plus.webveiw.hide("plg_input", "fade-out");
+										plus.webview.show("plg_work", "fade-in");
+										break;
+									default:
+										mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", nFlowID + "," + sortId);
+										//									plus.webveiw.hide("plg_input", "fade-out");
+										plus.webview.hide("plg_work", "fade-out");
+										break;
 								}
-
 							}
 						} else {
 							plus.webveiw.hide("plg_input", "fade-out");

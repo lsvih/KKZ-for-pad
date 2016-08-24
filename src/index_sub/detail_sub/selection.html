@@ -264,7 +264,6 @@
 			mui.init();
 			var eventid;
 			var skus;
-
 			function __fGetCurrentGroup(packageinfo, groupid) {
 				for(var k = 0; k < packageinfo.length; k++) {
 					if(lsvih.array.getSubByKey({
@@ -284,6 +283,7 @@
 				var thisevent = tempdata.event[lsvih.array.getSubByKey({
 					"id": eventid
 				}, tempdata.event)];
+				console.log(JSON.stringify(thisevent))
 				var thisskus = thisevent.content.skus;
 				skus = [];
 				for(var i = 0; i < thisskus.length; i++) {

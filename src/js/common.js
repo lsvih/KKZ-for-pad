@@ -17,6 +17,7 @@ common.apiServer = common.server + "api/web/";
  * @param {Object} option配置,包括closeObj,isReload
  */
 common.ajax = function(apiUrl, DATA, Type, successcallback, errcallback, option) {
+	var option = option || {};
 	var closeObj = option.closeObj;
 	var isReload = !!option.isReload;
 	var errfunction = errcallback || function(xhr, textStatus, errorThrown) {

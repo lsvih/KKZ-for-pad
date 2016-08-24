@@ -123,7 +123,7 @@
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br />
-					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
 				</div>
 				<div class="rendering block" v-if="event.content.renderings&&event.content.renderings.length">
 					<!--图片轴模块-->
@@ -160,32 +160,45 @@
 			<template v-if="event.status==4">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
-					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span>
+					<br /><span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
 				</div>
 				<div class="block">
-					<span>已交定金</span><br/><span class="check-time">预约开工日期：{{event.content.expected_start_date}}</span>
-					<br /><span class="check-time">据全款截止日期还剩：<span style="color:red">{{event.content.left_time_for_pay}}天</span></span>
+					<span class="check-time">预约开工日期：{{__fTimeStampToDate(event.content.schedule[0].schedule_at)}}</span>
+					<br /><span class="check-time">据全款截止日期还剩：<span style="color:red">1天</span></span>
 				</div>
 
 			</template>
 
-			<!--待改期-->
+			<!--已逾期-->
 			<template v-if="event.status==5">
+				<div class="user-info block">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span>
+					<br /><span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
+				</div>
+				<div class="block">
+					<span class="check-time">预约开工日期：{{__fTimeStampToDate(event.content.schedule[0].schedule_at)}}</span>
+					<br /><span class="check-time">付款逾期:<span style="color:red">已锁定</span></span>
+				</div>
+			</template>
+
+			<!--待改期-->
+			<template v-if="event.status==6">
 				<div class="user-info block">
 					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span>
 					<span class="user-phone">{{event.phone}}</span>
 					<span class="user-info-edit edit-icon" @tap="__fEditUser(event.id)"></span><br />
-					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.contractid}}</span>
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br /><span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
 				</div>
 				<div class="block">
-					<span class="check-time">原定开工日期：{{event.content.expected_start_date}}</span>
-					<br /><span>交款日期：{{event.content.pay_date}}</span>
-					<br /><span>请修改开工日期<input type="date" id="select-start-date" value="2016-01-01" onblur="fSubmitStartTime(this)"><span class="to-check" onclick="document.getElementById('select-start-date').focus()">修改</span></span>
+					<span class="check-time">原定开工日期：{{__fTimeStampToDate(event.content.schedule[0].schedule_at)}}</span>
+					<br /><span>请修改开工日期<input type="date" id="select-start-date" value="2016-01-01" onchange="fSelecetTimeChange(this)" onblur="fSubmitStartTime(this)"><span class="to-check" onclick="document.getElementById('select-start-date').focus()">修改</span></span>
 				</div>
 			</template>
 
 			<!--待评价-->
-			<template v-if="event.status==13">
+			<template v-if="event.status==14">
 				<button class="mui-btn mui-btn-block mui-btn-green remind-user-evaluate">提醒用户评价</button>
 			</template>
 		</article>
@@ -244,20 +257,26 @@
 					"event": thisevent
 				},
 				methods: {
+					__fTimeStampToDate: function(timestamp) {
+						console.log(timestamp)
+						var datearr = lsvih.time.stampToStr(timestamp * 1000, "date").split("-");
+						return datearr[1] + "月" + datearr[2] + "日";
+					},
 					refresh: function(a, b) {
 						document.getElementById("back-drop").style.display = "none";
 						var nextevent = fListAllFlowEvent(a)[b];
 						if(nextevent !== null && nextevent !== undefined) { //判断内容为空的情况
 							document.getElementById("mask").style.zIndex = -1;
 							myStorage.setItem("thisstatus", nextevent.status);
-							switch(nextevent.status) {
-								case 5:
-								case 6:
+							var status = parseInt(nextevent.status);
+							switch(status) {
 								case 7:
+								case 8:
+								case 9:
 									mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", a + "," + b);
 									plus.webview.show("plg_input", "fade-in", 200);
 									break;
-								case 8:
+								case 10:
 									mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", a + "," + b);
 									plus.webview.show("plg_work", "fade-in", 200);
 									break;
@@ -469,8 +488,13 @@
 				});
 			}
 		}
+		var uploading;
 
 		function fSubmitStartTime(e) {
+			var temp = JSON.parse(myStorage.getItem("data"));
+			var eventsortid = lsvih.array.getSubByKey({
+				"id": vueContent.event.id
+			}, temp.event);
 			if(e.value == "" || e.value == "2016-01-01") {
 				e.value = "2016-01-01";
 				return false;
@@ -478,8 +502,47 @@
 			var newdate = e.value;
 			mui.confirm('是否将开工日期修改为' + newdate + '？', common.appName, ['否', '是'], function(f) {
 				if(f.index == 1) {
-					alert("此时运行修改开工日期函数")
-						//TODO
+					uploading = plus.nativeUI.showWaiting("正在更改时间，请稍后...");
+					var house_group_id = temp.event[eventsortid].content.house_group_id;
+					mui.ajax(common.apiServer + 'house-groups/' + house_group_id + '?access-token=' + User("access_token"), {
+						data: {
+							"start_at": lsvih.time.strToStamp(newdate),
+							"status": 7
+						},
+						dataType: 'json',
+						type: 'PUT',
+						timeout: 6000,
+						success: function(data) {
+							if(data.success == true) {
+								common.ajax('house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + house_group_id, {}, "GET", function(data) {
+									var temp = JSON.parse(myStorage.getItem("data"));
+									mui.toast("开工时间修改成功，已进入待开工状态");
+									temp.event[eventsortid].content.start_at = e.value;
+									vueContent.event.content.start_at = e.value;
+									myStorage.setItem("data", JSON.stringify(temp)); //初版在远程修改时间成功后再在本地存储修改时间
+									temp.event[eventsortid].content.schedule = data.items;
+									temp.event[eventsortid].status = 7;
+									myStorage.setItem("data", JSON.stringify(temp)); //将所有数据存入本地
+									mui.fire(plus.webview.getLaunchWebview(), "fCaculateNumOfFlow");
+									mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+									mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+								}, "", {
+									closeObj: uploading
+								});
+							} else {
+								mui.alert(data.message, common.appName);
+								uploading.close();
+								console.log(JSON.stringify(data));
+								e.value = e.getAttribute("init-time");
+							}
+						},
+						error: function(xhr, textStatus, errorThrown) {
+							console.log(JSON.stringify(xhr))
+							uploading.close();
+							mui.alert("修改时间失败，请稍候再试", common.appName);
+							e.value = e.getAttribute("init-time");
+						}
+					});
 				} else {
 					e.value = "2016-01-01";
 				}

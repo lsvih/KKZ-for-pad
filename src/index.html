@@ -492,14 +492,19 @@
 								"content": appoint.houseGroups.length == 0 ? {
 									"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
 									"package": [],
-									"room": []
+									"room": [],
+									"skus": [],
+									"property": {
+										"img": []
+									}
 								} : {
 									"house_group_id": appoint.houseGroups[0].id,
+									"room": [],
 									"schedule": appoint.houseGroups[0].houseGroupSchedules,
 									"group_id": appoint.houseGroups[0].group_id,
 									"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
-									"room": [],
 									"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
+									"skus": appoint.houseGroups[0].houseGroupSkus,
 									"price": appoint.houseGroups[0].group_amount,
 									"clear_amount": appoint.houseGroups[0].clear_amount,
 									"distance_rate": appoint.houseGroups[0].distance_rate,
@@ -509,7 +514,10 @@
 									"time_period": appoint.houseGroups[0].time_period,
 									"is_holiday_work": appoint.houseGroups[0].is_holiday_work,
 									"duration": appoint.houseGroups[0].duration,
-									"start_at": appoint.houseGroups[0].start_at
+									"start_at": appoint.houseGroups[0].start_at,
+									"property": {
+										"img": []
+									}
 								}
 							}
 						}
