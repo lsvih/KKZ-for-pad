@@ -87,9 +87,9 @@ function fPostHouseGroup() {
 	});
 
 }
+const house_group_packages = [];
 
 function fPostHouseGroupPackage() {
-	const house_group_packages = [];
 	for(let i = 0; i < thiseventpackage.length; i++) {
 		var roomsortid = document.getElementsByTagName("select")[i].options[document.getElementsByTagName("select")[i].selectedIndex].getAttribute("value");
 		var thisRoom = tempdata.event[eventsortid].content.room[roomsortid];
@@ -110,7 +110,14 @@ function fPostHouseGroupPackage() {
 		common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, {
 			'status': 1,
 		}, "PUT", function(data) {
-			tempdata.event[eventsortid].content.package = house_group_packages;
+			for(let house_group_package of house_group_packages) {
+				var packagesortid = lsvih.array.getSubByKey({
+					"package_id": house_group_package.package_id
+				}, tempdata.event[eventsortid].content.package);
+				tempdata.event[eventsortid].content.package[packagesortid].size = house_group_package.area;
+				tempdata.event[eventsortid].content.package[packagesortid].images = house_group_package.measure_t_imgs;
+				tempdata.event[eventsortid].content.package[packagesortid].diagram = house_group_package.plan_t_img;
+			}
 			tempdata.event[eventsortid].status = 1;
 			myStorage.setItem("data", JSON.stringify(tempdata));
 			plus.webview.currentWebview().opener().setStyle({

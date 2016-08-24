@@ -554,6 +554,7 @@
 						'status': 2,
 					}, "PUT", function(data) {
 						tempdata.event[eventsortid].status = 2;
+						tempdata.event[eventsortid].content.skus;
 						tempdata.event[eventsortid].content.group_quotation = data.group_quotation;
 						tempdata.event[eventsortid].content.price = data.group_amount;
 						tempdata.event[eventsortid].content.taxes_amount = data.taxes_amount;

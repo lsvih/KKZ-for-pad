@@ -53,9 +53,8 @@ mui.plusReady(function() {
 				var tempdata = {
 					"event": []
 				};
-				if(data.items !== null && data.items !== undefined && data.items.length !== 0) {
-					for(var i = 0; i < data.items.length; i++) {
-						var appoint = data.items[i];
+				if(!data.items >> 0 || data.items.length !== 0) {
+					for(let appoint of data.items) {
 						var toinsertdata = {
 							"id": appoint.id,
 							"house_id": appoint.house.id,
@@ -108,16 +107,16 @@ mui.plusReady(function() {
 			 * 将传入的packages数组转化为符合的格式
 			 */
 			function __fMapPackage(packagearr) {
-				if(packagearr !== null && packagearr !== undefined && packagearr.length !== 0) {
-					var __temparr = [];
-					for(var __i = 0; __i < packagearr.length; __i++) {
+				if(!packagearr >> 0 || packagearr.length !== 0) {
+					const __temparr = [];
+					for(let packageItem of packagearr) {
 						__temparr.push({
-							"house_group_id": packagearr[__i].house_group_id,
-							"package_id": packagearr[__i].package_id,
-							"name": packagearr[__i].package.name,
-							"size": packagearr[__i].area,
-							"images": packagearr[__i].measure_t_imgs,
-							"diagram": packagearr[__i].plan_t_img
+							"house_group_id": packageItem.house_group_id,
+							"package_id": packageItem.package_id,
+							"name": packageItem.package.name,
+							"size": packageItem.area,
+							"images": packageItem.measure_t_imgs,
+							"diagram": packageItem.plan_t_img
 						})
 					}
 					return __temparr;
@@ -252,11 +251,11 @@ function fDownloadFiles() {
 			} else {
 				arr = [];
 			}
-			for(var i = 0; i < arr.length; i++) {
-				var filenamearr = arr[i].split("/");
+			for(let uploadItem of arr) {
+				var filenamearr = uploadItem.split("/");
 				var filename = filenamearr[filenamearr.length - 1];
 				if(!myStorage.getItem("filename")) {
-					DownloadResource(common.server + 'uploads/' + arr[i]);
+					DownloadResource(common.server + 'uploads/' + uploadItem);
 				}
 			}
 			var processController = setInterval(function() {
