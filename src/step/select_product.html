@@ -546,7 +546,6 @@
 						"sku_id": sku_id
 					});
 				}
-				console.log(JSON.stringify(uploadinfo))
 				common.ajax("house-group-sku/batch-create", {
 					"items": JSON.stringify(uploadinfo)
 				}, "POST", function(data) {

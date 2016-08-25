@@ -211,9 +211,6 @@
 			}
 
 			function fUploaddata() {
-				var temp = JSON.parse(myStorage.getItem("data"));
-				temp.event[eventsortid].content.skus = uploaddata;
-				myStorage.setItem("data", JSON.stringify(temp));
 				//更新状态以获得排期
 				common.ajax('house-groups/' + house_group_id, {
 					'status': 3

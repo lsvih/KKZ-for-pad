@@ -223,13 +223,13 @@ body {
 	background-color: #06b26f;
 }
 
-.status-7-pal {
+.status-pal {
 	width: 100%;
 	clear: both;
 	height: 40px;
 }
 
-.status-7-pal span {
+.status-pal span {
 	height: 40px;
 	width: 200px;
 	border-radius: 8px;
@@ -238,17 +238,17 @@ body {
 	color: #fff;
 }
 
-.status-7-modify {
+.status-modify {
 	float: left;
 	background-color: red;
 }
 
-.status-7-check {
+.status-check {
 	float: right;
 	background-color: green;
 }
 
-.status-7-checked {
+.status-checked {
 	display: block;
 	width: 100%;
 	text-align: center;

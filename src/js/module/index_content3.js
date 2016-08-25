@@ -40,6 +40,36 @@ mui.plusReady(function() {
 				vueContent.event = fListAllFlowEvent(a)[b];
 				myStorage.setItem("thisstatus", vueContent.event.status);
 			},
+			__fDetail: function(eventid, type, option) {
+				var extras = option ? {
+					type: type,
+					eventid: eventid
+				} : {
+					type: type,
+					eventid: eventid,
+					option: JSON.stringify(option)
+				};
+				mui.openWindow({
+					url: "index_frame.html",
+					id: "sub_detail",
+					styles: {
+						top: 60 + common.topBarHeight + 'px',
+						bottom: 0,
+						left: "38.7%",
+						height: "100%",
+						width: '61.6%',
+						bounce: 'none',
+						bounceBackground: '#ffffff',
+					},
+					extras: extras,
+					show: {
+						aniShow: "slide-in-right"
+					},
+					waiting: {
+						autoShow: false,
+					}
+				});
+			},
 			//编辑用户信息
 			__fEditUser: function(eventid) {
 				document.getElementById("back-drop").style.display = "block";
@@ -93,23 +123,33 @@ mui.plusReady(function() {
 				});
 			},
 			__fCheck: function(type) {
-				if(type == "selection") {
-					mui.confirm('是否确认以上选材信息？确认后将无法修改选材信息。', common.appName, ['否', '是'], function(f) {
-						if(f.index == 1) {
-							vueContent.event.content.selection.check = true;
-						} else {
-
-						}
-					});
-				} else {
-					mui.confirm('是否确认以上排期信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
-						if(f.index == 1) {
-							vueContent.event.content.schedule.check = true;
-						} else {
-
-						}
-					});
+				switch(type) {
+					case "selection":
+						mui.confirm('是否确认以上选材信息？确认后将无法修改选材信息。', common.appName, ['否', '是'], function(f) {
+							if(f.index == 1) {
+								vueContent.event.content.selection_check = true;
+								SaveToLocal();
+							}
+						});
+						break;
+					case "schedule":
+						mui.confirm('是否确认以上排期信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
+							if(f.index == 1) {
+								vueContent.event.content.schedule_check = true;
+								SaveToLocal();
+							}
+						});
+						break;
+					default:
+						mui.confirm('是否确认以上选材信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
+							if(f.index == 1) {
+								vueContent.event.content.schedule_check = true;
+								SaveToLocal();
+							}
+						});
+						break;
 				}
+
 			}
 		}
 	});
@@ -146,7 +186,7 @@ function fSelecetTimeChange(e) {
 function fSaveTime(e) {
 	if(e.value == "") e.value = e.getAttribute("init-time"); //防止出现时间为空的情况
 	if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
-		mui.confirm('是否将预计开工时间从' + e.getAttribute("init-time") + '修改为' + e.value + '？', common.appName, ['否', '是'], function(f) {
+		mui.confirm(`是否将预计开工时间从${e.getAttribute("init-time")}修改为${e.value}？`, common.appName, ['否', '是'], function(f) {
 			if(f.index == 1) {
 				var tempobj1 = JSON.parse(myStorage.getItem("data"));
 				tempobj1.event[lsvih.array.getSubByKey({
@@ -187,7 +227,7 @@ function _fImagesToBase64(tosuccess, callback) {
 			imagesarr[toUploadCount - tosuccess] = base64;
 			_fImagesToBase64(--tosuccess, callback); //递归开始下一张图片
 		}, function(e) {
-			console.log("加载图片失败：" + JSON.stringify(e));
+			console.log(`加载图片失败:${JSON.stringify(e)}`);
 		});
 	}
 }
@@ -199,12 +239,14 @@ var uploading;
 function fUploadProperty(images) {
 	uploading = plus.nativeUI.showWaiting("正在上传物业信息...");
 	common.ajax(`house-groups/${vueContent.event.content.house_group_id}`, {
-		'contract_imgs':JSON.stringify(images),
+		'contract_imgs': JSON.stringify(images),
 		'status': 8
 	}, "PUT", function(data) {
 		vueContent.event.status = 8;
 		var tempdata = JSON.parse(myStorage.getItem("data"));
-		var eventsortId = lsvih.array.getSubByKey({"id":vueContent.event.id},tempdata.event);
+		var eventsortId = lsvih.array.getSubByKey({
+			"id": vueContent.event.id
+		}, tempdata.event);
 		tempdata.event[eventsortId].status = 8;
 		myStorage.setItem("data", JSON.stringify(tempdata));
 		mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
@@ -213,4 +255,14 @@ function fUploadProperty(images) {
 	}, "", {
 		closeObj: uploading
 	});
+}
+
+/**
+ * 将修改后的vueContent存入storage中
+ */
+function SaveToLocal(){
+	var tempdata = JSON.parse(myStorage.getItem("data"));
+	var eventsortid = lsvih.array.getSubByKey({"id":vueContent.event.id},tempdata.event);
+	tempdata.event[eventsortid] = vueContent.event;
+	myStorage.setItem(JSON.stringify(tempdata));
 }

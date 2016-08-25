@@ -72,7 +72,7 @@ mui.plusReady(function() {
 								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
 								"package": [],
 								"room": [],
-								"skus":[],
+								"skus": [],
 								"property": {
 									"img": []
 								}
@@ -269,8 +269,8 @@ function fDownloadFiles() {
 				if(successfilecount < arr.length) {
 					mui("body").progressbar().setProgress(successfilecount / arr.length * 100);
 				}
-				if(true) {
-					//				if(successfilecount == arr.length) {
+				//				if(true) {
+				if(successfilecount == arr.length) {
 					clearInterval(processController);
 					mui("body").progressbar().setProgress(100);
 					localStorage.setItem("firstrun", lsvih.time.day());
