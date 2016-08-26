@@ -8,6 +8,7 @@ mui.init({
 });
 var MAXIMAGECOUNT = 10;
 var vueContent;
+var uploading;
 mui.plusReady(function() {
 	window.addEventListener('refreshvue', function(event) {
 		var aShow = event.detail.split(",");
@@ -127,24 +128,27 @@ mui.plusReady(function() {
 					case "selection":
 						mui.confirm('是否确认以上选材信息？确认后将无法修改选材信息。', common.appName, ['否', '是'], function(f) {
 							if(f.index == 1) {
-								vueContent.event.content.selection_check = true;
+								vueContent.event.content.check.selection = true;
 								SaveToLocal();
+								fIsCheckDone();
 							}
 						});
 						break;
 					case "schedule":
 						mui.confirm('是否确认以上排期信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
 							if(f.index == 1) {
-								vueContent.event.content.schedule_check = true;
+								vueContent.event.content.check.schedule = true;
 								SaveToLocal();
+								fIsCheckDone();
 							}
 						});
 						break;
 					default:
 						mui.confirm('是否确认以上选材信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
 							if(f.index == 1) {
-								vueContent.event.content.schedule_check = true;
+								vueContent.event.content.check.gauge = true;
 								SaveToLocal();
+								fIsCheckDone();
 							}
 						});
 						break;
@@ -154,6 +158,25 @@ mui.plusReady(function() {
 		}
 	});
 });
+
+function fIsCheckDone() {
+	var toCheck = vueContent.event.content.check;
+	if(toCheck.gauge && toCheck.schedule && toCheck.selection) {
+		uploading = plus.nativeUI.showWaiting("确认完成，正在进入待开工状态");
+		common.ajax(`house-groups/${vueContent.event.content.house_group_id}`, {
+			'status': 9,
+		}, "PUT", function(data) {
+			vueContent.event.status = 9;
+			SaveToLocal();
+			mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+			mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", `${myStorage.getItem("thisflow")},${localStorage.getItem("thiseventsort")}`);
+			uploading.close();
+		}, "", {
+			closeObj: uploading,
+		});
+
+	}
+}
 document.getElementById("back-drop").addEventListener("tap", function() {
 	document.getElementById("back-drop").style.display = "none";
 	plus.webview.close("sub_edituser");
@@ -260,9 +283,11 @@ function fUploadProperty(images) {
 /**
  * 将修改后的vueContent存入storage中
  */
-function SaveToLocal(){
+function SaveToLocal() {
 	var tempdata = JSON.parse(myStorage.getItem("data"));
-	var eventsortid = lsvih.array.getSubByKey({"id":vueContent.event.id},tempdata.event);
+	var eventsortid = lsvih.array.getSubByKey({
+		"id": vueContent.event.id
+	}, tempdata.event);
 	tempdata.event[eventsortid] = vueContent.event;
 	myStorage.setItem(JSON.stringify(tempdata));
 }

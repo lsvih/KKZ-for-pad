@@ -73,8 +73,17 @@ mui.plusReady(function() {
 								"package": [],
 								"room": [],
 								"skus": [],
+								"check": {
+									"selection": false,
+									"gauge": false,
+									"schedule": false
+								},
 								"property": {
 									"img": []
+								},
+								"pending_construction": {
+									"img": [],
+									"text": ""
 								}
 							} : {
 								"house_group_id": appoint.houseGroups[0].id,
@@ -94,8 +103,17 @@ mui.plusReady(function() {
 								"is_holiday_work": appoint.houseGroups[0].is_holiday_work,
 								"duration": appoint.houseGroups[0].duration,
 								"start_at": appoint.houseGroups[0].start_at,
+								"check": {
+									"selection": false,
+									"gauge": false,
+									"schedule": false
+								},
 								"property": {
 									"img": []
+								},
+								"pending_construction": {
+									"img": [],
+									"text": ""
 								}
 							}
 						}
@@ -269,8 +287,8 @@ function fDownloadFiles() {
 				if(successfilecount < arr.length) {
 					mui("body").progressbar().setProgress(successfilecount / arr.length * 100);
 				}
-				//				if(true) {
-				if(successfilecount == arr.length) {
+								if(true) {
+//				if(successfilecount == arr.length) {
 					clearInterval(processController);
 					mui("body").progressbar().setProgress(100);
 					localStorage.setItem("firstrun", lsvih.time.day());
