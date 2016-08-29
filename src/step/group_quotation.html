@@ -98,6 +98,7 @@
 					plus.webview.close(plus.webview.currentWebview());
 				});
 				mui("body").on("tap", ".next-btn", function() {
+					plus.webview.getWebviewById("sub_doc").close();
 					plus.webview.currentWebview().loadURL("../step/property.html?eventid=" + eventid);
 				})
 				mui("body").on("tap", ".pick-again", function() {

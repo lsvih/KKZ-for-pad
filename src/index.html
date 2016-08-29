@@ -142,7 +142,7 @@
 		<span class="flow-weixin flow-icon"><span class="flow-name">微信</span></span>
 		</span>
 		<span class="mui-icon mui-icon-plusempty mui-pull-right" style="font-size: 45px;margin-top: -10px;"></span>
-		<!--<span class="mui-pull-right" style="height: 50px;background-color: #06b26f;color:#06b26f;z-index: 99999;" ontouchstart="refresh();">安装测试数据</span>-->
+		<span class="mui-icon mui-icon-checkmarkempty mui-pull-right" style="font-size: 45px;margin-top: -10px;" onmouseup="fTempRefesh()"></span>
 	</header>
 	<!--<div class="cutoff-line"></div>-->
 
@@ -258,7 +258,6 @@
 					fRefreshData(ids.split("|")); //刷新局部数据
 				}, false);
 				//推送监听end
-
 				if(!localStorage.getItem("user")) {
 					mui.openWindow({
 						url: "user/login.html",
@@ -594,6 +593,14 @@
 						mui.toast("更新数据成功！");
 					}
 				}, 50)
+			}
+			
+			function fTempRefesh(){
+				mui.prompt('老大老大，你要更新哪一条数据呢：', '', common.appName, ['取消', '确定'], function(e) {
+					if (e.index == 1) {
+						fRefreshData([Number(e.value)])
+					}
+				})
 			}
 		</script>
 	</body>

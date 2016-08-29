@@ -160,7 +160,7 @@ function fCreateProductBrandTree(Brand) {
 }
 
 mui("body").on("tap", ".close-btn", function() {
-	plus.webview.close(plus.webview.currentWebview());
+	plus.webview.currentWebview().close();
 });
 var uploadinfo = [];
 var successcount = 0;

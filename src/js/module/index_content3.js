@@ -262,7 +262,7 @@ var uploading;
 function fUploadProperty(images) {
 	uploading = plus.nativeUI.showWaiting("正在上传物业信息...");
 	common.ajax(`house-groups/${vueContent.event.content.house_group_id}`, {
-		'contract_imgs': JSON.stringify(images),
+		'contract_imgs[]': JSON.stringify(images),
 		'status': 8
 	}, "PUT", function(data) {
 		vueContent.event.status = 8;
