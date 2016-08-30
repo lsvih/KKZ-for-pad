@@ -94,12 +94,21 @@ gulp.task("fonts", function() {
 		.pipe(gulp.dest("./dist/fonts/"));
 });
 
+gulp.task("mainifest",function(){
+	gulp.src("./src/manifest.json")
+		.pipe(gulp.dest("./dist/"));
+})
+
+gulp.task("resource",function(){
+	gulp.run("images","fonts","mainifest")
+})
+
 gulp.task("clean", function() {
 	clean("./dist/*");
 });
 
 gulp.task("build", function() {
-	gulp.run("less", "css", "javascripts", "html", "images", "fonts");
+	gulp.run("less", "css", "javascripts", "html", "fonts");
 	console.log("Done!")
 });
 
