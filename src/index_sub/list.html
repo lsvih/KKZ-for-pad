@@ -138,24 +138,24 @@
 									case 8:
 									case 9:
 										mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", nFlowID + "," + sortId);
-										plus.webview.hide("plg_work", "fade-out");
+//										plus.webview.getWebviewById("plg_work").hide("fade-out");
 										plus.webview.show("plg_input", "fade-in");
 										break;
 									case 10:
 										mui.fire(plus.webview.getWebviewById("plg_work"), "refreshvue", nFlowID + "," + sortId);
-										//									plus.webveiw.hide("plg_input", "fade-out");
+//										plus.webview.getWebviewById("plg_input").hide("fade-out");
 										plus.webview.show("plg_work", "fade-in");
 										break;
 									default:
 										mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", nFlowID + "," + sortId);
-										//									plus.webveiw.hide("plg_input", "fade-out");
-										plus.webview.hide("plg_work", "fade-out");
+//										plus.webview.getWebviewById("plg_input").hide("fade-out");
+//										plus.webview.getWebviewById("plg_work").hide("fade-out");
 										break;
 								}
 							}
 						} else {
-							plus.webveiw.hide("plg_input", "fade-out");
-							plus.webview.hide("plg_work", "fade-out");
+							plus.webview.getWebviewById("plg_input").hide("fade-out");
+							plus.webview.getWebviewById("plg_work").hide("fade-out");
 							fCloseSubPage();
 						}
 					}

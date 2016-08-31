@@ -22,6 +22,11 @@ mui.plusReady(function() {
 	window.addEventListener('sb', function(event) { //纯展示用
 		document.getElementById("back-drop").style.display = "none";
 	});
+
+	Vue.filter('stampToDate', function(stamp) {
+		return lsvih.time.stampToStr(stamp, "date");
+	});
+
 	vueContent = new Vue({
 		el: "#event",
 		data: {
@@ -211,49 +216,67 @@ function fSaveTime(e) {
 	if(e.getAttribute("init-time") != e.value) { //当时间有修改时才进行本地修改与上传操作
 		mui.confirm(`是否将预计开工时间从${e.getAttribute("init-time")}修改为${e.value}？`, common.appName, ['否', '是'], function(f) {
 			if(f.index == 1) {
-				var tempobj1 = JSON.parse(myStorage.getItem("data"));
-				tempobj1.event[lsvih.array.getSubByKey({
-					"id": vueContent.event.id
-				}, tempobj1.event)].content.expected_start_date = e.value;
-				vueContent.event.content.expected_start_date = e.value;
-				myStorage.setItem("data", JSON.stringify(tempobj1)); //在本地存储修改时间
-				//TODO:将修改时间存入队列等待同步
+				uploading = plus.nativeUI.showWaiting("正在修改开工时间,请稍后...");
+				console.log(`${common.apiServer}house-groups/${vueContent.event.content.house_group_id}?access-token=${User("access_token")}`);
+				mui.ajax(`${common.apiServer}house-groups/${vueContent.event.content.house_group_id}?access-token=${User("access_token")}`, {
+					data: {
+						"start_at": lsvih.time.strToStamp(e.value)
+					},
+					dataType: 'json',
+					type: 'PUT',
+					timeout: 6000,
+					success: function(data) {
+						if(data.success == true) {
+							var tempobj1 = JSON.parse(myStorage.getItem("data"));
+							tempobj1.event[lsvih.array.getSubByKey({
+								"id": vueContent.event.id
+							}, tempobj1.event)].content.expected_start_date = e.value;
+							vueContent.event.content.expected_start_date = e.value;
+							myStorage.setItem("data", JSON.stringify(tempobj1)); //在本地存储修改时间
+							mui.toast("开工时间修改成功");
+							uploading.close();
+						} else {
+							mui.alert(data.message, common.appName);
+							uploading.close();
+							console.log(JSON.stringify(data));
+							e.value = e.getAttribute("init-time");
+						}
+					},
+					error: function(xhr, textStatus, errorThrown) {
+						console.log(JSON.stringify(xhr))
+						uploading.close();
+						mui.alert("修改时间失败，请稍候再试", common.appName);
+						e.value = e.getAttribute("init-time");
+					}
+				});
 			} else {
 				e.value = e.getAttribute("init-time");
 			}
 		});
 	}
 }
-var toUploadCount;
-var imagesarr = [];
 mui("#event").on("tap", ".submit-property", function() {
 	var imagesArr = vueContent.event.content.property.img;
-	toUploadCount = imagesArr.length;
-	if(!toUploadCount) {
-		mui.toast("请按规范上传物业交割图片。")
+	if(!imagesArr.length) {
+		mui.toast("请按规范上传物业交割照片。")
 	} else {
-		_fImagesToBase64(toUploadCount, fUploadProperty);
+		ImagesToBase64(imagesArr, fUploadProperty)
 	}
 });
-/**
- * 递归将图片转换为base64
- * @param {Number} tosuccess待成功数量
- */
-function _fImagesToBase64(tosuccess, callback) {
-	if(tosuccess == 0) {
-		callback(imagesarr);
-	} else {
-		var bitmap = new plus.nativeObj.Bitmap(uuid());
-		// 从本地加载Bitmap图片
-		bitmap.load(vueContent.event.content.property.img[toUploadCount - tosuccess], function() {
-			var base64 = bitmap.toBase64Data();
-			imagesarr[toUploadCount - tosuccess] = base64;
-			_fImagesToBase64(--tosuccess, callback); //递归开始下一张图片
-		}, function(e) {
-			console.log(`加载图片失败:${JSON.stringify(e)}`);
-		});
+mui("#event").on("tap",".start",function(){
+	var imagesArr = vueContent.event.content.pending_construction.img;
+	if(!imagesArr.length) {
+		mui.toast("请按规范上传开工所需照片。");
+	}else if(!vueContent.event.content.pending_construction.text){
+		mui.toast("请按规范填写开工信息。")
 	}
-}
+	else {
+		ImagesToBase64(imagesArr, fUploadStart)
+	}
+})
+
+
+
 var uploading;
 /**
  * 上传物业信息图片
@@ -262,16 +285,27 @@ var uploading;
 function fUploadProperty(images) {
 	uploading = plus.nativeUI.showWaiting("正在上传物业信息...");
 	common.ajax(`house-groups/${vueContent.event.content.house_group_id}`, {
-		'contract_imgs[]': JSON.stringify(images),
+		'contract_imgs': JSON.stringify(images),
 		'status': 8
 	}, "PUT", function(data) {
 		vueContent.event.status = 8;
-		var tempdata = JSON.parse(myStorage.getItem("data"));
-		var eventsortId = lsvih.array.getSubByKey({
-			"id": vueContent.event.id
-		}, tempdata.event);
-		tempdata.event[eventsortId].status = 8;
-		myStorage.setItem("data", JSON.stringify(tempdata));
+		SaveToLocal();
+		mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
+		mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", `${myStorage.getItem("thisflow")},${localStorage.getItem("thiseventsort")}`);
+		uploading.close();
+	}, "", {
+		closeObj: uploading
+	});
+}
+function fUploadStart(images){
+	uploading = plus.nativeUI.showWaiting("正在提交开工信息...");
+	common.ajax(`house-groups/${vueContent.event.content.house_group_id}`, {
+		'start_imgs': JSON.stringify(images),
+		'start_description': vueContent.event.content.pending_construction.text,
+		'status': 10
+	}, "PUT", function(data) {
+		vueContent.event.status = 10;
+		SaveToLocal();
 		mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
 		mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", `${myStorage.getItem("thisflow")},${localStorage.getItem("thiseventsort")}`);
 		uploading.close();

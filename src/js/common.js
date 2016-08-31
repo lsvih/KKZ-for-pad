@@ -39,7 +39,7 @@ common.ajax = function(apiUrl, DATA, Type, successcallback, errcallback, option)
 				successcallback(data.data);
 			} else {
 				mui.alert(data.message, common.appName);
-				if(closeObj) eval(closeObj + '.close()');
+				if(closeObj) closeObj.close();
 				if(isReload) plus.webview.currentWebview().reload();
 			}
 		},
@@ -204,16 +204,16 @@ function galleryImg(targetJSON) {
  * 在某次event的timeline中获取指定日期的timeline下标
  * Date: YYYY-MM-DD
  * 如果没找到相应的时期则返回false
- * @param {String} date 需要查找下标的日期
- * @param {Object} JSON 需要查找的event json对象
+ * @param {String} timestamp 需要查找下标的日期时间戳
+ * @param {Object} schedule 需要查找的event json对象
  */
-function fGetSortIdByDate(date, JSON) {
-	var timeline = JSON.content.timeline;
-	if(timeline.length == 0) return false;
-	for(let i = 0; i < timeline.length; i++) {
-		if(timeline[i].date == date) return i;
+function fGetEventsByDate(timestamp, schedule) {
+	if(schedule.length == 0) return false;
+	var currentDate = [];
+	for(let i = 0; i < schedule.length; i++) {
+		if(schedule[i].schedule_at == timestamp) currentDate.push(schedule[i])
 	}
-	return false;
+	return currentDate.length?currentDate:false;
 }
 
 /**
@@ -256,4 +256,31 @@ function User(e) {
 	if(localStorage.user == undefined || localStorage.user == null) return null;
 	var userdata = JSON.parse(localStorage.user);
 	return userdata[e];
+}
+
+/**
+ * 将图片转换为Base64并传给回调函数
+ * @param {Object} imgarr
+ * @param {Object} callback
+ */
+function ImagesToBase64(imgarr, callback) {
+	var imgCount = imgarr.length;
+	var outarr = [];
+	_fImageToBase64(imgCount, callback)
+
+	function _fImageToBase64(tosuccess, callback) {
+		if(tosuccess == 0) {
+			callback(outarr);
+		} else {
+			var bitmap = new plus.nativeObj.Bitmap(uuid());
+			// 从本地加载Bitmap图片
+			bitmap.load(imgarr[imgCount - tosuccess], function() {
+				var base64 = bitmap.toBase64Data();
+				outarr[imgCount - tosuccess] = base64;
+				_fImageToBase64(--tosuccess, callback); //递归开始下一张图片
+			}, function(e) {
+				console.log("加载图片失败:" + JSON.stringify(e));
+			});
+		}
+	}
 }

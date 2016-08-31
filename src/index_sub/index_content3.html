@@ -46,7 +46,7 @@
 
 				<div class="block">
 					<span>报价信息</span><br/>
-					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.size}}米</span><br /></span>
+					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.size}}米²</span><br /></span>
 					<span>总价:{{event.content.price}}元</span>
 					<span class="user-info-edit"><span class="mui-icon mui-icon-arrowright"></span></span>
 					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'gauge')"></div>
@@ -86,7 +86,7 @@
 					<span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
 				</div>
 				<div class="block">
-					<span class="check-time">预计开工时间：<span><input type="date" id="select-time"  v-bind:value="event.content.expected_start_date" init-time="{{event.content.expected_start_date}}" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)"></span></span><span class="user-info-edit edit-time"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
+					<span class="check-time">预计开工时间：<span><input type="date" id="select-time"  v-bind:value="event.content.schedule[0].schedule_at*1000|stampToDate" init-time="{{event.content.schedule[0].schedule_at*1000|stampToDate}}" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)"></span></span><span class="user-info-edit edit-time"><i class="mui-icon mui-icon-compose"></i>修改日期</span>
 				</div>
 				<div class="mui-content-padded" style="margin: 5px 10px;">
 					<div class="mui-input-row" style="margin: 10px 0;">
@@ -98,7 +98,7 @@
 					</div>
 					<div id="add-picture" v-show="event.content.pending_construction.img.length < 10" @tap="__fAddPic()">+</div>
 				</div>
-				<button class="mui-btn mui-btn-block mui-btn-green submit-button" @tap="__start()">确认开工</button>
+				<button class="mui-btn mui-btn-block mui-btn-green submit-button start">确认开工</button>
 			</template>
 
 			<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">

@@ -526,6 +526,7 @@
 									mui.fire(plus.webview.getLaunchWebview(), "fCaculateNumOfFlow");
 									mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
 									mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+									uploading.close();
 								}, "", {
 									closeObj: uploading
 								});
