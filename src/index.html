@@ -504,6 +504,11 @@
 									"pending_construction": {
 										"img": [],
 										"text": ""
+									},
+									"broadcast": {
+										"img": [],
+										"text": "",
+										"date": ""
 									}
 								} : {
 									"house_group_id": appoint.houseGroups[0].id,
@@ -534,6 +539,11 @@
 									"pending_construction": {
 										"img": [],
 										"text": ""
+									},
+									"broadcast": {
+										"img": [],
+										"text": "",
+										"date": ""
 									}
 								}
 							}
@@ -594,10 +604,10 @@
 					}
 				}, 50)
 			}
-			
-			function fTempRefesh(){
+
+			function fTempRefesh() {
 				mui.prompt('老大老大，你要更新哪一条数据呢：', '', common.appName, ['取消', '确定'], function(e) {
-					if (e.index == 1) {
+					if(e.index == 1) {
 						fRefreshData([Number(e.value)])
 					}
 				})

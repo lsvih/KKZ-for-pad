@@ -66,7 +66,6 @@
 			height: 30px;
 			margin: 50px 0 0 0;
 		}
-
 		
 		#mask {
 			position: fixed;
@@ -101,51 +100,52 @@
 							<div v-if="__fGetEventsByDate(__fGetDate(),event.content.schedule)">
 								<!--如果没有今日信息则隐藏今日模块-->
 								<div class="block">
-									<span>今日详情</span>
-									<div v-for="processitem in event.content.schedule[__fGetSortIdByDate(__fGetDate(),event.content.schedule)]">{{ processitem.process_name }}&nbsp;&nbsp;{{processitem.process_text}}
-										<div v-for="worker in processitem.workers">&nbsp;&nbsp;工人：{{worker.name}}&nbsp;&nbsp;
-											<a href="tel:{{worker.tel}}">{{worker.tel}}</a>
-										</div>
+									<span><h3>今日详情</h3></span>
+									<div v-for="processitem in __fGetEventsByDate(__fGetDate(),event.content.schedule)">{{ processitem.process.process_name }}&nbsp;&nbsp;{{processitem.process.process_content}}
 									</div>
-									<span class="more-info" @tap="__fDetail(event.id,'todaydetail',processitem)">今日详情 ></span>
+									<!--<span class="more-info" @tap="__fDetail(event.id,'todaydetail',processitem)">今日详情 ></span>-->
 								</div>
-								<div v-if="__fTodayIsChecked(event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)])">
+								<div v-if="__fIsAllCheck(__fGetEventsByDate(__fGetDate(),event.content.schedule))">
 									<!--如果当日已经全部验收完则显示提交播报模块-->
-									<div v-if="!event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.submit">
-										<!--如果当日播报已上传则显示播报预览模块-->
+
+									<div v-if="!__fDidTodayBroadcast()">
+										<!--如果当日播报未上传，则判断是否是第一次上传播报，如果是第一次上传播报则正常上传，如果不是则判断昨天的播报是否上传完成-->
 										<div class="mui-content-padded" style="margin: 5px 10px;">
-											今日验收已全部完成，请提交今日播报
+											<span v-if="__ffIsFirstBroadcast()?true:__fDidYesterdayBroadcast()">今日验收已全部完成，请提交今日播报</span>
+											<span v-if="__ffIsFirstBroadcast()?false:!__fDidYesterdayBroadcast()">您昨天没有提交播报，请提交昨天的今日播报再进行操作</span>
 											<div class="mui-input-row" style="margin: 10px 0;">
-												<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.text">{{event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.text}}</textarea>
-												<h5>您还可以添加<span id="imgcount">{{10 - event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.img.length }}</span>张图片</h5>
+												<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.broadcast.text">{{event.content.broadcast.text}}</textarea>
+												<h5>您还可以添加<span id="imgcount">{{10 - event.content.broadcast.img.length }}</span>张图片</h5>
 											</div>
 											<div id="pictures">
-												<div class="picture" v-for="images in event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.img"><img class="adds" v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' @tap="__fEditPictures($event)" /></div>
+												<div class="picture" v-for="images in event.content.broadcast.img"><img class="adds" v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' @tap="__fEditPictures($event)" /></div>
 											</div>
-											<div id="add-picture" v-show="event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.img.length < 10" @tap="__fAddPic()">+</div>
+											<div id="add-picture" v-show="event.content.broadcast.img.length < 10" @tap="__fAddPic()">+</div>
 										</div>
-										<button class="mui-btn mui-btn-block mui-btn-green submit-button">提交播报</button>
+										<button class="mui-btn mui-btn-block mui-btn-green submit-button" @tap="fSubmitBroadcast()">提交播报</button>
 									</div>
 
-									<div class="mui-content-padded" style="margin: 5px 10px;" v-if="event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.submit">
+									<div class="mui-content-padded" style="margin: 5px 10px;" v-if="__fDidTodayBroadcast()">
+										<!--当日播报已上传-->
 										<div class="block">
 											今日验收已全部完成，播报已提交
-											<span>{{event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.text}}</span>
+											<span>{{event.content.broadcast.text}}</span>
 										</div>
 										<div id="pictures">
-											<div class="picture" v-for="images in event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].today_broadcast.img"><img v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' @tap="__fEditPictures($event)" /></div>
+											<div class="picture" v-for="images in event.content.broadcast.img"><img v-bind:src="images" v-bind:data-preview-src="images" data-preview-group='1' @tap="__fEditPictures($event)" /></div>
 										</div>
 									</div>
 								</div>
-								<div v-if="!__fTodayIsChecked(event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)])">
+
+								<div v-if="!__fIsAllCheck(__fGetEventsByDate(__fGetDate(),event.content.schedule))">
 									<!--如果当日的验收还未全部完成则显示验收模块-->
 									<div class="block">
 										<span>今日验收</span>
-										<div v-for="checkitem in event.content.timeline[__fGetSortIdByDate(__fGetDate(),event)].check">
-											<div>{{checkitem.name}}&nbsp;<span class="mui-pull-right"><span class="check-ok" v-if="checkitem.checked">验收完成√</span><span class="to-check" v-if="!checkitem.checked" @tap="__fDetail(event.id,'tocheck')">验收</span></span>
+										<div v-for="checkitem in __fChecksInEvents(__fGetEventsByDate(__fGetDate(),event.content.schedule))">
+											<div>{{checkitem.check.check_name}}&nbsp;<span class="mui-pull-right"><span class="check-ok" v-if="checkitem.checked">验收完成√</span><span class="to-check" v-if="!checkitem.checked" @tap="__fDetail(event.id,'tocheck')">验收</span></span>
 											</div>
 											<!--TODO 验收buttom-->
-											<div>{{checkitem.description}}</div>
+											<div>{{checkitem.check.checkStandards.description}}</div>
 										</div>
 									</div>
 								</div>
@@ -168,8 +168,8 @@
 										<span class="name-row">
 									<span class="time" v-bind:class="{'hide':!fIsFirstDate($index)}">{{__fTimeStampToDate(event.schedule_at)}}</span>
 										<span class="event-name">
-											<!--当前事件为单品-->
-											<span v-if="event.sku_id">{{event.sku.productBrand.product.name}}</span>
+										<!--当前事件为单品-->
+										<span v-if="event.sku_id">{{event.sku.productBrand.product.name}}</span>
 										<!--当前事件为工序-->
 										<span v-if="event.process_id">{{event.process.process_name}}</span>
 										<!--当前事件为验收-->
@@ -224,6 +224,7 @@
 				},
 				swipeBack: false
 			});
+			var tocastDate;
 			var MAXIMAGECOUNT = 10;
 			var vueContent;
 			mui.plusReady(function() {
@@ -232,8 +233,8 @@
 					vueContent.refresh(aShow[0], aShow[1]);
 				});
 				window.addEventListener('delete', function(event) { //今日播报的删除图片
-					var deleteitem = vueContent.event.content.timeline[fGetSortIdByDate(lsvih.time.day(), vueContent.event)].today_broadcast.img[event.detail - 1];
-					vueContent.event.content.today_broadcast.img.$remove(deleteitem);
+					var deleteitem = vueContent.event.content.broadcast.img[event.detail - 1];
+					vueContent.event.content.broadcast.img.$remove(deleteitem);
 				});
 				vueContent = new Vue({
 					el: "#event",
@@ -241,11 +242,31 @@
 						"event": fListAllFlowEvent(myStorage.getItem("thisflow"))[myStorage.getItem("thiseventsort")]
 					},
 					methods: {
-						__fTodayIsChecked: function(a) {
-							return fTodayIsChecked(a);
+						fSubmitBroadcast: function() {
+							tocastDate = fIsFirstBroadcast() ? lsvih.time.day() : (fDidYesterdayBroadcast() ? lsvih.time.day() : lsvih.time.day(-1));
+							if(vueContent.event.content.broadcast.img.length && vueContent.event.content.broadcast.text) {
+								ImagesToBase64(vueContent.event.content.broadcast.img, fSubmitBroadcast);
+							} else {
+								mui.toast("请按照规定上传图片与文字信息。")
+							}
 						},
-						__fGetDate: function() {
-							return lsvih.time.day();
+						__fDidYesterdayBroadcast: function() {
+							return fDidYesterdayBroadcast();
+						},
+						__ffIsFirstBroadcast: function() {
+							return fIsFirstBroadcast();
+						},
+						__fDidTodayBroadcast: function() {
+							return fDidTodayBroadcast()
+						},
+						__fChecksInEvents: function(events) {
+							return fChecksInEvents(events);
+						},
+						__fIsAllCheck: function(event) {
+							return fTodayIsChecked(event);
+						},
+						__fGetDate: function(date) {
+							return lsvih.time.day(date);
 						},
 						__fGetEventsByDate: function(a, b) {
 							return fGetEventsByDate(lsvih.time.strToStamp(a), b);
@@ -370,11 +391,11 @@
 				switch(this.getAttribute("data")) {
 					case "1": //拍照
 						mui("#picture").popover('toggle');
-						getImage("today_broadcast.img");
+						getImage("broadcast.img");
 						break;
 					case "2": //从相册选择
 						mui("#picture").popover('toggle');
-						galleryImg("today_broadcast.img");
+						galleryImg("broadcast.img");
 						break;
 					default:
 						break;
@@ -392,8 +413,10 @@
 					sliderApi.gotoItem(1);
 					sliderApi.destroy();
 				} else {
+					scrollTo(0, 0);
 					lsvih.dom.removeClass(innerIcon, "mui-icon-arrowleft");
-					lsvih.dom.addClass(innerIcon, "mui-icon-arrowright")
+					lsvih.dom.addClass(innerIcon, "mui-icon-arrowright");
+
 					var sliderApi = mui("#slider-contain").slider({
 						scrollTime: 500
 					});
@@ -403,21 +426,76 @@
 			});
 
 			/**
-			 * 判断当天验收是否全部完成
-			 * @param {Object} JSONobj 当天的json对象
+			 * 从当天事件中选出验收项
+			 * @param {Array} events
 			 */
-			function fTodayIsChecked(JSONobj) {
-				var checkitem = JSONobj.check;
-				var checkednum = 0;
-				if(checkitem.length == 0) return true;
-				for(var j = 0; j < checkitem.length; j++) {
-					if(checkitem[j].checked == true) ++checkednum;
+			function fChecksInEvents(events) {
+				var checked = [];
+				for(var a = 0; a < events.length; a++) {
+					if(events[a].check != null) checked.push(events[a])
 				}
-				if(checkitem.length == checkednum) {
-					return true;
-				} else {
-					return false;
+			}
+
+			/**
+			 * 判断当天验收是否全部完成
+			 * @param {Array} event 当天的json对象
+			 */
+			function fTodayIsChecked(events) {
+				for(var s = 0; s < events.length; s++) {
+					if(events[s].check != null) {
+						if(!(events[s].check_imgs && events[s].check_content)) {
+							return false;
+						}
+					}
 				}
+				return true;
+			}
+			/**
+			 * 判断当前是否是第一次每日播报。
+			 * 如果为第一次每日播报则不需要再判断昨天是否播报了
+			 */
+			function fIsFirstBroadcast() {
+				return vueContent.event.content.broadcast.date == "";
+			}
+			/**
+			 * 判断当天是否已经进行播报
+			 */
+			function fDidTodayBroadcast() {
+				var today = lsvih.time.day();
+				return(vueContent.event.content.broadcast.date == today);
+			}
+
+			/**
+			 * 若当日未进行播报，判断昨天是否播报
+			 */
+			function fDidYesterdayBroadcast() {
+				var yesterday = lsvih.time.day(-1);
+				return(vueContent.event.content.broadcast.date == yesterday);
+			}
+
+			var uploading;
+			/**
+			 * 将指定日期的每日播报上传
+			 * @param {Array} 图片数组
+			 */
+			function fSubmitBroadcast(imgArr) {
+				uploading = plus.nativeUI.showWaiting("正在上传每日播报数据...");
+				common.ajax('broadcasts/', {
+					"house_group_id": vueContent.event.content.house_group_id,
+					"content": vueContent.event.content.broadcast.text,
+					"broadcast_imges": JSON.stringify(imgArr),
+					"casted_at": lsvih.time.strToStamp(tocastDate)
+				}, "POST", function() {
+					vueContent.event.content.broadcast.date = tocastDate;
+					var tempobj = JSON.parse(myStorage.getItem("data"));
+					tempobj.event[lsvih.array.getSubByKey({
+						"id": vueContent.event.id
+					}, tempobj.event)] = vueContent.event;
+					myStorage.setItem("data", JSON.stringify(tempobj));
+					vueContent.refresh();
+				}, "", {
+					closeObj: uploading
+				});
 			}
 		</script>
 	</body>
