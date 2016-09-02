@@ -89,6 +89,10 @@ mui.plusReady(function() {
 									"img": [],
 									"text": "",
 									"date": ""
+								},
+								"completed": {
+									"img": [],
+									"text": ""
 								}
 							} : {
 								"house_group_id": appoint.houseGroups[0].id,
@@ -124,6 +128,10 @@ mui.plusReady(function() {
 									"img": [],
 									"text": "",
 									"date": ""
+								},
+								"completed": {
+									"img": [],
+									"text": ""
 								}
 							}
 						}

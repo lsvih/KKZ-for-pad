@@ -190,7 +190,7 @@
 					}
 				}],
 				preloadPages: [{
-					url: "index_sub/index_content3.html",
+					url: "index_sub/index_input.html",
 					id: "plg_input",
 					styles: {
 						top: 50 + common.topBarHeight + 'px',
@@ -211,7 +211,7 @@
 						autoShow: false,
 					}
 				}, {
-					url: "index_sub/index_content4.html",
+					url: "index_sub/index_inwork.html",
 					id: "plg_work",
 					styles: {
 						top: 50 + common.topBarHeight + 'px',
@@ -241,14 +241,32 @@
 					var ids = event.detail.toString();
 					fRefreshData(ids.split("|"));
 				});
-				//				plus.jgpush.JGPushFunction("qnmlgb", "sb", "nmb", "s",
-				//						function(e) {
-				//							alert(JSON.stringify(a))
-				//						},
-				//						function(e) {
-				//							alert(JSON.stringify(a))
-				//						})
-				//					//推送监听				
+				window.addEventListener('reloadhouse', function(event) { //状态流转
+					var appointment_id = event.detail;
+					var tempobj = JSON.parse(myStorage.getItem("data"));
+					var houseobj = lsvih.array.getObjByKey({
+						"id": appointment_id
+					}, tempobj.event);
+					var status = houseobj.status;
+					var thisflow;
+					if(status >= -1 && status <= 2) thisflow = 1;
+					if(status >= 3 && status <= 6) thisflow = 2;
+					if(status >= 7 && status <= 9) thisflow = 3;
+					if(status >= 10 && status <= 13) thisflow = 4;
+					if(status == 14) thisflow = 5;
+					fCaculateNumOfFlow();
+					var sortid = lsvih.array.getSubByKey({
+						"id": appointment_id
+					}, fListAllFlowEvent(nActiveMenu));
+					mui.fire(plus.webview.getWebviewById("list"), "refreshvue", {
+						"flow": thisflow,
+						"appointment_id": appointment_id
+					});
+					mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", thisflow + "," + sortid);
+					lsvih.dom.removeClass(document.getElementById("flow-" + myStorage.getItem("thisflow")), "mui-active");
+					lsvih.dom.addClass(document.getElementById("flow-" + thisflow), "mui-active");
+					myStorage.setItem("thisflow", thisflow);
+				});
 				plus.push.addEventListener("click", function(msg) {
 					var ids = msg.payload.house_appointment_id.toString(); //当只有一个数字时会无法使用split，因此转换为字符串
 					fRefreshData(ids.split("|")); //刷新局部数据
@@ -284,9 +302,6 @@
 				window.addEventListener("closemenu", fCloseMenu);
 				window.addEventListener("menu:close", fCloseMenu);
 				window.addEventListener("menu:open", fOpenMenu);
-				window.addEventListener('fCaculateNumOfFlow', function(event) { //纯展示用
-					fCaculateNumOfFlow();
-				});
 				//处理侧滑导航，为了避免和子页面初始化等竞争资源，延迟加载侧滑页面；
 				setTimeout(function() {
 					menu = mui.preload({
@@ -319,7 +334,10 @@
 							lsvih.dom.addClass(this, "mui-active");
 							nActiveMenu = this.id.split("-")[1];
 							//fCloseSubPage();
-							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", nActiveMenu); //点击图标时传值到list并刷新视图
+							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", {
+								"flow": nActiveMenu,
+								"appointment_id": null
+							}); //点击图标时传值到list并刷新视图
 							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", nActiveMenu + ",0"); //传值到index_content
 							myStorage.setItem("thisflow", nActiveMenu);
 						}
@@ -399,14 +417,6 @@
 					gFlow.flow[o].num = fListAllFlowEvent(gFlow.flow[o].id).length;
 				}
 			}
-			//点击左上角侧滑图标，打开侧滑菜单；
-			//			document.querySelector('.mui-icon-bars').addEventListener('tap', function(e) {
-			//				if(bShowMenu) {
-			//					fCloseMenu();
-			//				} else {
-			//					fOpenMenu();
-			//				}
-			//			});
 
 			mui.menu = function() {
 				if(bShowMenu) {
@@ -509,6 +519,10 @@
 										"img": [],
 										"text": "",
 										"date": ""
+									},
+									"completed": {
+										"img": [],
+										"text": ""
 									}
 								} : {
 									"house_group_id": appoint.houseGroups[0].id,
@@ -544,6 +558,10 @@
 										"img": [],
 										"text": "",
 										"date": ""
+									},
+									"completed": {
+										"img": [],
+										"text": ""
 									}
 								}
 							}
@@ -595,9 +613,7 @@
 				var loadController = setInterval(function() {
 					if(successCount == eventids.length) {
 						clearInterval(loadController);
-						mui.fire(plus.webview.getLaunchWebview(), "fCaculateNumOfFlow");
-						mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-						mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+						mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventids[eventids.length - 1]);
 						loading.close();
 						plus.runtime.setBadgeNumber(0);
 						mui.toast("更新数据成功！");

@@ -100,6 +100,27 @@
 				</div>
 				<button class="mui-btn mui-btn-block mui-btn-green submit-button start">确认开工</button>
 			</template>
+			
+			<!--竣工验收-->
+			<template v-if="event.status==12">
+				<div class="user-info block">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span><br />
+					<span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
+				</div>
+				<div class="mui-content-padded" style="margin: 5px 10px;">
+					<div class="mui-input-row" style="margin: 10px 0;">
+						<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.completed.text">{{event.content.completed.text}}</textarea>
+						<h5>您还可以添加<span id="imgcount">{{10 - event.content.completed.img.length }}</span>张图片</h5>
+					</div>
+					<div id="pictures">
+						<div class="picture" v-for="images in event.content.completed.img"><img v-bind:src="images" class="adds" data-preview-src data-preview-group='1' @tap="__fEditPictures($event)" /></div>
+					</div>
+					<div id="add-picture" v-show="event.content.completed.img.length < 10" @tap="__fAddPic()">+</div>
+				</div>
+				<button class="mui-btn mui-btn-block mui-btn-green submit-button completed">确认竣工！</button>
+			</template>
+			
 
 			<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
 				<ul class="mui-table-view">
@@ -124,6 +145,6 @@
 	<script type="text/javascript" src="../js/data.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../js/lib/vue.js"></script>
-	<script type="text/javascript" src="../js/module/index_content3.js"></script>
+	<script type="text/javascript" src="../js/module/index_input.js"></script>
 
 </html>

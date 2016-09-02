@@ -123,8 +123,7 @@ function fPostHouseGroupPackage() {
 			plus.webview.currentWebview().opener().setStyle({
 				mask: "none"
 			});
-			mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-			mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", `${myStorage.getItem("thisflow")},${localStorage.getItem("thiseventsort")}`);
+			mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
 			plus.webview.currentWebview().opener().evalJS("location.href='select_product.html?eventid='+eventid");
 			uploading.close();
 			plus.webview.currentWebview().close();

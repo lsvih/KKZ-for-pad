@@ -197,8 +197,7 @@ mui("body").on("tap", ".next-btn", function() {
 			tempdata.event[eventsortid].content.price = data.group_amount;
 			tempdata.event[eventsortid].content.taxes_amount = data.taxes_amount;
 			myStorage.setItem("data", JSON.stringify(tempdata));
-			mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-			mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+			mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
 			uploading.close();
 			mui.toast("选材完毕，报价清单已生成。");
 			plus.webview.currentWebview().loadURL("../step/group_quotation.html?eventid=" + eventid);

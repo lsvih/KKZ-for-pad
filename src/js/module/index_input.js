@@ -15,7 +15,7 @@ mui.plusReady(function() {
 		vueContent.refresh(aShow[0], aShow[1]);
 	});
 	window.addEventListener('delete', function(event) {
-		var statustarget = vueContent.event.status == "7" ? "property" : "pending_construction";
+		var statustarget = vueContent.event.status == "7" ? "property" : (vueContent.event.status == "9" ? "pending_construction" : "completed");
 		var deleteitem = vueContent.event.content[statustarget].img[event.detail - 1];
 		vueContent.event.content[statustarget].img.$remove(deleteitem);
 	});
@@ -173,8 +173,6 @@ function fIsCheckDone() {
 		}, "PUT", function(data) {
 			vueContent.event.status = 9;
 			SaveToLocal();
-			mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-			mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", `${myStorage.getItem("thisflow")},${localStorage.getItem("thiseventsort")}`);
 			uploading.close();
 		}, "", {
 			closeObj: uploading,
@@ -187,7 +185,7 @@ document.getElementById("back-drop").addEventListener("tap", function() {
 	plus.webview.close("sub_edituser");
 });
 mui('#picture').on('tap', '.mui-popover-action li>a', function() {
-	var statustarget = vueContent.event.status == "7" ? "property.img" : "pending_construction.img";
+	var statustarget = vueContent.event.status == "7" ? "property.img" : (vueContent.event.status == "9" ? "pending_construction.img" : "completed.img");
 	switch(this.getAttribute("data")) {
 		case "1": //拍照
 			mui("#picture").popover('toggle');
@@ -263,19 +261,26 @@ mui("#event").on("tap", ".submit-property", function() {
 		ImagesToBase64(imagesArr, fUploadProperty)
 	}
 });
-mui("#event").on("tap",".start",function(){
+mui("#event").on("tap", ".start", function() {
 	var imagesArr = vueContent.event.content.pending_construction.img;
 	if(!imagesArr.length) {
 		mui.toast("请按规范上传开工所需照片。");
-	}else if(!vueContent.event.content.pending_construction.text){
+	} else if(!vueContent.event.content.pending_construction.text) {
 		mui.toast("请按规范填写开工信息。")
-	}
-	else {
+	} else {
 		ImagesToBase64(imagesArr, fUploadStart)
 	}
+});
+mui("#event").on("tap", ".completed", function() {
+	var imagesArr = vueContent.event.content.completed.img;
+	if(!imagesArr.length) {
+		mui.toast("请按规范上传竣工照片。");
+	} else if(!vueContent.event.content.completed.text) {
+		mui.toast("请按规范填写竣工信息。")
+	} else {
+		ImagesToBase64(imagesArr, fUploadCompleted)
+	}
 })
-
-
 
 var uploading;
 /**
@@ -290,14 +295,13 @@ function fUploadProperty(images) {
 	}, "PUT", function(data) {
 		vueContent.event.status = 8;
 		SaveToLocal();
-		mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-		mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", `${myStorage.getItem("thisflow")},${localStorage.getItem("thiseventsort")}`);
 		uploading.close();
 	}, "", {
 		closeObj: uploading
 	});
 }
-function fUploadStart(images){
+
+function fUploadStart(images) {
 	uploading = plus.nativeUI.showWaiting("正在提交开工信息...");
 	common.ajax(`house-groups/${vueContent.event.content.house_group_id}`, {
 		'start_imgs': JSON.stringify(images),
@@ -306,8 +310,21 @@ function fUploadStart(images){
 	}, "PUT", function(data) {
 		vueContent.event.status = 10;
 		SaveToLocal();
-		mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-		mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", `${myStorage.getItem("thisflow")},${localStorage.getItem("thiseventsort")}`);
+		uploading.close();
+	}, "", {
+		closeObj: uploading
+	});
+}
+
+function fUploadCompleted(images) {
+	uploading = plus.nativeUI.showWaiting("正在提交竣工信息...");
+	common.ajax(`house-groups/${vueContent.event.content.house_group_id}`, {
+		'end_imgs': JSON.stringify(images),
+		'end_description': vueContent.event.content.completed.text,
+		'status': 13
+	}, "PUT", function(data) {
+		vueContent.event.status = 13;
+		SaveToLocal();
 		uploading.close();
 	}, "", {
 		closeObj: uploading
@@ -324,4 +341,5 @@ function SaveToLocal() {
 	}, tempdata.event);
 	tempdata.event[eventsortid] = vueContent.event;
 	myStorage.setItem(JSON.stringify(tempdata));
+	mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", vueContent.event.id);
 }

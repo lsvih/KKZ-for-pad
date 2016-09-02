@@ -116,8 +116,7 @@
 							tempdata.event[eventsortid].status = 1;
 							myStorage.setItem("data", JSON.stringify(tempdata))
 							plus.webview.close("sub_doc");
-							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+							mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
 							plus.webview.currentWebview().loadURL("../step/select_product.html?eventid=" + eventid);
 						}, "", {
 							closeObj: watiting,

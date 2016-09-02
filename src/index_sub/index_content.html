@@ -197,6 +197,39 @@
 				</div>
 			</template>
 
+			<!--已提报竣工-->
+			<template v-if="event.status==11">
+				<div class="user-info block">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span>
+					<br /><span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
+				</div>
+				<div class="block">
+					<div class="today-is-nothing-to-do">
+						<!--如果没有今日信息，则显示没有信息模块-->
+						<img src="../images/smile.png">
+						<div>已提报竣工，请进行竣工验收</div>
+						<button class="mui-btn mui-btn-block mui-btn-green submit-button check-btn" @tap='_fCheck(event.id)'>立即验收</button>
+					</div>
+				</div>
+			</template>
+
+			<!--财务验收-->
+			<template v-if="event.status==13">
+				<div class="user-info block">
+					<span class="user-name">{{event.name}}</span><span class="user-sex">{{event.sex?"女士":"先生"}}</span><span class="user-phone">{{event.phone}}</span>
+					<br /><span class="user-address">{{event.province}}{{event.city}}{{event.district}}{{event.street}}{{event.address}}</span>
+					<br /><span>合同号：{{event.content.group_contract.split(".pdf")[0]}}</span>
+				</div>
+				<div class="block">
+					<div class="today-is-nothing-to-do">
+						<!--如果没有今日信息，则显示没有信息模块-->
+						<img src="../images/smile.png">
+						<div>已提交竣工验收，请等待财务验收</div>
+					</div>
+				</div>
+			</template>
+
 			<!--待评价-->
 			<template v-if="event.status==14">
 				<button class="mui-btn mui-btn-block mui-btn-green remind-user-evaluate">提醒用户评价</button>
@@ -273,6 +306,7 @@
 								case 7:
 								case 8:
 								case 9:
+								case 12:
 									mui.fire(plus.webview.getWebviewById("plg_input"), "refreshvue", a + "," + b);
 									plus.webview.show("plg_input", "fade-in", 200);
 									break;
@@ -424,6 +458,9 @@
 								autoShow: false,
 							}
 						});
+					},
+					_fCheck: function(eventid) {
+						fCheck(eventid);
 					}
 				},
 				ready: function() {
@@ -490,6 +527,24 @@
 		}
 		var uploading;
 
+		function fCheck(eventid) {
+			uploading = plus.nativeUI.showWaiting("正在进入竣工验收流程");
+			common.ajax('house-groups/' + vueContent.event.content.house_group_id, {
+				'status': 12,
+			}, "PUT", function(data) {
+				vueContent.event.status = 12;
+				var tempobj = JSON.parse(myStorage.getItem("data"));
+				tempobj.event[lsvih.array.getSubByKey({
+					"id": vueContent.event.id
+				}, tempobj.event)] = vueContent.event;
+				myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改
+				mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", vueContent.event.id);
+				uploading.close();
+			}, "", {
+				closeObj: uploading,
+			});
+		}
+
 		function fSubmitStartTime(e) {
 			var temp = JSON.parse(myStorage.getItem("data"));
 			var eventsortid = lsvih.array.getSubByKey({
@@ -524,8 +579,7 @@
 									temp.event[eventsortid].status = 7;
 									myStorage.setItem("data", JSON.stringify(temp)); //将所有数据存入本地
 									mui.fire(plus.webview.getLaunchWebview(), "fCaculateNumOfFlow");
-									mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-									mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+									mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", vueContent.event.id);
 									uploading.close();
 								}, "", {
 									closeObj: uploading

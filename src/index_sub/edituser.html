@@ -167,14 +167,10 @@
 							tempdata.event[eventsortid].street = street;
 							tempdata.event[eventsortid].address = address;
 							myStorage.setItem("data", JSON.stringify(tempdata)); //将已经修改成功的数据在本地修改
-							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
-							//TODO:下面为成功回调
 							mui.toast("修改用户信息成功");
 							uploading.close();
 							//通知列表页面与内容页面刷新
-							mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-							mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+							mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
 							mui.fire(plus.webview.currentWebview().opener(), "sb", "");
 							plus.webview.close(plus.webview.currentWebview());
 						}, "", {

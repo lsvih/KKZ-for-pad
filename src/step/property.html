@@ -228,9 +228,7 @@
 						temp.event[eventsortid].status = 3;
 						myStorage.setItem("data", JSON.stringify(temp)); //将所有数据存入本地
 						uploading.close();
-						mui.fire(plus.webview.getLaunchWebview(), "fCaculateNumOfFlow");
-						mui.fire(plus.webview.getWebviewById("list"), "refreshvue", myStorage.getItem("thisflow"));
-						mui.fire(plus.webview.getWebviewById("index_content"), "refreshvue", myStorage.getItem("thisflow") + "," + localStorage.getItem("thiseventsort"));
+						mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
 						plus.webview.currentWebview().loadURL("../step/schedule_list.html?eventid=" + eventid);
 					}, "", {
 						closeObj: uploading,
