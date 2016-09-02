@@ -578,7 +578,6 @@
 									temp.event[eventsortid].content.schedule = data.items;
 									temp.event[eventsortid].status = 7;
 									myStorage.setItem("data", JSON.stringify(temp)); //将所有数据存入本地
-									mui.fire(plus.webview.getLaunchWebview(), "fCaculateNumOfFlow");
 									mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", vueContent.event.id);
 									uploading.close();
 								}, "", {

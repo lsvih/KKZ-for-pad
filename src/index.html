@@ -257,7 +257,7 @@
 					fCaculateNumOfFlow();
 					var sortid = lsvih.array.getSubByKey({
 						"id": appointment_id
-					}, fListAllFlowEvent(nActiveMenu));
+					}, fListAllFlowEvent(thisflow));
 					mui.fire(plus.webview.getWebviewById("list"), "refreshvue", {
 						"flow": thisflow,
 						"appointment_id": appointment_id
@@ -266,6 +266,7 @@
 					lsvih.dom.removeClass(document.getElementById("flow-" + myStorage.getItem("thisflow")), "mui-active");
 					lsvih.dom.addClass(document.getElementById("flow-" + thisflow), "mui-active");
 					myStorage.setItem("thisflow", thisflow);
+					nActiveMenu = thisflow;
 				});
 				plus.push.addEventListener("click", function(msg) {
 					var ids = msg.payload.house_appointment_id.toString(); //当只有一个数字时会无法使用split，因此转换为字符串

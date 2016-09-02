@@ -340,6 +340,6 @@ function SaveToLocal() {
 		"id": vueContent.event.id
 	}, tempdata.event);
 	tempdata.event[eventsortid] = vueContent.event;
-	myStorage.setItem(JSON.stringify(tempdata));
+	myStorage.setItem("data",JSON.stringify(tempdata));
 	mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", vueContent.event.id);
 }
