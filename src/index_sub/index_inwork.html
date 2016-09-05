@@ -105,7 +105,7 @@
 									</div>
 									<!--<span class="more-info" @tap="__fDetail(event.id,'todaydetail',processitem)">今日详情 ></span>-->
 								</div>
-								<div v-if="__fIsAllCheck(__fGetEventsByDate(__fGetDate(),event.content.schedule))">
+								<div v-if="__fIsAllCheck(__fChecksInEvents(__fGetEventsByDate(__fGetDate(),event.content.schedule)))">
 									<!--如果当日已经全部验收完则显示提交播报模块-->
 
 									<div v-if="!__fDidTodayBroadcast()">
@@ -137,12 +137,12 @@
 									</div>
 								</div>
 
-								<div v-if="!__fIsAllCheck(__fGetEventsByDate(__fGetDate(),event.content.schedule))">
+								<div v-if="!__fIsAllCheck(__fChecksInEvents(__fGetEventsByDate(__fGetDate(),event.content.schedule)))">
 									<!--如果当日的验收还未全部完成则显示验收模块-->
 									<div class="block">
 										<span>今日验收</span>
 										<div v-for="checkitem in __fChecksInEvents(__fGetEventsByDate(__fGetDate(),event.content.schedule))">
-											<div>{{checkitem.check.check_name}}&nbsp;<span class="mui-pull-right"><span class="check-ok" v-if="checkitem.checked">验收完成√</span><span class="to-check" v-if="!checkitem.checked" @tap="__fDetail(event.id,'tocheck')">验收</span></span>
+											<div>{{checkitem.check.check_name}}&nbsp;{{checkitem.description}}<span class="mui-pull-right"><span class="check-ok" v-if="checkitem.checked">验收完成√</span><span class="to-check" v-if="!checkitem.checked" @tap="__fDetail(event.id,'tocheck',checkitem)">验收</span></span>
 											</div>
 											<!--TODO 验收buttom-->
 											<div>{{checkitem.check.checkStandards.description}}</div>
@@ -192,8 +192,6 @@
 				</div>
 			</template>
 
-			
-
 			<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
 				<ul class="mui-table-view">
 					<li class="mui-table-view-cell">
@@ -233,6 +231,10 @@
 				window.addEventListener('refreshvue', function(event) {
 					var aShow = event.detail.split(",");
 					vueContent.refresh(aShow[0], aShow[1]);
+				});
+				window.addEventListener('checked', function(event) {
+					var aShow = event.detail.split(",");
+					vueContent.checked(aShow[0], aShow[1]);
 				});
 				window.addEventListener('delete', function(event) { //今日播报的删除图片
 					var deleteitem = vueContent.event.content.broadcast.img[event.detail - 1];
@@ -282,7 +284,10 @@
 								myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改
 							}
 							vueContent.event = fListAllFlowEvent(a)[b];
-							myStorage.setItem("thisstatus", vueContent.event.status);
+							fCloseSubOpenPage();
+						},
+						checked: function(a, b) {
+							vueContent.event = fListAllFlowEvent(a)[b];
 							fCloseSubOpenPage();
 						},
 						//编辑用户信息
@@ -434,8 +439,9 @@
 			function fChecksInEvents(events) {
 				var checked = [];
 				for(var a = 0; a < events.length; a++) {
-					if(events[a].check != null) checked.push(events[a])
+					if(events[a].check != null) checked.push(events[a]);
 				}
+				return checked;
 			}
 
 			/**
@@ -444,11 +450,7 @@
 			 */
 			function fTodayIsChecked(events) {
 				for(var s = 0; s < events.length; s++) {
-					if(events[s].check != null) {
-						if(!(events[s].check_imgs && events[s].check_content)) {
-							return false;
-						}
-					}
+					if(events[s].checked == undefined) return false;
 				}
 				return true;
 			}
@@ -494,7 +496,11 @@
 						"id": vueContent.event.id
 					}, tempobj.event)] = vueContent.event;
 					myStorage.setItem("data", JSON.stringify(tempobj));
-					vueContent.refresh();
+					var listSortId = lsvih.array.getSubByKey({
+						"id": vueContent.event.id
+					}, fListAllFlowEvent(4));
+					vueContent.checked(4,listSortId);
+					uploading.close();
 				}, "", {
 					closeObj: uploading
 				});

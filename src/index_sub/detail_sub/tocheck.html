@@ -1,10 +1,163 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+
 	<head>
 		<meta charset="UTF-8">
 		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/index_content.css" />
 	</head>
+
 	<body>
-		This is the page of "tocheck".
+		<div id="back-drop"></div>
+		<article id="event">
+			<div class="block">
+				<span v-for="checkStandard in event.content.check.checkStandards">{{checkStandard.description}}</span>
+			</div>
+			<div class="mui-content-padded" style="margin: 5px 10px;">
+				<div class="mui-input-row" style="margin: 10px 0;">
+					<textarea id="textarea" rows="5" placeholder="请输入描述内容" v-model="event.content.check.description">{{event.content.check.description}}</textarea>
+					<h5>您还可以添加<span id="imgcount">{{10 - event.content.check.description_t_imgs.length }}</span>张图片</h5>
+				</div>
+				<div id="pictures">
+					<div class="picture" v-for="images in event.content.check.description_t_imgs"><img v-bind:src="images" class="adds" data-preview-src data-preview-group='1' @tap="__fEditPictures($event)" /></div>
+				</div>
+				<div id="add-picture" v-show="event.content.check.description_t_imgs.length < 10" @tap="__fAddPic()">+</div>
+			</div>
+			<button class="mui-btn mui-btn-block mui-btn-green submit-button start">确认验收</button>
+			<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<a href="#" data="1">拍照</a>
+					</li>
+					<li class="mui-table-view-cell">
+						<a href="#" data="2">从相册中选择</a>
+					</li>
+				</ul>
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<a href="#picture" data="0"><b>取消</b></a>
+					</li>
+				</ul>
+			</div>
+		</article>
 	</body>
+	<script type="text/javascript" src="../../js/lsvih.js"></script>
+	<script src="../../js/lib/mui.js"></script>
+	<script type="text/javascript" src="../../js/storage.js"></script>
+	<script type="text/javascript" src="../../js/data.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+	<script type="text/javascript" src="../../js/lib/vue.js"></script>
+	<script>
+		var MAXIMAGECOUNT = 10;
+		var eventid;
+		var thischeck;
+		var vueContent;
+		mui.plusReady(function() {
+			eventid = plus.webview.currentWebview().eventid;
+			thischeck = plus.webview.currentWebview().option;
+			if(thischeck.check.description_t_imgs == "") thischeck.check.description_t_imgs = [];
+			vueContent = new Vue({
+				el: "#event",
+				data: {
+					"event": {
+						"content": thischeck
+					}
+				},
+				methods: {
+					__fAddPic: function() {
+						document.activeElement.blur();
+						mui("#picture").popover('toggle');
+					},
+					__fEditPictures: function(thisobj) { //编辑图片
+						mui.openWindow({
+							url: "../../module/preview_image.html",
+							id: "preview_image",
+							styles: {
+								top: 0,
+								bottom: 0,
+								right: 0,
+								width: "100%",
+								height: "100%"
+							},
+							extras: {
+								images: thisobj.currentTarget.parentNode.parentNode.innerHTML,
+								indexid: index(thisobj.currentTarget, thisobj.currentTarget.parentNode.parentNode.getElementsByTagName("img")),
+								deletemode: lsvih.dom.hasClass(thisobj.currentTarget, "adds")
+							},
+							show: {
+								aniShow: "fade-in"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+					},
+				}
+			});
+			mui('#picture').on('tap', '.mui-popover-action li>a', function() {
+				switch(this.getAttribute("data")) {
+					case "1": //拍照
+						mui("#picture").popover('toggle');
+						getImage("check.description_t_imgs");
+						break;
+					case "2": //从相册选择
+						mui("#picture").popover('toggle');
+						galleryImg("check.description_t_imgs");
+						break;
+					default:
+						break;
+				}
+			});
+			mui("#event").on("tap", ".submit-button", function() {
+				if(vueContent.event.content.check.description == "" || vueContent.event.content.check.description_t_imgs.length == 0) {
+					mui.toast("请按照规定上传验收信息");
+					return false;
+				} else {
+					ImagesToBase64(vueContent.event.content.check.description_t_imgs, fUploadCheck);
+				}
+			});
+		});
+		var uploading;
+		/**
+		 * 上传验收信息
+		 * @param {Object} imgArr
+		 */
+		function fUploadCheck(imgArr) {
+			var checkId = vueContent.event.content.check.id;
+			uploading = plus.nativeUI.showWaiting("正在上传验收信息，请稍后...");
+			common.ajax("checks/" + checkId, {
+				"description_t_imgs": JSON.stringify(imgArr),
+				"description": vueContent.event.content.check.description
+			}, "PUT", function() {
+				vueContent.event.content.checked = true;
+				plus.webview.currentWebview().opener().close();
+				uploading.close();
+				save();
+			}, "", {
+				closeObj: uploading
+			});
+		}
+		/**
+		 * 将验收内容保存在本地，由opener触发此事件
+		 */
+		function save() {
+			var tempdata = JSON.parse(myStorage.getItem("data"));
+			var eventsort = lsvih.array.getSubByKey({
+				"id": eventid
+			}, tempdata.event);
+			var schedulesort = lsvih.array.getSubByKey({
+				"id": thischeck.id
+			}, tempdata.event[eventsort].content.schedule);
+			tempdata.event[eventsort].content.schedule[schedulesort] = vueContent.event.content;
+			myStorage.setItem("data", JSON.stringify(tempdata));
+			var listSortId = lsvih.array.getSubByKey({
+				"id": eventid
+			}, fListAllFlowEvent(4));
+			mui.fire(plus.webview.getWebviewById("plg_work"), "checked", 4 + "," + listSortId);
+			plus.webview.currentWebview().close();
+		}
+	</script>
+
 </html>

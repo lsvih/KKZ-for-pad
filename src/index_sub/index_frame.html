@@ -23,7 +23,7 @@
 		}
 	</style>
 	<header class="mui-bar">
-		<span class="mui-action-back mui-icon mui-icon-closeempty mui-pull-right"></span>
+		<span class="mui-icon mui-icon-closeempty mui-pull-right"></span>
 		<div class="mui-title"></div>
 
 	</header>
@@ -31,19 +31,19 @@
 	<body>
 		<script src="../js/lib/mui.js"></script>
 		<script type="text/javascript" src="../js/common.js"></script>
-		
+
 		<script type="text/javascript">
 			mui.init({
 				gestureConfig: {
 					doubletap: false,
 					longtap: false
-				},
-				beforeback: function() {
-					plus.webview.close("sub_content_detail")
-					return true;
-				},
-
+				}
 			});
+			mui(".mui-bar").on("tap", ".mui-icon-closeempty", function() {
+				//为了保存验收数据，重写关闭逻辑
+				plus.webview.currentWebview().type == "tocheck" ? plus.webview.getWebviewById("sub_content_detail").evalJS("save()") : plus.webview.getWebviewById("sub_content_detail").close();
+				plus.webview.currentWebview().close();
+			})
 			mui.plusReady(function() {
 				var self = plus.webview.currentWebview();
 				switch(self.type) {
@@ -69,9 +69,9 @@
 						break;
 					case "tocheck": //去验收
 						fSetTitle("验收");
-						fOpenDetailPage("tocheck", self.eventid);
+						fOpenDetailPage("tocheck", self.eventid, self.option);
 						break;
-					case "contract"://查看合同
+					case "contract": //查看合同
 						fSetTitle("查看合同");
 						fOpenDetailPage("contract", self.eventid);
 						break;

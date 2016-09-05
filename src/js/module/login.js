@@ -97,7 +97,7 @@ mui.plusReady(function() {
 							} : {
 								"house_group_id": appoint.houseGroups[0].id,
 								"room": [],
-								"schedule": appoint.houseGroups[0].houseGroupSchedules,
+								"schedule": fDelCheckImg(appoint.houseGroups[0].houseGroupSchedules),
 								"group_id": appoint.houseGroups[0].group_id,
 								"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
 								"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
@@ -166,6 +166,16 @@ mui.plusReady(function() {
 				} else {
 					return [];
 				}
+			}
+			/**
+			 * 删除不需要的验收图片
+			 * @param {Object} schedules
+			 */
+			function fDelCheckImg(schedules){
+				for(var a =0;a<schedules.length;a++){
+					if(schedules[a].check != null) schedules[a].check.description_t_imgs = [];
+				}
+				return schedules;
 			}
 		}, "", {
 			closeObj: loading
@@ -306,7 +316,7 @@ function fDownloadFiles() {
 					mui("body").progressbar().setProgress(successfilecount / arr.length * 100);
 				}
 				if(true) {
-					//				if(successfilecount == arr.length) {
+//									if(successfilecount == arr.length) {
 					clearInterval(processController);
 					mui("body").progressbar().setProgress(100);
 					localStorage.setItem("firstrun", lsvih.time.day());

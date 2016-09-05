@@ -44,7 +44,6 @@ mui.plusReady(function() {
 					myStorage.setItem("data", JSON.stringify(tempobj)); //在本地存储修改
 				}
 				vueContent.event = fListAllFlowEvent(a)[b];
-				myStorage.setItem("thisstatus", vueContent.event.status);
 			},
 			__fDetail: function(eventid, type, option) {
 				var extras = option ? {
