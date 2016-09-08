@@ -138,7 +138,7 @@
 				</div>
 				<div class="block">
 					<span>报价信息</span><br/>
-					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.size}}米</span><br /></span>
+					<span v-for="item in event.content.package"><span class="package-item">{{item.name}}：{{item.size}}米²</span><br /></span>
 					<span>总价:{{event.content.price}}元</span>
 					<span class="user-info-edit"><span class="mui-icon mui-icon-arrowright"></span></span>
 					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'gauge')"></div>
