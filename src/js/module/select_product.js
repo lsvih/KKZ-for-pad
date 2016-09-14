@@ -1,6 +1,8 @@
 var loading;
 mui.init();
 var eventid = GetRequest()["eventid"];
+var isModify = GetRequest()["modify"];
+if(isModify) document.getElementsByClassName("next-btn")[0].innerText = "确认";
 var tempdata = JSON.parse(myStorage.getItem("data"));
 var eventsortid = lsvih.array.getSubByKey({
 	"id": eventid
@@ -12,6 +14,7 @@ var package_id;
 var vueContent;
 var temppackage;
 var thisgroup;
+
 function __fGetCurrentGroup(packageinfo, groupid) {
 	for(var k = 0; k < packageinfo.length; k++) {
 		if(lsvih.array.getSubByKey({
@@ -28,7 +31,7 @@ mui.plusReady(function() {
 	temppackage = JSON.parse(myStorage.getItem("packageinfo")).packageinfo;
 	thisgroup = __fGetCurrentGroup(temppackage, group_id)
 	loading = plus.nativeUI.showWaiting("正在加载，请稍后...");
-	plus.webview.close("sub_doc");
+	if(!isModify) plus.webview.close("sub_doc");
 	fAddVueCacheFilter();
 	var detailinfo = plus.webview.currentWebview().detail;
 	vueContent = new Vue({
@@ -185,27 +188,48 @@ mui("body").on("tap", ".next-btn", function() {
 			"sku_id": sku_id
 		});
 	}
-	common.ajax("house-group-sku/batch-create", {
-		"items": JSON.stringify(uploadinfo)
-	}, "POST", function(data) {
-		common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, {
-			'status': 2,
-		}, "PUT", function(data) {
-			tempdata.event[eventsortid].status = 2;
-			tempdata.event[eventsortid].content.skus = uploadinfo;
-			tempdata.event[eventsortid].content.group_quotation = data.group_quotation;
-			tempdata.event[eventsortid].content.price = data.group_amount;
-			tempdata.event[eventsortid].content.taxes_amount = data.taxes_amount;
-			myStorage.setItem("data", JSON.stringify(tempdata));
-			mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
-			uploading.close();
-			mui.toast("选材完毕，报价清单已生成。");
-			plus.webview.currentWebview().loadURL("../step/group_quotation.html?eventid=" + eventid);
+	var status = isModify ? {} : {
+		'status': 2
+	};
+	if(isModify) {
+		common.ajax('house-group-sku/batch-delete?filter=house_group_id:' + tempdata.event[eventsortid].content.house_group_id, {}, "DELETE", function(data) {
+			common.ajax("house-group-sku/batch-create", {
+				"items": JSON.stringify(uploadinfo)
+			}, "POST", function(data) {
+				common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, status, "PUT", function(data) {
+					
+					mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
+					uploading.close();
+					mui.toast("选材修改完毕!请确认");
+					plus.webview.currentWebview().close();
+				}, "", {
+					closeObj: uploading,
+					isReload: true
+				});
+			}, "", {
+				closeObj: uploading
+			});
 		}, "", {
 			closeObj: uploading,
 			isReload: true
 		});
-	}, "", {
-		closeObj: uploading
-	});
+	} else {
+		common.ajax("house-group-sku/batch-create", {
+			"items": JSON.stringify(uploadinfo)
+		}, "POST", function(data) {
+			common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, status, "PUT", function(data) {
+				
+				mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
+				uploading.close();
+				mui.toast("选材完毕，报价清单已生成。");
+				plus.webview.currentWebview().loadURL("../step/group_quotation.html?eventid=" + eventid);
+			}, "", {
+				closeObj: uploading,
+				isReload: true
+			});
+		}, "", {
+			closeObj: uploading
+		});
+	}
+
 });

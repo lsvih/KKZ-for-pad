@@ -165,6 +165,7 @@
 		"use strict";
 		mui.init();
 		var eventid = GetRequest()["eventid"]; //获得eventid
+		var isModify = GetRequest()["modify"];
 		var tempdata;
 		var uploading;
 		var eventsortid;
@@ -195,7 +196,13 @@
 					'time_period': from + "-" + to,
 					'is_holiday_work': isholidaywork
 				}, "PUT", function(data) {
+					if(isModify){
+					mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid); 
+					uploading.close();
+					plus.webview.currentWebview().close();
+					}else{
 					fUploaddata()
+					}
 				}, "", {
 					closeObj: uploading,
 					isReload: true

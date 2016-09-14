@@ -2,6 +2,7 @@
 var vueContent;
 var MAXIMAGECOUNT = 10;
 var eventid = GetRequest()["eventid"]; //获得eventid
+var isModify = GetRequest()["modify"];
 var tempdata = JSON.parse(myStorage.getItem("data"));
 var uploading;
 var iRoomSortId;
@@ -261,7 +262,11 @@ mui.plusReady(function() {
 					tempdata.event[eventsortid].content.room[i].remote_measure_t_imgs = data.items[i].measure_t_imgs;
 				}
 				myStorage.setItem("data", JSON.stringify(tempdata)); //将信息存储在本地
-				plus.webview.currentWebview().loadURL(`pick_packages.html?eventid=${eventid}`);
+				if(isModify) {
+					plus.webview.currentWebview().close();
+				} else {
+					plus.webview.currentWebview().loadURL(`pick_packages.html?eventid=${eventid}`);
+				}
 			}, "", {
 				closeObj: uploading
 			});

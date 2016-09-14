@@ -158,6 +158,50 @@ mui.plusReady(function() {
 						break;
 				}
 
+			},
+			__fModify: function(type) {
+				switch(type) {
+					case "selection":
+						mui.openWindow({
+							url: `../step/select_product.html?eventid=${vueContent.event.id}&modify=true`,
+							id: "sub_modify_selection",
+							styles: {
+								top: 0,
+								bottom: 0,
+								right: 0,
+								width: "100%",
+								height: "100%"
+							},
+							show: {
+								aniShow: "fade-in"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+						break;
+					case "schedule":
+						mui.openWindow({
+							url: `../step/property.html?eventid=${vueContent.event.id}&modify=true`,
+							id: "sub_modify_schedule",
+							styles: {
+								top: 0,
+								bottom: 0,
+								right: 0,
+								width: "100%",
+								height: "100%"
+							},
+							show: {
+								aniShow: "fade-in"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+						break;
+					default:
+						break;
+				}
 			}
 		}
 	});
@@ -339,6 +383,6 @@ function SaveToLocal() {
 		"id": vueContent.event.id
 	}, tempdata.event);
 	tempdata.event[eventsortid] = vueContent.event;
-	myStorage.setItem("data",JSON.stringify(tempdata));
+	myStorage.setItem("data", JSON.stringify(tempdata));
 	mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", vueContent.event.id);
 }

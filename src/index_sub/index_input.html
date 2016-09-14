@@ -61,7 +61,7 @@
 					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'selection')"></div>
 					<div v-show="event.content.check.selection" class="status-checked">已确认√</div>
 					<div v-show="!event.content.check.selection" class="status-pal">
-						<!--<span class="status-modify">修改</span>-->
+						<span class="status-modify" @tap="__fModify('selection')">修改</span>
 						<span class="status-check" @tap="__fCheck('selection')">确认</span></div>
 				</div>
 				<div class="block">
@@ -70,7 +70,7 @@
 					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'schedule')"></div>
 					<div v-show="event.content.check.schedule" class="status-checked">已确认√</div>
 					<div v-show="!event.content.check.schedule" class="status-pal">
-						<!--<span class="status-modify">修改</span>-->
+						<span class="status-modify" @tap="__fModify('schedule')">修改</span>
 						<span class="status-check" @tap="__fCheck('schedule')">确认</span></div>
 				</div>
 
