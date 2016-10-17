@@ -5,7 +5,7 @@ var common = {};
 common.version = "1.3";
 common.appName = "块块装";
 common.topBarHeight = 20;
-common.server = "http://123.56.200.45/kkz/";
+common.server = "http://kkzhuang.net/kkz/";
 common.apiServer = common.server + "api/web/";
 /**
  * 封装AJAX方法
