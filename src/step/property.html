@@ -243,7 +243,7 @@
 					mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
 					mui.fire(plus.webview.getLaunchWebview(), "addhouse", String(eventid));
 					mui.toast("信息已上传，请等待安排");
-					plus.webview.currentWebview().close();
+					plus.webview.currentWebview().loadURL("../step/contract.html?eventid=" + eventid);
 					//					common.ajax('house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + house_group_id, {}, "GET", function(data) {
 					//						var temp = JSON.parse(myStorage.getItem("data"));
 					//						temp.event[eventsortid].content.schedule = data.items;
