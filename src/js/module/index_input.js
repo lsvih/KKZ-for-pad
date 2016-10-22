@@ -138,17 +138,17 @@ mui.plusReady(function() {
 							}
 						});
 						break;
-					case "schedule":
-						mui.confirm('是否确认以上排期信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
-							if(f.index == 1) {
-								vueContent.event.content.check.schedule = true;
-								SaveToLocal();
-								fIsCheckDone();
-							}
-						});
-						break;
+//					case "schedule":
+//						mui.confirm('是否确认以上排期信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
+//							if(f.index == 1) {
+//								vueContent.event.content.check.schedule = true;
+//								SaveToLocal();
+//								fIsCheckDone();
+//							}
+//						});
+//						break;
 					default:
-						mui.confirm('是否确认以上选材信息？确认后将无法修改排期信息。', common.appName, ['否', '是'], function(f) {
+						mui.confirm('是否确认以上量房信息？确认后将无法修改量房信息。', common.appName, ['否', '是'], function(f) {
 							if(f.index == 1) {
 								vueContent.event.content.check.gauge = true;
 								SaveToLocal();
@@ -209,7 +209,8 @@ mui.plusReady(function() {
 
 function fIsCheckDone() {
 	var toCheck = vueContent.event.content.check;
-	if(toCheck.gauge && toCheck.schedule && toCheck.selection) {
+	if(toCheck.gauge && toCheck.selection) {
+//		if(toCheck.gauge && toCheck.schedule && toCheck.selection) {
 		uploading = plus.nativeUI.showWaiting("确认完成，正在进入待开工状态");
 		common.ajax(`house-groups/${vueContent.event.content.house_group_id}`, {
 			'status': 9,

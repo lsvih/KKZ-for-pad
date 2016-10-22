@@ -92,10 +92,21 @@
 				position: absolute;
 				top: 340px;
 			}
-			
+			#expect{
+				position: absolute;
+				top:250px;
+			}
 			#isholidaywork {
 				position: absolute;
 				top: 467px;
+			}
+			
+			input[type='number'] {
+				position: absolute;
+				top: -10px;
+				width: 200px;
+				padding: 0 10px;
+				border-color: #00b06c;
 			}
 			
 			input[type='date'] {
@@ -148,7 +159,8 @@
 		<div class="content">
 			<div class="title">物业信息确认</div>
 			<div id="startat"><span>开工日期：</span><input type="date" id="starttime"></div>
-			<div id="timeperiod">工作时段:<input type="time" id="from" value="09:00"><span style="margin-left: 132px;">~</span><input type="time" id="to" value="18:00"></div>
+			<div id="expect"><span>预估时间：</span><input type="number" id="expect-time"></div>
+			<div id="timeperiod">工作时段：<input type="time" id="from" value="09:00"><span style="margin-left: 132px;">~</span><input type="time" id="to" value="18:00"></div>
 			<div id="isholidaywork">
 				<div class="mui-input-row mui-checkbox mui-left">
 					<label>节假日工作</label>
@@ -185,23 +197,29 @@
 				plus.webview.currentWebview().close();
 			}); //关闭
 			mui(".header").on("tap", ".next-btn", function() {
+				var expect = document.getElementById("expect-time").value;
 				var startat = lsvih.time.strToStamp(document.getElementById("starttime").value);
 				var from = document.getElementById("from").value;
 				var to = document.getElementById("to").value;
 				var isholidaywork = document.getElementById("isholidaywork").getElementsByTagName("input")[0].checked ? 1 : 0;
+				if(!expect){
+					mui.toast("请正确输入预估施工时间");
+					return false;
+				}
 				uploading = plus.nativeUI.showWaiting("正在上传物业信息，请稍后...");
 				//将物业信息上传
 				common.ajax('house-groups/' + house_group_id, {
-					'start_at': startat,
-					'time_period': from + "-" + to,
-					'is_holiday_work': isholidaywork
+					start_at: startat,
+					time_period: from + "-" + to,
+					is_holiday_work: isholidaywork,
+					duration:expect
 				}, "PUT", function(data) {
-					if(isModify){
-					mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid); 
-					uploading.close();
-					plus.webview.currentWebview().close();
-					}else{
-					fUploaddata()
+					if(isModify) {
+						mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
+						uploading.close();
+						plus.webview.currentWebview().close();
+					} else {
+						fUploaddata()
 					}
 				}, "", {
 					closeObj: uploading,
@@ -222,25 +240,28 @@
 				common.ajax('house-groups/' + house_group_id, {
 					'status': 3
 				}, "PUT", function(data) {
-					var houseinfo = data;
-					common.ajax('house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + house_group_id, {}, "GET", function(data) {
-						var temp = JSON.parse(myStorage.getItem("data"));
-						temp.event[eventsortid].content.schedule = data.items;
-						temp.event[eventsortid].content.group_contract = houseinfo.group_contract;
-						temp.event[eventsortid].contractid = houseinfo.group_contract.split(".")[0];
-						temp.event[eventsortid].content.start_at = houseinfo.start_at;
-						temp.event[eventsortid].content.is_holiday_work = houseinfo.is_holiday_work;
-						temp.event[eventsortid].content.time_period = houseinfo.time_period;
-						temp.event[eventsortid].content.duration = houseinfo.duration;
-						temp.event[eventsortid].status = 3;
-						myStorage.setItem("data", JSON.stringify(temp)); //将所有数据存入本地
-						uploading.close();
-						mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
-						plus.webview.currentWebview().loadURL("../step/schedule_list.html?eventid=" + eventid);
-					}, "", {
-						closeObj: uploading,
-						isReload: true
-					});
+					mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
+					mui.fire(plus.webview.getLaunchWebview(), "addhouse", String(eventid));
+					mui.toast("信息已上传，请等待安排");
+					plus.webview.currentWebview().close();
+					//					common.ajax('house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + house_group_id, {}, "GET", function(data) {
+					//						var temp = JSON.parse(myStorage.getItem("data"));
+					//						temp.event[eventsortid].content.schedule = data.items;
+					//						temp.event[eventsortid].content.group_contract = houseinfo.group_contract;
+					//						temp.event[eventsortid].contractid = houseinfo.group_contract.split(".")[0];
+					//						temp.event[eventsortid].content.start_at = houseinfo.start_at;
+					//						temp.event[eventsortid].content.is_holiday_work = houseinfo.is_holiday_work;
+					//						temp.event[eventsortid].content.time_period = houseinfo.time_period;
+					//						temp.event[eventsortid].content.duration = houseinfo.duration;
+					//						temp.event[eventsortid].status = 3;
+					//						myStorage.setItem("data", JSON.stringify(temp)); //将所有数据存入本地
+					//						uploading.close();
+					//					mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
+					//						plus.webview.currentWebview().loadURL("../step/schedule_list.html?eventid=" + eventid);
+					//				}, "", {
+					//					closeObj: uploading,
+					//					isReload: true
+					//				});
 				}, "", {
 					closeObj: uploading,
 					isReload: true

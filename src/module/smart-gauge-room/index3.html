@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="../../css/mui.css" rel="stylesheet" />
+    <link href="../../css/mui.picker.css" rel="stylesheet" />
+    <link href="../../css/mui.poppicker.css" rel="stylesheet" />
+    <title>智图</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 80px;
+            width: 100%;
+            background-color: #ccc;
+            z-index: 20;
+        }
+
+        .tool {
+            display: inline-block;
+            height: 50px;
+            width: 100px;
+        }
+
+        .toolbar .left {
+            margin-left: 20px;
+            float: left;
+        }
+
+        .toolbar .right {
+            margin-right: 20px;
+            float: right;
+        }
+
+        .content {
+            padding: 20px 20px;
+        }
+
+        table {
+            width: 100%;
+            padding: 20px 20px;
+        }
+
+        th {
+            font-weight: normal;
+            color: #aaa;
+            text-align: left;
+        }
+
+        tr th:first-child,
+        tr td:first-child,
+        tr th:nth-child(2),
+        tr td:nth-child(2),
+        tr th:nth-child(3),
+        tr td:nth-child(3) {
+            width: 30%;
+        }
+
+        tr th:last-child,
+        tr td:last-child {
+            width: 10%;
+        }
+
+        tbody td {
+            padding-top: 20px;
+            vertical-align: middle;
+        }
+
+        tbody td:not(:last-child) {
+            padding-right: 40px;
+        }
+
+        .pick-btn {
+            height: 40px;
+            width: 100%;
+        }
+
+        .left-input,
+        .bottom-input {
+            margin-bottom: 0px!important;
+        }
+
+        .delete-btn {
+            float: right;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="toolbar">
+        <div class="tool left">
+            <button id="save-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">保存这面墙</button>
+        </div>
+        <div class="tool left">
+            <button id="cancle-btn" type="button" class="mui-btn mui-btn-danger mui-btn-outlined">取消</button>
+        </div>
+        <div class="tool right">
+            <button id="add-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">添加一个单元</button>
+        </div>
+        <!-- <div class="tool right">
+            <button id="preview-btn" type="button" class="mui-btn mui-btn-primary mui-btn-outlined">预览</button>
+        </div> -->
+    </div>
+    <div id="scroll" class="mui-scroll-wrapper">
+        <div class="mui-scroll">
+            <div class="content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>类型</th>
+                            <th>距离左边距离(m)</th>
+                            <th>距离底边距离(m)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="components">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="../../js/lib/mui.js"></script>
+    <script type="text/javascript" src="../../js/lib/mui.picker.js"></script>
+    <script type="text/javascript" src="../../js/lib/mui.poppicker.js"></script>
+    <script>
+        "use strict";
+        // ----------common-----------
+        mui.init();
+        var SCREEN = {};
+        SCREEN.width = 1024;
+        SCREEN.height = 768;
+        SCREEN.topbar = 20;
+        var TOOLBAR = {};
+        TOOLBAR.width = SCREEN.width;
+        TOOLBAR.height = 80;
+        var segmentId = parseInt(localStorage.getItem("selectedSegmentId"));
+        var gauge_data = JSON.parse(localStorage.getItem("gauge_data"));
+        console.log("selected segment id: " + segmentId);
+        var componentData = [{
+            value: 1,
+            text: "水口"
+        }, {
+            value: 2,
+            text: "电口"
+        }];
+
+        // --------Init objects----------
+        var toolbar = document.getElementsByClassName("toolbar")[0];
+        toolbar.style.height = TOOLBAR.height + SCREEN.topbar + 'px';
+        toolbar.style.paddingTop = SCREEN.topbar + 'px';
+        var scroll = document.getElementById("scroll");
+        scroll.style.paddingTop = (TOOLBAR.height + SCREEN.topbar) + "px";
+        mui('.mui-scroll-wrapper').scroll({
+            scrollY: true,
+            scrollX: false,
+            startX: 0,
+            startY: 0,
+            indicators: true,
+            deceleration: 0.0006,
+            bounce: true,
+        });
+        var picker = new mui.PopPicker();
+        picker.setData(componentData);
+        var componentList = getComponentlist(gauge_data.components[segmentId]);
+        fillComponents();
+        mui(".toolbar").on("tap", "#cancle-btn", function(e) {
+            history.go(-1);
+        });
+        mui(".toolbar").on("tap", "#save-btn", function(e) {
+            if (saveComonents()) {
+                history.go(-1);
+            } else {
+                alert("大哥，您填的有点问题");
+            }
+        });
+        mui(".toolbar").on("tap", "#add-btn", function(e) {
+            addComponent();
+        });
+        mui(".toolbar").on("tap", "#preview-btn", function(e) {
+            preview();
+        });
+        mui("#components").on("tap", ".pick-btn", function(e) {
+            var id = parseInt(this.getAttribute("data-id"));
+            var that = this;
+            picker.show(function(items) {
+                componentList[id].value = items[0].value;
+                componentList[id].text = items[0].text;
+                that.innerText = items[0].text;
+            })
+        });
+        mui("#components").on("input", ".left-input", function(e) {
+            var id = parseInt(this.getAttribute("data-id"));
+            componentList[id].left = this.value;
+        });
+        mui("#components").on("input", ".bottom-input", function(e) {
+            var id = parseInt(this.getAttribute("data-id"));
+            componentList[id].bottom = this.value;
+        });
+        mui("#components").on("tap", ".delete-btn", function(e) {
+            var id = parseInt(this.getAttribute("data-id"));
+            componentList.splice(id, 1);
+            fillComponents();
+        });
+        // --------Init End-------------
+
+        //-------Functions------------
+        function getComponentlist(components) {
+            var list = [];
+            if (components.length == 0) {
+                list.push({
+                    left: "",
+                    bottom: ""
+                });
+            } else {
+                for (var i = 0; i < components.length; i++) {
+                    var com = components[i];
+                    list.push({
+                        value: com.value,
+                        text: com.text,
+                        left: String(com.left),
+                        bottom: String(com.bottom)
+                    });
+                }
+            }
+            return list;
+        }
+
+        function fillComponents() {
+            var html = ""
+            for (var i = 0; i < componentList.length; i++) {
+                html += getComponent(i);
+            }
+            document.getElementById("components").innerHTML = html;
+        }
+
+        function getComponent(id) {
+            var text = typeof componentList[id].value === "undefined" ? "选择单元类型" : componentList[id].text;
+            var tdType = '<td><button class="pick-btn" data-id="' + id + '" type="button" class="mui-btn" />' + text + '</td>';
+            var tdLeft = '<td><input class="left-input" data-id="' + id + '" type="text" value="' + componentList[id].left + '" /></td>';
+            var tdBottom = '<td><input class="bottom-input" data-id="' + id + '" type="text" value="' + componentList[id].bottom + '" /></td>';
+            var tdOption = '<td><button data-id="' + id + '" type="button" class="mui-btn mui-btn-danger mui-btn-outlined delete-btn">删除</button></td>';
+            return '<tr>' + tdType + tdLeft + tdBottom + tdOption + '</tr>';
+        }
+
+        function addComponent() {
+            componentList.push({
+                left: "",
+                bottom: ""
+            });
+            fillComponents();
+        }
+
+        function saveComonents() {
+            var com = [];
+            for (var i = 0; i < componentList.length; i++) {
+                var v = componentList[i].value,
+                    t = componentList[i].text,
+                    l = componentList[i].left,
+                    b = componentList[i].bottom;
+                if (typeof v === "undefined" && l === "" && b === "") {
+                    continue;
+                }
+                if (typeof v === "undefined" || l === "" || b === "") {
+                    return false;
+                }
+                try {
+                    com.push({
+                        value: v,
+                        text: t,
+                        left: parseFloat(l),
+                        bottom: parseFloat(b)
+                    });
+                } catch (e) {
+                    return false;
+                }
+            }
+            gauge_data.components[segmentId] = com;
+            localStorage.setItem("gauge_data", JSON.stringify(gauge_data));
+            return true;
+        }
+
+
+        function getComponents() {
+            var com = [];
+            for (var i = 0; i < componentList.length; i++) {
+                var v = componentList[i].value,
+                    t = componentList[i].text,
+                    l = componentList[i].left,
+                    b = componentList[i].bottom;
+                if (typeof v === "undefined" && l === "" && b === "") {
+                    continue;
+                }
+                if (typeof v === "undefined" || l === "" || b === "") {
+                    return false;
+                }
+                try {
+                    com.push({
+                        value: v,
+                        text: t,
+                        left: parseFloat(l),
+                        bottom: parseFloat(b)
+                    });
+                } catch (e) {
+                    return false;
+                }
+            }
+            return com;
+        }
+    </script>
+
+</body>
+
+</html>

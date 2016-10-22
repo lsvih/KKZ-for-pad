@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<link href="../../css/mui.css" rel="stylesheet" />
+		<title>智图</title>
+		<style>
+			body {
+				margin: 0;
+				overflow: hidden;
+				height: 100%;
+				widows: 100%;
+				;
+			}
+			
+			canvas {
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				z-index: 0;
+			}
+			
+			.toolbar {
+				position: absolute;
+				top: 0;
+				left: 0;
+				height: 80px;
+				width: 100%;
+				background-color: #ccc;
+				z-index: 20;
+			}
+			
+			.tool {
+				display: inline-block;
+				height: 50px;
+				width: 50px;
+				margin-left: 20px;
+			}
+			
+			.tool img {
+				height: 100%;
+				width: 100%;
+			}
+			
+			.block {
+				position: absolute;
+				top: 0;
+				right: 0;
+				z-index: 1;
+			}
+			
+			#scale {
+				position: absolute;
+				bottom: 20px;
+				right: 20px;
+				height: 10px;
+				width: 100px;
+				border-style: solid;
+				border-color: #000;
+				border-width: 0 1px 1px;
+				text-align: center;
+				line-height: 40px;
+				font-size: 12px;
+			}
+			
+			#area-set {
+				position: absolute;
+				/*top: 100px;*/
+				top: 47px;
+				left: 0;
+				width: 100%;
+				height: 53px;
+				z-index: 18;
+				padding-left: 50px;
+				background-color: #dcdcdc;
+				transition: 0.5s ease;
+			}
+			
+			#area-set input {
+				height: 33px;
+				line-height: 33px;
+				width: 118px;
+				margin: 10px;
+			}
+			
+			#area-set buttom {
+				border: none;
+				display: inline-block;
+				height: 33px;
+				line-height: 33px;
+				margin: 10px;
+				padding: 0 20px;
+				color: #fff;
+			}
+			
+			.confirm {
+				background-color: #239e65;
+			}
+			
+			.delete {
+				background-color: #ff0000;
+				float: right;
+			}
+			
+			.next-step {
+				position: absolute;
+				right: 0;
+				height: 60px;
+				line-height: 60px;
+				width: 150px;
+				background-color: green;
+				text-align: center;
+				color: #fff;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="toolbar">
+			<div class="next-step">下一步</div>
+		</div>
+		<canvas id="canvas"></canvas>
+		<div id="scale"></div>
+		<div id="area-set" data-id="">
+			<lable>长:</lable><input type="text" id="area_w" placeholder="单位:米(保留3位小数)" />
+			<lable>宽:</lable><input type="text" id="area_h" placeholder="单位:米(保留3位小数)" />
+			<lable>高亮线长度:</lable><input type="text" id="position_length" placeholder="单位:米(保留3位小数)" />
+			<buttom class="confirm">确认</buttom>
+			<buttom class="delete">删除组件</buttom>
+		</div>
+		<script type="text/javascript" src="../../js/lib/mui.js"></script>
+		<script>
+			// ----------common-----------
+			mui.init();
+			var eventid;
+			var packagesort;
+			var SCREEN = {};
+			SCREEN.width = 1024;
+			SCREEN.height = 768;
+			SCREEN.topbar = 20;
+			var TOOLBAR = {};
+			TOOLBAR.width = SCREEN.width;
+			TOOLBAR.height = 80;
+			var INIT = {};
+			var OUT = [];
+			var IN = [];
+			var temp = {};
+			//初始区域，这个区域x1<x<x2,y1<y<y2
+			//坐标全部以canvas为准
+			var occupyArea = new Array; //占用区域，用一个个长方形表示
+			var releaseArea = new Array; //非占用渔区，用一个个长方形表示，优先级高于占用区域
+			var scale = 1; //比例尺，由程序开始时输入的房屋数据决定，比例尺=房间长度(m)/屏幕长度(px)
+			//生成比例尺逻辑：房屋最长的一条边占屏幕该方向的三分之二
+			// --------Init objects----------
+			var toolbar = document.getElementsByClassName("toolbar")[0];
+			toolbar.style.height = TOOLBAR.height + SCREEN.topbar + 'px';
+			toolbar.style.paddingTop = SCREEN.topbar + 'px';
+			var canvas = document.getElementById("canvas");
+			canvas.height = SCREEN.height - SCREEN.topbar - TOOLBAR.height;
+			canvas.width = SCREEN.width;
+			var can = canvas.getContext('2d');
+			var areaSetBlock = document.getElementById("area-set");
+			canvas.addEventListener("tap", function(e) {
+				var C_x = e.detail.changedTouches[0].pageX;
+				var C_y = e.detail.changedTouches[0].pageY - TOOLBAR.height - SCREEN.topbar;
+				var click_in = WhichblockClickIn(C_x, C_y);
+				if(click_in !== null) {
+					areaSet.open(click_in);
+				} else {
+					areaSet.close();
+				}
+			});
+			mui("#area-set").on("tap", ".delete", function() {
+				areaSet.delete();
+			});
+			mui("#area-set").on("tap", ".confirm", function() {
+					areaSet.save();
+				})
+				// --------Init End-------------
+
+			// --------Init TOOLBAR----------
+			var tools = [{
+				"name": "1",
+				"default": {
+					"height": 50,
+					"width": 50,
+					"color": "red",
+					"position": "out"
+				},
+				"icon": "../../images/gauge/out.png"
+			}, {
+				"name": "2",
+				"default": {
+					"height": 50,
+					"width": 50,
+					"color": "green",
+					"position": "in"
+				},
+				"icon": "../../images/gauge/in.png"
+			}];
+			initToolBar(tools);
+			//---------Init End------------
+
+			//--------Init Inital Area---------
+			mui.plusReady(function() {
+				inputInitArea()
+				eventid = plus.webview.currentWebview().eventid;
+				packagesort = plus.webview.currentWebview().packagesort;
+			})
+
+			//--------Init End---------------
+
+			//-------Functions------------
+
+			/**
+			 * inputInitArea 输入初始区域大小，存入INIT对象中
+			 */
+			var numReg = /[1-9]\d*.\d*|0.\d*[1-9]\d*|[1-9]\d*/;
+
+			function inputInitArea() {
+				mui.prompt("请输入房屋的宽度", "单位:米", "KKL", ["取消", "确认"], function(e) {
+					var d = e.value;
+					if(numReg.test(d) && d > 0) {
+						INIT.d = Number(d);
+						mui.prompt("请输入房屋的长度", "单位:米", "KKL", ["取消", "确认"], function(e) {
+							var s = e.value;
+							if(numReg.test(s) && s > 0) {
+								INIT.w = Number(s);
+								calcInitArea();
+								can.strokeRect(INIT.x1, INIT.y1, INIT.x2 - INIT.x1, INIT.y2 - INIT.y1);
+							} else {
+								mui.toast("您的输入有误，请确认后重试");
+								location.reload();
+							}
+						});
+					} else {
+						mui.toast("您的输入有误，请确认后重试");
+						location.reload();
+					}
+				});
+			}
+
+			/**
+			 * InitToolBar 初始化工具栏,根据tools数组的内容创建工具图标并添加拖动事件
+			 * @param {Array} tools 要初始化的工具列表
+			 */
+			function initToolBar(tools) {
+				for(var i = 0; i < tools.length; i++) {
+					var tool = document.createElement("span");
+					tool.className = "tool";
+					tool.setAttribute("name", tools[i].name);
+					tool.innerHTML = '<img src="' + tools[i].icon + '"/>';
+					if(tools[i].default.position == "out") {
+						tool.addEventListener("tap", function() {
+							Drag(document.getElementById(this.getAttribute("name")), putBlockOut)
+						})
+					} else {
+						tool.addEventListener("tap", function() {
+							Drag(document.getElementById(this.getAttribute("name")), putBlockIn)
+						})
+					}
+
+					console.log("Tools loading...")
+					toolbar.appendChild(tool);
+					var block = document.createElement("div");
+					if(tools[i].default.position == "out") {
+						block.setAttribute("style", "height:" + tools[i].default.height + "px;width:" + tools[i].default.width + "px;border:2px solid " + tools[i].default.color + ";");
+					} else {
+						block.setAttribute("style", "height:" + tools[i].default.height + "px;width:" + tools[i].default.width + "px;background-color: " + tools[i].default.color + ";");
+					}
+					block.setAttribute("data-type", tools[i].default.position);
+					block.className = "block";
+					block.setAttribute("id", tools[i].name);
+					document.body.appendChild(block);
+				}
+			}
+
+			/**
+			 * Drag 拖动指定的dom
+			 * @param {Object} obj 需要拖动的对象
+			 * @param {Number} initY 初始点击位置坐标
+			 * @param {Function} callback 松开拖动对象时执行的回调,传出拖动对象最终停留坐标与回调函数的回调函数(x,y,callback)
+			 */
+			function Drag(obj, callback) {
+				temp.obj = obj;
+				canvas.removeEventListener("dragstart", _dragstart);
+				canvas.removeEventListener("drag", _drag);
+				canvas.removeEventListener("dragend", _dragend);
+				console.log("Wait for dragging...")
+				try {
+					if(typeof(callback) !== "function") {
+						console.log("回调必须是一个函数");
+						return;
+					}
+				} catch(e) {
+					console.log("拖动回调函数不存在");
+					return;
+				}
+				temp.callback = callback;
+				temp.obj_H = obj.offsetHeight;
+				temp.obj_W = obj.offsetWidth;
+				//移动元素到指定位置
+				canvas.addEventListener("dragstart", _dragstart);
+				canvas.addEventListener("drag", _drag);
+				canvas.addEventListener("dragend", _dragend);
+
+			}
+
+			function _dragstart(e) {
+				areaSet.close();
+				var e = window.event || e;
+				temp.obj.style.left = e.detail.changedTouches[0].pageX - temp.obj_W / 2 + 'px';
+				temp.obj.style.top = e.detail.changedTouches[0].pageY - temp.obj_H / 2 + 'px';
+			}
+
+			function _drag(e) {
+				var e = window.event || e;
+				var gC = gravityCoordinate(e.detail.changedTouches[0].pageX, e.detail.changedTouches[0].pageY, temp.obj.getAttribute("data-type"));
+				if(gC !== null) {
+					var x = gC[0];
+					var y = gC[1];
+					if(!collision(x, y)) {
+						temp.obj.style.left = x - temp.obj_W / 2 + 'px';
+						temp.obj.style.top = y - temp.obj_H / 2 + 'px';
+					}
+				}
+
+			}
+
+			function _dragend(e) {
+				var e = window.event || e;
+				var y1 = Number(temp.obj.style.top.split("px")[0]) - TOOLBAR.height - SCREEN.topbar;
+				var x1 = Number(temp.obj.style.left.split("px")[0]);
+				var inOrOut = temp.obj.style.backgroundColor == "" ? "out" : "in";
+				if(WhichLineTheBlockIn(x1, x1 + temp.obj.offsetWidth, y1, y1 + temp.obj.offsetHeight, inOrOut) !== null) {
+					temp.callback(x1 + temp.obj.offsetWidth / 2, y1 + temp.obj.offsetHeight / 2, function() {
+						var name = temp.obj.getAttribute("id");
+						for(var z = 0; z < tools.length; z++) {
+							if(tools[z].name == name) {
+								temp.obj.style.height = tools[z].default.height + 'px';
+								temp.obj.style.width = tools[z].default.width + 'px';
+							}
+						}
+						temp.obj.style.left = '-600px';
+						temp.obj.style.top = '0px';
+					});
+				} else {
+					var name = temp.obj.getAttribute("id");
+					for(var z = 0; z < tools.length; z++) {
+						if(tools[z].name == name) {
+							temp.obj.style.height = tools[z].default.height + 'px';
+							temp.obj.style.width = tools[z].default.width + 'px';
+						}
+					}
+					temp.obj.style.left = '-600px';
+					temp.obj.style.top = '0px';
+				}
+			}
+
+			/**
+			 * 碰撞检测
+			 * @param  {Number} x
+			 * @param  {Number} y
+			 * @return {Boolbean}   返回是否碰撞[true|false]
+			 */
+			function collision(x, y) {
+				var this_height = temp.obj.style.height.split("px")[0];
+				var this_width = temp.obj.style.width.split("px")[0];
+				var this_y1 = y - this_height / 2 - TOOLBAR.height - SCREEN.topbar;
+				var this_y2 = y + this_height / 2 - TOOLBAR.height - SCREEN.topbar;
+				var this_x1 = x - this_width / 2;
+				var this_x2 = x + this_width / 2;
+				var inOrOut = temp.obj.style.backgroundColor == "" ? "out" : "in";
+				var position = WhichLineTheBlockIn(this_x1, this_x2, this_y1, this_y2, inOrOut)
+				switch(position) {
+					case "top":
+						var S_L = getCurrentBlock("top", "out");
+						for(var e = 0; e < S_L.length; e++) {
+							if(S_L[e].x2 >= this_x2 && (S_L[e].x2 - this_x2) < (S_L[e].x2 - S_L[e].x1)) return true;
+							if(S_L[e].x1 < this_x1 && (this_x1 - S_L[e].x1) < (S_L[e].x2 - S_L[e].x1)) return true;
+						}
+						var L_L = getCurrentBlock("left", "out");
+						for(var w = 0; w < L_L.length; w++) {
+							if(L_L[w].y1 < INIT.y1 && this_x1 < INIT.x1) return true;
+						}
+						var R_L = getCurrentBlock("right", "out");
+						for(var r = 0; r < R_L.length; r++) {
+							if(R_L[r].y1 < INIT.y1 && this_x2 > INIT.x2) return true;
+						}
+						var I_T_L = getCurrentBlock("top", "in");
+						for(var y = 0; y < I_T_L.length; y++) {
+							if(I_T_L[y].x2 >= this_x2 && (I_T_L[y].x2 - this_x2) < (I_T_L[y].x2 - I_T_L[y].x1)) return true;
+							if(I_T_L[y].x1 < this_x1 && (this_x1 - I_T_L[y].x1) < (I_T_L[y].x2 - I_T_L[y].x1)) return true;
+						}
+						if(inOrOut == "in") {
+							var I_L_L = getCurrentBlock("left", "in");
+							var I_R_L = getCurrentBlock("right", "in");
+							for(var o = 0; o < I_L_L.length; o++) {
+								if((I_L_L[o].y1 - INIT.y1) < (this_y2 - this_y1) && (this_x1 - INIT.x1) < (I_L_L[o].x2 - I_L_L[o].x1)) return true;
+							}
+							for(var u = 0; u < I_R_L.length; u++) {
+								if((I_R_L[u].y1 - INIT.y1) < (this_y2 - this_y1) && (INIT.x2 - this_x2) < (I_R_L[u].x2 - I_R_L[u].x1)) return true;
+							}
+						} else {
+							var I_L_L = getCurrentBlock("left", "in");
+							var I_R_L = getCurrentBlock("right", "in");
+							for(var o = 0; o < I_L_L.length; o++) {
+								if((I_L_L[o].y1 - INIT.y1).toFixed(3) == 0 && (this_x1 - INIT.x1) < (I_L_L[o].x2 - I_L_L[o].x1)) return true;
+							}
+							for(var u = 0; u < I_R_L.length; u++) {
+								if((I_R_L[u].y1 - INIT.y1).toFixed(3) == 0 && (INIT.x2 - this_x2) < (I_R_L[u].x2 - I_R_L[u].x1)) return true;
+							}
+						}
+						break;
+					case "bottom":
+						var S_L = getCurrentBlock("bottom", "out");
+						for(var e = 0; e < S_L.length; e++) {
+							if(S_L[e].x2 >= this_x2 && (S_L[e].x2 - this_x2) < (S_L[e].x2 - S_L[e].x1)) return true;
+							if(S_L[e].x1 < this_x1 && (this_x1 - S_L[e].x1) < (S_L[e].x2 - S_L[e].x1)) return true;
+						}
+						var L_L = getCurrentBlock("left", "out");
+						for(var w = 0; w < L_L.length; w++) {
+							if(L_L[w].y2 > INIT.y2 && this_x1 < INIT.x1) return true;
+						}
+						var R_L = getCurrentBlock("right", "out");
+						for(var r = 0; r < R_L.length; r++) {
+							if(R_L[r].y2 > INIT.y2 && this_x2 > INIT.x2) return true;
+						}
+						var I_T_L = getCurrentBlock("bottom", "in");
+						for(var y = 0; y < I_T_L.length; y++) {
+							if(I_T_L[y].x2 >= this_x2 && (I_T_L[y].x2 - this_x2) < (I_T_L[y].x2 - I_T_L[y].x1)) return true;
+							if(I_T_L[y].x1 < this_x1 && (this_x1 - I_T_L[y].x1) < (I_T_L[y].x2 - I_T_L[y].x1)) return true;
+						}
+						if(inOrOut == "in") {
+							var I_L_L = getCurrentBlock("left", "in");
+							var I_R_L = getCurrentBlock("right", "in");
+							for(var o = 0; o < I_L_L.length; o++) {
+								if((INIT.y2 - I_L_L[o].y2) < (this_y2 - this_y1) && (this_x1 - INIT.x1) < (I_L_L[o].x2 - I_L_L[o].x1)) return true;
+							}
+							for(var u = 0; u < I_R_L.length; u++) {
+								if((INIT.y2 - I_R_L[u].y2) < (this_y2 - this_y1) && (INIT.x2 - this_x2) < (I_R_L[u].x2 - I_R_L[u].x1)) return true;
+							}
+						} else {
+							var I_L_L = getCurrentBlock("left", "in");
+							var I_R_L = getCurrentBlock("right", "in");
+							for(var o = 0; o < I_L_L.length; o++) {
+								if((INIT.y2 - I_L_L[o].y2).toFixed(3) == 0 && (this_x1 - INIT.x1) < (I_L_L[o].x2 - I_L_L[o].x1)) return true;
+							}
+							for(var u = 0; u < I_R_L.length; u++) {
+								if((INIT.y2 - I_R_L[u].y2).toFixed(3) == 0 && (INIT.x2 - this_x2) < (I_R_L[u].x2 - I_R_L[u].x1)) return true;
+							}
+						}
+						break;
+					case "left":
+						var S_L = getCurrentBlock("left", "out");
+						for(var e = 0; e < S_L.length; e++) {
+							if(S_L[e].y2 >= this_y2 && (S_L[e].y2 - this_y2) < (S_L[e].y2 - S_L[e].y1)) return true;
+							if(S_L[e].y1 < this_y1 && (this_y1 - S_L[e].y1) < (S_L[e].y2 - S_L[e].y1)) return true;
+						}
+						var T_L = getCurrentBlock("top", "out");
+						for(var w = 0; w < T_L.length; w++) {
+							if(T_L[w].x1 < INIT.x1 && this_y1 < INIT.y1) return true;
+						}
+						var B_L = getCurrentBlock("bottom", "out");
+						for(var r = 0; r < B_L.length; r++) {
+							if(B_L[r].x1 < INIT.x1 && this_y2 > INIT.y2) return true;
+						}
+						var I_L_L = getCurrentBlock("left", "in");
+						for(var y = 0; y < I_L_L.length; y++) {
+							if(I_L_L[y].y2 >= this_y2 && (I_L_L[y].y2 - this_y2) < (I_L_L[y].y2 - I_L_L[y].y1)) return true;
+							if(I_L_L[y].y1 < this_y1 && (this_y1 - I_L_L[y].y1) < (I_L_L[y].y2 - I_L_L[y].y1)) return true;
+						}
+						if(inOrOut == "in") {
+							var I_T_L = getCurrentBlock("top", "in");
+							var I_B_L = getCurrentBlock("bottom", "in");
+							for(var o = 0; o < I_T_L.length; o++) {
+								if((I_T_L[o].x1 - INIT.x1) < (this_x2 - this_x1) && (this_y1 - INIT.y1) < (I_T_L[o].y2 - I_T_L[o].y1)) return true;
+							}
+							for(var u = 0; u < I_B_L.length; u++) {
+								if((I_B_L[u].x1 - INIT.x1) < (this_x2 - this_x1) && (INIT.y2 - this_y2) < (I_B_L[u].y2 - I_B_L[u].y1)) return true;
+							}
+						} else {
+							var I_T_L = getCurrentBlock("top", "in");
+							var I_B_L = getCurrentBlock("bottom", "in");
+							for(var o = 0; o < I_T_L.length; o++) {
+								if((I_T_L[o].x1 - INIT.x1).toFixed(3) == 0 && (this_y1 - INIT.y1) < (I_T_L[o].y2 - I_T_L[o].y1)) return true;
+							}
+							for(var u = 0; u < I_B_L.length; u++) {
+								if((I_B_L[u].x1 - INIT.x1).toFixed(3) == 0 && (INIT.y2 - this_y1) < (I_B_L[u].y2 - I_B_L[u].y1)) return true;
+							}
+						}
+						break;
+					case "right":
+
+						var S_L = getCurrentBlock("right", "out");
+						for(var e = 0; e < S_L.length; e++) {
+							if(S_L[e].y2 >= this_y2 && (S_L[e].y2 - this_y2) < (S_L[e].y2 - S_L[e].y1)) return true;
+							if(S_L[e].y1 < this_y1 && (this_y1 - S_L[e].y1) < (S_L[e].y2 - S_L[e].y1)) return true;
+						}
+						var T_L = getCurrentBlock("top", "out");
+						for(var w = 0; w < T_L.length; w++) {
+							if(T_L[w].x2 > INIT.x2 && this_y1 < INIT.y1) return true;
+						}
+						var B_L = getCurrentBlock("bottom", "out");
+						for(var r = 0; r < B_L.length; r++) {
+							if(B_L[r].x2 > INIT.x2 && this_y2 > INIT.y2) return true;
+						}
+						var I_R_L = getCurrentBlock("right", "in");
+						for(var y = 0; y < I_R_L.length; y++) {
+							if(I_R_L[y].y2 >= this_y2 && (I_R_L[y].y2 - this_y2) < (I_R_L[y].y2 - I_R_L[y].y1)) return true;
+							if(I_R_L[y].y1 < this_y1 && (this_y1 - I_R_L[y].y1) < (I_R_L[y].y2 - I_R_L[y].y1)) return true;
+						}
+						if(inOrOut == "in") {
+							var I_T_L = getCurrentBlock("top", "in");
+							var I_B_L = getCurrentBlock("bottom", "in");
+							for(var o = 0; o < I_T_L.length; o++) {
+								if((INIT.x2 - I_T_L[o].x2) < (this_x2 - this_x1) && (this_y1 - INIT.y1) < (I_T_L[o].y2 - I_T_L[o].y1)) return true;
+							}
+							for(var u = 0; u < I_B_L.length; u++) {
+								if((INIT.x2 - I_B_L[u].x2) < (this_x2 - this_x1) && (INIT.y2 - this_y2) < (I_B_L[u].y2 - I_B_L[u].y1)) return true;
+							}
+						} else {
+							var I_T_L = getCurrentBlock("top", "in");
+							var I_B_L = getCurrentBlock("bottom", "in");
+							for(var o = 0; o < I_T_L.length; o++) {
+								if((INIT.x2 - I_T_L[o].x2).toFixed(3) == 0 && (this_y1 - INIT.y1) < (I_T_L[o].y2 - I_T_L[o].y1)) return true;
+							}
+							for(var u = 0; u < I_B_L.length; u++) {
+								if((INIT.x2 - I_B_L[u].x2).toFixed(3) == 0 && (INIT.y2 - this_y1) < (I_B_L[u].y2 - I_B_L[u].y1)) return true;
+							}
+						}
+						break;
+					default:
+						return true;
+						break;
+				}
+
+				return false;
+				/**
+				 * 获取满足条件的块
+				 * @param  {String} position [top|bottom|left|right]
+				 * @param  {String} inOrOut  [in|out]
+				 * @return {Array}         符合条件的块数组
+				 */
+				function getCurrentBlock(position, inOrOut) {
+					var blocks = [];
+					if(inOrOut == 'out') {
+						for(var s = 0; s < OUT.length; s++) {
+							if(OUT[s].position == position) blocks.push(OUT[s]);
+						}
+					} else {
+						for(var s = 0; s < IN.length; s++) {
+							if(IN[s].position == position) blocks.push(IN[s]);
+						}
+					}
+					return blocks;
+				}
+			}
+
+			/**
+			 * calcScale 计算比例尺
+			 * @param  {Number} W 宽度
+			 * @param  {Number} D 长度
+			 * @return {Number} 返回计算出来的比例尺
+			 */
+			function calcScale(W, D) {
+				var h = canvas.height * 2 / 3;
+				var w = canvas.width * 2 / 3;
+				return W / D * h > w ? W / w : D / h;
+			}
+
+			/**
+			 * calcInitArea 计算初始房间的坐标以及计算比例尺
+			 */
+			function calcInitArea() {
+				scale = calcScale(INIT.w, INIT.d);
+				document.getElementById("scale").innerText = (scale * 100).toFixed(2) + '米';
+				var W_px = INIT.w / scale;
+				var D_px = INIT.d / scale;
+				var midpoint = {
+					"x": SCREEN.width / 2,
+					"y": (SCREEN.height - TOOLBAR.height) / 2
+				}
+				INIT.x1 = midpoint.x - W_px / 2;
+				INIT.x2 = midpoint.x + W_px / 2;
+				INIT.y1 = midpoint.y - D_px / 2;
+				INIT.y2 = midpoint.y + D_px / 2;
+			}
+
+			/**
+			 * 使组件吸附在初始图像之上
+			 * @param {Object} x
+			 * @param {Object} y
+			 * @param {String} 内部或外部[in|out]
+			 * @return {Object} 返回吸附的组件中心坐标
+			 */
+			function gravityCoordinate(x, y, position) {
+				var d = temp.obj_H / 2;
+				var w = temp.obj_W / 2;
+				var x1 = INIT.x1;
+				var x2 = INIT.x2;
+				var y1 = INIT.y1 + TOOLBAR.height + SCREEN.topbar;
+				var y2 = INIT.y2 + TOOLBAR.height + SCREEN.topbar;
+				var A = y2 - y1;
+				var B = x2 - x1;
+				if(position == "out") {
+					// if (x < (x1 - w) && y < (y1 - d)) return [x1 - w, y1 - d];
+					// if (x >= (x2 + w) && y < (y1 - d)) return [x2 + w, y1 - d];
+					// if (x < (x1 - w) && y >= (y2 + d)) return [x1 - w, y2 + d];
+					// if (x >= (x2 + w) && y >= (y2 + d)) return [x2 + w, y2 + d];
+					// 以上代码注释以防止块落在初始块的四角导致无法判断块所属边线
+					if((x < (x1 - w) && y >= (y1 - d) && y < y1) || (x < x1 && y >= y1 && y < y2) || (x < (x1 - w) && y >= y2 && y < (y2 + d))) return [x1 - w, y];
+					if((x >= (x1 - w) && x < x1 && y < (y1 - d)) || (x >= x1 && x < x2 && y < y1) || (x >= x2 && x < (x2 + w) && y < (y1 - d))) return [x, y1 - d];
+					if((x >= (x2 + w) && y >= (y1 - d) && y < y1) || (x >= x2 && y >= y1 && y < y2) || (x >= (x2 + w) && y >= y2 && y < (y2 + d))) return [x2 + w, y];
+					if((x >= x2 && x < (x2 + w) && y >= (y2 + d)) || (x >= x1 && x < x2 && y > y2) || (x >= (x1 - w) && x < x1 && y >= (y2 + d))) return [x, y2 + d];
+					if((x >= (x1 - w) && x < x1 && y >= (y1 - d) && y < y1)) return((y - (y1 - d)) > d / w * (x - (x1 - w))) ? [x, y1 - d] : [x1 - w, y];
+					if(x >= x2 && x < (x2 + w) && y >= (y1 - d) && y < y1) return((y - (y1 - d)) < (-d / w * (x - x2) + d)) ? [x, y1 - d] : [x2 + w, y];
+					if(x >= x2 && x < (x2 + w) && y >= y2 && y < (y2 + d)) return((y - y2) > -d / w * (x - x2)) ? [x2 + w, y] : [x, y2 + d];
+					if(x >= (x1 - w) && x < x1 && y >= y2 && y < (y2 + d)) return((y - y2) > w / d * (x - x1)) ? [x1 - w, y] : [x, y2 + d];
+					if(x >= x1 && x < x2 && y >= y1 && y < y2) { //触点在初始形状内部
+						if((y - y1) < (A / B * (x - x1))) {
+							return((y - y1) < (-A / B * (x - x1) + A)) ? [x, y1 - d] : [x2 + w, y];
+						} else {
+							return((y - y1) < (-A / B * (x - x1) + A)) ? [x1 - w, y] : [x, y2 + d];
+						}
+					}
+				} else {
+					if(x >= x1 && x < x2 && y >= y1 && y < y2) { //区域内
+						var R_T = (y - y1) < A / B * (x - x1);
+						var L_T = (y - y1) < -A / B * (x - x1) + A;
+						if(R_T && L_T) {
+							if(x >= x1 && x < (x1 + w)) return [x1 + w, y1 + d];
+							if(x >= (x2 - w) && x < x2) return [x2 - w, y1 + d];
+							return [x, y1 + d];
+						}
+						if(!R_T && L_T) {
+							if(y >= y1 && y < (y1 + d)) return [x1 + w, y1 + d];
+							if(y >= (y2 - d) && y < y2) return [x1 + w, y2 - d];
+							return [x1 + w, y];
+						}
+						if(!R_T && !L_T) {
+							if(x >= x1 && x < (x1 + w)) return [x1 + w, y2 - d];
+							if(x >= (x2 - w) && x < x2) return [x2 - w, y2 - d];
+							return [x, y2 - d];
+						}
+						if(R_T && !L_T) {
+							if(y >= y1 && y < (y1 + d)) return [x2 - w, y1 + d];
+							if(y >= (y2 - d) && y < y2) return [x2 - w, y2 - d];
+							return [x2 - w, y];
+						}
+					} else { //区域外
+						// if ((x < (x1 + w) && y < (y1 + d))) return [x1 + w, y1 + d];
+						// if (x < (x1 + w) && y >= (y2 - d)) return [x1 + w, y2 - d];
+						// if (x >= (x2 - w) && y >= (y2 - d)) return [x2 - w, y2 - d];
+						// if (x >= (x2 - w) && y < (y1 + d)) return [x2 - w, y1 + d];
+						// 以上代码注释以防止块落在初始块的四角导致无法判断块所属边线
+						if(x < x1 && y >= (y1 + d) && y < (y2 - d)) return [x1 + w, y];
+						if(x >= (x1 + w) && x < (x2 - w) && y >= y2) return [x, y2 - d];
+						if(x >= x2 && y >= (y1 + d) && y < (y2 - d)) return [x2 - w, y];
+						if(x >= (x1 + w) && x < (x2 - w) && y < y1) return [x, y1 + d];
+					}
+				}
+				return null;
+			}
+
+			/**
+			 * 新增一个外部区域
+			 * @param {Object} x
+			 * @param {Object} y
+			 * @param {Object} callback
+			 */
+			function putBlockOut(x, y, callback) {
+				var this_height = temp.obj.style.height.split("px")[0];
+				var this_width = temp.obj.style.width.split("px")[0];
+				var this_y1 = y - this_height / 2;
+				var this_y2 = y + this_height / 2;
+				var this_x1 = x - this_width / 2;
+				var this_x2 = x + this_width / 2;
+				OUT.push({
+					"x": x,
+					"y": y,
+					"x1": this_x1,
+					"x2": this_x2,
+					"y1": this_y1,
+					"y2": this_y2,
+					"position": WhichLineTheBlockIn(this_x1, this_x2, this_y1, this_y2, "out")
+				});
+				can.strokeRect(this_x1, this_y1, this_x2 - this_x1, this_y2 - this_y1);
+				areaSet.open(WhichblockClickIn(x, y));
+				callback();
+			}
+
+			/**
+			 * 新增一个内部区域
+			 * @param {Object} x
+			 * @param {Object} y
+			 * @param {Object} callback
+			 */
+			function putBlockIn(x, y, callback) {
+				var this_height = temp.obj.style.height.split("px")[0];
+				var this_width = temp.obj.style.width.split("px")[0];
+				var this_y1 = y - this_height / 2;
+				var this_y2 = y + this_height / 2;
+				var this_x1 = x - this_width / 2;
+				var this_x2 = x + this_width / 2;
+				IN.push({
+					"x": x,
+					"y": y,
+					"x1": this_x1,
+					"x2": this_x2,
+					"y1": this_y1,
+					"y2": this_y2,
+					"position": WhichLineTheBlockIn(this_x1, this_x2, this_y1, this_y2, "in")
+				});
+				can.fillRect(this_x1, this_y1, this_x2 - this_x1, this_y2 - this_y1);
+				areaSet.open(WhichblockClickIn(x, y));
+				callback();
+			}
+
+			/**
+			 * 判断某个方块是落在哪条边上。
+			 * @param {Number} x1
+			 * @param {Number} x2
+			 * @param {Number} y1
+			 * @param {Number} y2
+			 * @param {String} position [out|in]
+			 * @return {String} [top|bottom|left|right]
+			 */
+			function WhichLineTheBlockIn(x1, x2, y1, y2, position) {
+				if(position == "out") {
+					if(x2.toFixed(3) == INIT.x1.toFixed(3)) return "left";
+					if(x1.toFixed(3) == INIT.x2.toFixed(3)) return "right";
+					if(y2.toFixed(3) == INIT.y1.toFixed(3)) return "top";
+					if(y1.toFixed(3) == INIT.y2.toFixed(3)) return "bottom";
+				} else {
+					if(x1.toFixed(3) == INIT.x1.toFixed(3)) return "left";
+					if(x2.toFixed(3) == INIT.x2.toFixed(3)) return "right";
+					if(y1.toFixed(3) == INIT.y1.toFixed(3)) return "top";
+					if(y2.toFixed(3) == INIT.y2.toFixed(3)) return "bottom";
+				}
+				return null;
+			}
+
+			/**
+			 * 判断在画布中的点击点击到的是什么元素
+			 * @param {Number} x
+			 * @param {Number} y
+			 * @retrun {JSON} {"position":是内部元素或外部元素[in|out],"index":该元素在内部或外部元素组中的索引,"object":该元素}
+			 */
+			function WhichblockClickIn(x, y) {
+				if(x > INIT.x1 && x < INIT.x2 && y > INIT.y1 && y < INIT.y2) {
+					for(var a = 0; a < IN.length; a++) {
+						if(x > IN[a].x1 && x < IN[a].x2 && y > IN[a].y1 && y < IN[a].y2) return {
+							"position": "in",
+							"index": a,
+							"object": IN[a]
+						}
+					}
+				} else {
+					for(var b = 0; b < OUT.length; b++) {
+						if(x > OUT[b].x1 && x < OUT[b].x2 && y > OUT[b].y1 && y < OUT[b].y2) return {
+							"position": "out",
+							"index": b,
+							"object": OUT[b]
+						}
+					}
+				}
+				return null;
+			}
+
+			var areaSet = {};
+			/**
+			 * 打开区域设置板
+			 * @param  {Object} object 正在编辑的对象
+			 */
+			areaSet.open = function(object) {
+					reDraw();
+					temp.selectObj = object;
+					document.getElementById("area_w").value = ((object.object.x2 - object.object.x1) * scale).toFixed(3);
+					document.getElementById("area_h").value = ((object.object.y2 - object.object.y1) * scale).toFixed(3);
+					document.getElementById("position_length").value = (subLine.get(object.position, object.object.position, object.object) * scale).toFixed(3);
+					subLine.show(object.position, object.object.position, object.object);
+					areaSetBlock.style.top = '100px';
+				}
+				/**
+				 * 保存输入的数据并重绘画布
+				 */
+			areaSet.save = function() {
+					var new_co = subLine.calc(temp.selectObj.position, temp.selectObj.object.position, temp.selectObj.object, Number(document.getElementById("area_w").value) / scale, Number(document.getElementById("area_h").value) / scale, Number(document.getElementById(
+							"position_length")
+						.value) / scale);
+					temp.selectObj.position == 'out' ? (OUT[temp.selectObj.index].x1 = new_co.x1, OUT[temp.selectObj.index].x2 = new_co.x2, OUT[temp.selectObj.index].y1 = new_co.y1, OUT[temp.selectObj.index].y2 = new_co.y2) : (IN[temp.selectObj.index].x1 = new_co.x1,
+						IN[temp.selectObj.index].x2 = new_co.x2, IN[temp.selectObj.index]
+						.y1 = new_co.y1, IN[temp.selectObj.index].y2 = new_co.y2);
+					this.close();
+				}
+				/**
+				 * 删除组件
+				 */
+			areaSet.delete = function() {
+					temp.selectObj.position == "out" ? OUT.splice(temp.selectObj.index, 1) : IN.splice(temp.selectObj.index, 1);
+					this.close();
+				}
+				/**
+				 * 关闭区域设置版
+				 */
+			areaSet.close = function() {
+				document.getElementById("area_w").value = "";
+				document.getElementById("area_h").value = "";
+				document.getElementById("position_length").value = "";
+				areaSetBlock.style.top = '47px';
+				reDraw();
+				temp.selectObj = null;
+			}
+
+			/**
+			 * 重绘画布
+			 * @param {Function} callback 重绘完成的成功回调
+			 */
+			function reDraw(callback) {
+				clearCanvas();
+				can.strokeRect(INIT.x1, INIT.y1, INIT.x2 - INIT.x1, INIT.y2 - INIT.y1);
+				for(var a = 0; a < IN.length; a++) {
+					can.fillRect(IN[a].x1, IN[a].y1, IN[a].x2 - IN[a].x1, IN[a].y2 - IN[a].y1);
+				}
+				for(var b = 0; b < OUT.length; b++) {
+					can.strokeRect(OUT[b].x1, OUT[b].y1, OUT[b].x2 - OUT[b].x1, OUT[b].y2 - OUT[b].y1);
+				}
+			}
+
+			/**
+			 * 辅助线
+			 */
+			var subLine = {};
+			/**
+			 * 显示辅助线
+			 * @param {String} inOrOut  块在区域内或区域外[in|out]
+			 * @param {String} position 块在区域的位置[top|bottom|left|right]
+			 * @param {Object} object   选择的块对象
+			 */
+			subLine.show = function(inOrOut, position, object) {
+				if(inOrOut == "out") {
+					switch(position) {
+						case "top":
+							if(object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1)) {
+								setColor("#f8b551");
+								can.fillRect(object.x2, object.y2, INIT.x2 - object.x2, 3);
+								setColor("#000");
+							} else {
+								setColor("#f8b551");
+								can.fillRect(INIT.x1, INIT.y1, object.x1 - INIT.x1, 3);
+								setColor("#000");
+							}
+							break;
+						case "bottom":
+							if(object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1)) {
+								setColor("#f8b551");
+								can.fillRect(object.x2, object.y1, INIT.x2 - object.x2, 3);
+								setColor("#000");
+							} else {
+								setColor("#f8b551");
+								can.fillRect(INIT.x1, INIT.y2, object.x1 - INIT.x1, 3);
+								setColor("#000");
+							}
+							break;
+						case "left":
+							if(object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1)) {
+								setColor("#f8b551");
+								can.fillRect(object.x2, object.y2, 3, INIT.y2 - object.y2);
+								setColor("#000");
+							} else {
+								setColor("#f8b551");
+								can.fillRect(INIT.x1, INIT.y1, 3, object.y1 - INIT.y1);
+								setColor("#000");
+							}
+							break;
+						case "right":
+							if(object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1)) {
+								setColor("#f8b551");
+								can.fillRect(object.x1, object.y2, 3, INIT.y2 - object.y2);
+								setColor("#000");
+							} else {
+								setColor("#f8b551");
+								can.fillRect(INIT.x2, INIT.y1, 3, object.y1 - INIT.y1);
+								setColor("#000");
+							}
+							break;
+						default:
+							break;
+					}
+				} else {
+					switch(position) {
+						case "top":
+							if(object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1)) {
+								setColor("#f8b551");
+								can.fillRect(object.x2, object.y1, INIT.x2 - object.x2, 3);
+								setColor("#000");
+							} else {
+								setColor("#f8b551");
+								can.fillRect(INIT.x1, INIT.y1, object.x1 - INIT.x1, 3);
+								setColor("#000");
+							}
+							break;
+						case "bottom":
+							if(object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1)) {
+								setColor("#f8b551");
+								can.fillRect(object.x2, object.y2, INIT.x2 - object.x2, 3);
+								setColor("#000");
+							} else {
+								setColor("#f8b551");
+								can.fillRect(INIT.x1, INIT.y2, object.x1 - INIT.x1, 3);
+								setColor("#000");
+							}
+							break;
+						case "left":
+							if(object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1)) {
+								setColor("#f8b551");
+								can.fillRect(object.x1, object.y2, 3, INIT.y2 - object.y2);
+								setColor("#000");
+							} else {
+								setColor("#f8b551");
+								can.fillRect(INIT.x1, INIT.y1, 3, object.y1 - INIT.y1);
+								setColor("#000");
+							}
+							break;
+						case "right":
+							if(object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1)) {
+								setColor("#f8b551");
+								can.fillRect(object.x2, object.y2, 3, INIT.y2 - object.y2);
+								setColor("#000");
+							} else {
+								setColor("#f8b551");
+								can.fillRect(INIT.x2, INIT.y1, 3, object.y1 - INIT.y1);
+								setColor("#000");
+							}
+							break;
+						default:
+							break;
+					}
+				}
+			}
+
+			/**
+			 * 计算辅助线长度
+			 * @param {String} inOrOut  块在区域内或区域外[in|out]
+			 * @param {String} position 块在区域的位置[top|bottom|left|right]
+			 * @param {Object} object   选择的块对象
+			 * @return {Number} 辅助线的像素长度
+			 */
+			subLine.get = function(inOrOut, position, object) {
+				if(inOrOut == "out") {
+					switch(position) {
+						case "top":
+							return object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1) ? (INIT.x2 - object.x2) : (object.x1 - INIT.x1);
+							break;
+						case "bottom":
+							return object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1) ? (INIT.x2 - object.x2) : (object.x1 - INIT.x1);
+							break;
+						case "left":
+							return object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1) ? (INIT.y2 - object.y2) : (object.y1 - INIT.y1);
+							break;
+						case "right":
+							return object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1) ? (INIT.y2 - object.y2) : (object.y1 - INIT.y1);
+							break;
+						default:
+							break;
+					}
+				} else {
+					switch(position) {
+						case "top":
+							return object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1) ? (INIT.x2 - object.x2) : (object.x1 - INIT.x1);
+							break;
+						case "bottom":
+							return object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1) ? (INIT.x2 - object.x2) : (object.x1 - INIT.x1);
+							break;
+						case "left":
+							return object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1) ? (INIT.y2 - object.y2) : (object.y1 - INIT.y1);
+							break;
+						case "right":
+							return object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1) ? (INIT.y2 - object.y2) : (object.y1 - INIT.y1);
+							break;
+						default:
+							break;
+					}
+				}
+			}
+
+			/**
+			 * 根据辅助线长度与位置，来重新计算x1,x2,y1,y2
+			 * @param {String} inOrOut  块在区域内或区域外[in|out]
+			 * @param {String} position 块在区域的位置[top|bottom|left|right]
+			 * @param {Object} object   选择的块对象
+			 * @param {Number} w 				宽(px)
+			 * @param {Number} h 				高(px)
+			 * @param {Number} l 				辅助线长度(px)
+			 * @return {Object} 返回计算所得的新坐标{"x1","x2","y1","y2"}
+			 */
+			subLine.calc = function(inOrOut, position, object, w, h, l) {
+				if(inOrOut == "out") {
+					switch(position) {
+						case "top":
+							return object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1) ? packageCo(INIT.x2 - l - w, INIT.x2 - l, INIT.y1 - h, INIT.y1) : packageCo(INIT.x1 + l, INIT.x1 + l + w, INIT.y1 - h, INIT.y1);
+							break;
+						case "bottom":
+							return object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1) ? packageCo(INIT.x2 - l - w, INIT.x2 - l, INIT.y2, INIT.y2 + h) : packageCo(INIT.x1 + l, INIT.x1 + l + w, INIT.y2, INIT.y2 + h);
+							break;
+						case "left":
+							return object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1) ? packageCo(INIT.x1 - w, INIT.x1, INIT.y2 - l - h, INIT.y2 - l) : packageCo(INIT.x1 - w, INIT.x1, INIT.y1 + l, INIT.y1 + l + h);
+							break;
+						case "right":
+							return object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1) ? packageCo(INIT.x2, INIT.x2 + w, INIT.y2 - l - h, INIT.y2 - l) : packageCo(INIT.x2, INIT.x2 + w, INIT.y1 + l, INIT.y1 + l + h);
+							break;
+						default:
+							break;
+					}
+				} else {
+					switch(position) {
+						case "top":
+							return object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1) ? packageCo(INIT.x2 - l - w, INIT.x2 - l, INIT.y1, INIT.y1 + h) : packageCo(INIT.x1 + l, INIT.x1 + l + w, INIT.y1, INIT.y1 + h);
+							break;
+						case "bottom":
+							return object.x1 >= ((INIT.x2 - INIT.x1) / 2 + INIT.x1) ? packageCo(INIT.x2 - l - w, INIT.x2 - l, INIT.y2 - h, INIT.y2) : packageCo(INIT.x1 + l, INIT.x1 + l + w, INIT.y2 - h, INIT.y2);
+							break;
+						case "left":
+							return object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1) ? packageCo(INIT.x1, INIT.x1 + w, INIT.y2 - l - h, INIT.y2 - l) : packageCo(INIT.x1, INIT.x1 + w, INIT.y1 + l, INIT.y1 + l + h);
+							break;
+						case "right":
+							return object.y1 >= ((INIT.y2 - INIT.y1) / 2 + INIT.y1) ? packageCo(INIT.x2 - w, INIT.x2, INIT.y2 - l - h, INIT.y2 - l) : packageCo(INIT.x2 - w, INIT.x2, INIT.y1 + l, INIT.y1 + l + h);
+							break;
+						default:
+							break;
+					}
+				}
+				/**
+				 * 将坐标封装为JSON格式
+				 * @param  {Number} x1
+				 * @param  {Number} x2
+				 * @param  {Number} y1
+				 * @param  {Number} y2
+				 * @return {JSON} {"x1":x1,"x2":x2,"y1":y1,"y2":y2}
+				 */
+				function packageCo(x1, x2, y1, y2) {
+					return {
+						"x1": x1,
+						"x2": x2,
+						"y1": y1,
+						"y2": y2
+					};
+				}
+			}
+
+			/**
+			 * 设置canvas画笔颜色
+			 * @param {String} color
+			 */
+			function setColor(color) {
+				can.strokeStyle = color;
+				can.fillStyle = color;
+			}
+
+			/**
+			 * 设置canvas画笔粗细
+			 * @param {Number} width
+			 */
+			function setLineWidth(width) {
+				can.lineWidth = 1;
+			}
+
+			/**
+			 * 清空画布
+			 */
+			function clearCanvas() {
+				can.clearRect(0, 0, SCREEN.width, SCREEN.height - TOOLBAR.height - SCREEN.topbar);
+			}
+
+			mui(".toolbar").on("tap", ".next-step", function() {
+				mui.prompt("请输入房屋的高度", "单位:米", "KKL", ["取消", "确认"], function(e) {
+					var z = e.value;
+					if(numReg.test(z) && z > 0) {
+						INIT.z = Number(z);
+						var data = {
+							"IN": IN,
+							"OUT": OUT,
+							"INIT": INIT,
+							"scale": scale
+						};
+						localStorage.setItem("gauge_data", JSON.stringify(data));
+						location.href = "index2.html?eventid=" + eventid + "&packagesort=" + packagesort;
+					} else {
+						mui.toast("您的输入有误，请确认后重试");
+						location.reload();
+					}
+				});
+
+			})
+		</script>
+
+	</body>
+
+</html>

@@ -71,28 +71,55 @@ mui.plusReady(function() {
 				});
 			},
 			__fAddDiagram: function(iRoomSortId, edit) { //调用画板画示意图,edit为空则为创建模式，否则为编辑模式。edit中内容为base64内容
-				mui.openWindow({
-					url: "../module/drawing_board.html",
-					id: "drawing_board",
-					styles: {
-						top: 0,
-						bottom: 0,
-						right: 0,
-						width: "100%",
-						height: "100%"
-					},
-					extras: {
-						eventid: eventid,
-						packagesort: iRoomSortId,
-						edit: edit
-					},
-					show: {
-						aniShow: "fade-in"
-					},
-					waiting: {
-						autoShow: false,
-					}
-				});
+				if(edit) {
+					localStorage.setItem("gauge_data", vueContent.event.content.room[iRoomSortId].graph_info);
+					setTimeout(function() {
+						mui.openWindow({
+							url: "../module/smart-gauge-room/index2.html?eventid=" + eventid + "&packagesort=" + iRoomSortId,
+							id: "drawing_board",
+							styles: {
+								top: 0,
+								bottom: 0,
+								right: 0,
+								width: "100%",
+								height: "100%"
+							},
+							extras: {
+								eventid: eventid,
+								packagesort: iRoomSortId,
+							},
+							show: {
+								aniShow: "fade-in"
+							},
+							waiting: {
+								autoShow: false,
+							}
+						});
+					}, 5)
+
+				} else {
+					mui.openWindow({
+						url: "../module/smart-gauge-room/index.html",
+						id: "drawing_board",
+						styles: {
+							top: 0,
+							bottom: 0,
+							right: 0,
+							width: "100%",
+							height: "100%"
+						},
+						extras: {
+							eventid: eventid,
+							packagesort: iRoomSortId,
+						},
+						show: {
+							aniShow: "fade-in"
+						},
+						waiting: {
+							autoShow: false,
+						}
+					});
+				}
 			}
 		}
 	});
@@ -106,6 +133,8 @@ mui.plusReady(function() {
 		var tempdiagramarr = event.detail.split("///");
 		var imgkey = tempdiagramarr[2];
 		vueContent.event.content.room[tempdiagramarr[1]].diagram = myStorage.getItem(imgkey);
+		vueContent.event.content.room[tempdiagramarr[1]].graph_info = localStorage.getItem("gauge_data");
+		localStorage.removeItem("gauge_data");
 		myStorage.removeItem(imgkey);
 	});
 
@@ -131,17 +160,17 @@ mui.plusReady(function() {
 	 */
 	function __fIsSizeImagesDiagramEmpty(arr) {
 		for(let arritem of arr) {
-			if(arritem.size) return true; //根据需求，只需要填好面积即可
+			if(arritem.graph_info) return true; //根据需求，只需要填好面积即可
 		}
 		return false;
 	}
 	/**
-	 * 删除size为空的项
+	 * 删除graph_info为空的项
 	 * @param {Array} arr
 	 */
-	function __fDeleteSizeImagesDiagramEmpty(arr) {
+	function __fDeleteGraphImagesDiagramEmpty(arr) {
 		for(var i = arr.length - 1; i >= 0; i--) {
-			if(!arr[i].size) {
+			if(!arr[i].graph_info) {
 				arr.$remove(arr[i]);
 			}
 		}
@@ -183,7 +212,7 @@ mui.plusReady(function() {
 		if(__fIsSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.room)) {
 			uploading.setTitle("正在上传量房信息，请耐心等待...");
 			//过滤空数据
-			__fDeleteSizeImagesDiagramEmpty(tempdata.event[eventsortid].content.room);
+			__fDeleteGraphImagesDiagramEmpty(tempdata.event[eventsortid].content.room);
 			//进入备注逻辑
 			__fSetAlias(tempdata.event[eventsortid].content.room);
 		} else {
@@ -246,13 +275,13 @@ mui.plusReady(function() {
 					"house_id": tempdata.event[eventsortid].house_id,
 					"room_id": tempdata.event[eventsortid].content.room[a].room_id,
 					"alias": tempdata.event[eventsortid].content.room[a].alias,
-					"area": tempdata.event[eventsortid].content.room[a].size,
+					"graph_info": tempdata.event[eventsortid].content.room[a].graph_info,
 					"plan_t_img": tempdata.event[eventsortid].content.room[a].diagram,
 					"measure_t_imgs": myStorage.getItem("tempimg")[a]
 				})
 			}
 			common.ajax("house-room/batch-create", {
-				"items": JSON.stringify(data)
+				"jsbody": JSON.stringify(data)
 			}, "POST", function(data) {
 				uploading.close()
 				console.log(JSON.stringify(data));

@@ -247,12 +247,12 @@
 				<div v-for="room in event.content.room" class="package-item" track-by="$index">
 					<div class="room-name">{{room.name}}</div>
 					<div class="add-same" @tap="__fAddSameTypeRoomAfter($index)"><img src="../images/guage_plus.png"></div>
-					<div class="room-alias"><input type="text" v-model="room.alias" placeholder="添加备注"></div>
+					<!--<div class="room-alias"><input type="text" v-model="room.alias" placeholder="添加备注"></div>-->
 					<div class="package-text-image">
 						<div class="mui-content-padded" style="margin: 5px 10px;">
 							<div class="mui-input-row">
-								<label>面积</label>
-								<input type="number" placeholder="请输入面积" v-model="room.size"><span>米²</span>
+								<label>备注</label>
+								<input type="number" placeholder="请输入备注" v-model="room.alias">
 							</div>
 							<div class="picture-area">
 								<div class="packagesort" v-bind:data-id="$index">

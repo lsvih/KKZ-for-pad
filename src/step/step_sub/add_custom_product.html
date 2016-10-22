@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<link rel="stylesheet" href="../../css/mui.css" />
+	<style>
+		body {
+			background-color: #fff;
+		}
+		
+		header {
+			height: 40px;
+			padding: 20px 30px 0;
+		}
+		
+		.submit-btn {
+			width: 100px;
+			background-color: #00b06c
+		}
+		
+		.mui-icon-closeempty {
+			font-size: 38px
+		}
+		
+		.mui-scroll-wrapper {
+			margin-top: 60px;
+			padding: 0 70px;
+		}
+		
+		.mui-input-row {
+			margin-top: 30px;
+			height: 60px;
+			border-bottom: 1px solid #eee;
+		}
+		
+		.mui-input-row label~select {
+			border: 1px solid #00B06C!important;
+			width: 45%;
+			float: left;
+			padding-left: 5px
+		}
+	</style>
+
+	<body>
+		<header>
+			<span class="mui-pull-left mui-icon mui-icon-closeempty"></span>
+			<span class="mui-pull-right"><button class="mui-btn-green submit-btn">确认</button></span>
+		</header>
+		<div class="mui-scroll-wrapper">
+			<label>商品名称：</label><input type="text" id="product_name">
+			<label>商品价格：</label><input type="text" id="product_price">
+			<label>商品数量：</label><input type="number" id="product_num">
+		</div>
+	</body>
+	<script type="text/javascript" src="../../js/lsvih.js"></script>
+	<script type="text/javascript" src="../../js/lib/vue.js"></script>
+	<script type="text/javascript" src="../../js/lib/mui.js"></script>
+	<script type="text/javascript" src="../../js/storage.js"></script>
+	<script type="text/javascript" src="../../js/common.js"></script>
+
+</html>
+<script>
+	var uploading;
+	var custom_id = GetRequest().id;
+	mui.plusReady(function() {
+		mui("header").on("tap", ".mui-icon-closeempty", function() {
+			plus.webview.currentWebview().opener().setStyle({
+				mask: 'none'
+			});
+			plus.webview.currentWebview().close();
+		});
+		mui("header").on("tap", ".submit-btn", function() {
+			if(document.getElementById("product_name").value !== "" && document.getElementById("product_num").value !== "" && document.getElementById("product_price").value !== "") {
+				uploading = plus.nativeUI.showWaiting("正在上传自定义商品，请稍后...");
+				fPostCustomProduct();
+			} else {
+				mui.toast("请完成全部数据填写");
+				return false;
+			}
+		})
+	})
+
+	function fPostCustomProduct() {
+		mui.toast("成功添加自定义商品");
+		uploading.close();
+		var product_info = {
+			'id': custom_id,
+			'name': document.getElementById("product_name").value,
+			'price': document.getElementById("product_price").value,
+			'num': document.getElementById("product_num").value
+		}
+		mui.fire(plus.webview.currentWebview().opener(), "custom", product_info);
+		plus.webview.currentWebview().opener().setStyle({
+			mask: 'none'
+		});
+		plus.webview.currentWebview().close();
+	}
+</script>

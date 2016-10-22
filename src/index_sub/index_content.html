@@ -51,7 +51,7 @@
 				</div>
 				<div class="block">
 					<span>待量房</span><br/>
-					<span class="check-time">预约上门时间：<span>
+					<span class="check-time">预约上门时间：
 						<input type="datetime-local" id="select-time"  v-bind:value="event.content.ordertime" v-bind:init-time="event.content.ordertime" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)">
 					</span>
 					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
@@ -70,7 +70,7 @@
 				</div>
 				<div class="block">
 					<span>待量房</span><br/>
-					<span class="check-time">预约上门时间：<span>
+					<span class="check-time">预约上门时间：
 						<input type="datetime-local" id="select-time"  v-bind:value="event.content.ordertime" v-bind:init-time="event.content.ordertime" onchange="fSelecetTimeChange(this)" onblur="fSaveTime(this)">
 					</span>
 					<span class="user-info-edit edit-time edit-icon-fill"><div class="click-area"></div></span>
@@ -148,11 +148,11 @@
 					<span class="user-info-edit center"><span class="mui-icon mui-icon-arrowright"></span></span>
 					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'selection')"></div>
 				</div>
-				<div class="block">
+				<!--<div class="block">
 					<span>排期信息</span>
 					<span class="user-info-edit center"><span class="mui-icon mui-icon-arrowright"></span></span>
 					<div class="click-area user-info-edit" @tap="__fDetail(event.id,'schedule')"></div>
-				</div>
+				</div>-->
 				<div class="btns block"><span class="contract-btn" @tap="__fDetail(event.id,'contract')">查看合同</span></div>
 			</template>
 

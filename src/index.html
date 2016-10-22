@@ -242,6 +242,7 @@
 					fRefreshData(ids.split("|"));
 				});
 				window.addEventListener('reloadhouse', function(event) { //状态流转
+					console.log("house-appointment: " + event.detail + " is reloading...");
 					var appointment_id = event.detail;
 					var tempobj = JSON.parse(myStorage.getItem("data"));
 					var houseobj = lsvih.array.getObjByKey({
@@ -482,90 +483,123 @@
 				loading = plus.nativeUI.showWaiting("正在更新数据，请稍后");
 				for(var a = 0; a < eventids.length; a++) {
 					var thiseventid = eventids[a];
+					console.log("Now getting the " + thiseventid + "'s data");
 					common.ajax('house-appointments/' + thiseventid + '?expand=houseGroups.houseGroupSchedules.sku.productBrand.product,houseGroups.houseGroupSchedules.process,houseGroups.houseGroupSchedules.check.checkStandards,houseGroups.houseGroupPackages.package,user,house&sort=houseGroups.houseGroupSchedules.schedule_at', "", "GET", function(data) {
 						var toinsertdata;
+						console.log("accept " + thiseventid + "'s data!");
 						if(data !== null && data !== undefined && data.length !== 0) {
 							var appoint = data;
-							toinsertdata = {
-								"id": appoint.id,
-								"house_id": appoint.house.id,
-								"user_id": appoint.user_id,
-								"name": appoint.user.fullname,
-								"sex": appoint.user.sex,
-								"status": appoint.houseGroups.length !== 0 ? appoint.houseGroups[0].status : -1,
-								"province": appoint.house.province,
-								"city": appoint.house.city,
-								"district": appoint.house.county,
-								"street": appoint.house.street,
-								"address": appoint.house.address,
-								"phone": appoint.user.mobile,
-								"content": appoint.houseGroups.length == 0 ? {
-									"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
-									"package": [],
-									"room": [],
-									"skus": [],
-									"check": {
-										"selection": false,
-										"gauge": false,
-										"schedule": false
-									},
-									"property": {
-										"img": []
-									},
-									"pending_construction": {
-										"img": [],
-										"text": ""
-									},
-									"broadcast": {
-										"img": [],
-										"text": "",
-										"date": ""
-									},
-									"completed": {
-										"img": [],
-										"text": ""
+							if(appoint.houseGroups.length == 0) {
+								console.log("there is a new appointment");
+								toinsertdata = {
+									"id": appoint.id,
+									"house_id": appoint.house.id,
+									"user_id": appoint.user_id,
+									"name": appoint.user.fullname,
+									"sex": appoint.user.sex,
+									"status": -1,
+									"province": appoint.house.province,
+									"city": appoint.house.city,
+									"district": appoint.house.county,
+									"street": appoint.house.street,
+									"address": appoint.house.address,
+									"phone": appoint.user.mobile,
+									"content": {
+										"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
+										"package": [],
+										"room": [],
+										"skus": [],
+										"schedule": null,
+										"group_id": null,
+										"group_quotation": null,
+										"group_contract": null,
+										"price": null,
+										"taxes_amount": null,
+										"distance_rate": null,
+										"time_period": null,
+										"is_holiday_work": null,
+										"duration": null,
+										"check": {
+											"selection": false,
+											"gauge": false,
+											"schedule": false
+										},
+										"property": {
+											"img": []
+										},
+										"pending_construction": {
+											"img": [],
+											"text": ""
+										},
+										"broadcast": {
+											"img": [],
+											"text": "",
+											"date": ""
+										},
+										"completed": {
+											"img": [],
+											"text": ""
+										}
 									}
-								} : {
-									"house_group_id": appoint.houseGroups[0].id,
-									"room": [],
-									"schedule": fDelCheckImg(appoint.houseGroups[0].houseGroupSchedules),
-									"group_id": appoint.houseGroups[0].group_id,
-									"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
-									"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
-									"skus": appoint.houseGroups[0].houseGroupSkus,
-									"price": appoint.houseGroups[0].group_amount,
-									"clear_amount": appoint.houseGroups[0].clear_amount,
-									"distance_rate": appoint.houseGroups[0].distance_rate,
-									"taxes_amount": appoint.houseGroups[0].taxes_amount,
-									"group_quotation": appoint.houseGroups[0].group_quotation,
-									"group_contract": appoint.houseGroups[0].group_contract,
-									"time_period": appoint.houseGroups[0].time_period,
-									"is_holiday_work": appoint.houseGroups[0].is_holiday_work,
-									"duration": appoint.houseGroups[0].duration,
-									"check": {
-										"selection": false,
-										"gauge": false,
-										"schedule": false
-									},
-									"start_at": appoint.houseGroups[0].start_at,
-									"property": {
-										"img": []
-									},
-									"pending_construction": {
-										"img": [],
-										"text": ""
-									},
-									"broadcast": {
-										"img": [],
-										"text": "",
-										"date": ""
-									},
-									"completed": {
-										"img": [],
-										"text": ""
+								}
+							} else {
+								console.log("there is a exsit appointment")
+								toinsertdata = {
+									"id": appoint.id,
+									"house_id": appoint.house.id,
+									"user_id": appoint.user_id,
+									"name": appoint.user.fullname,
+									"sex": appoint.user.sex,
+									"status": appoint.houseGroups[0].status,
+									"province": appoint.house.province,
+									"city": appoint.house.city,
+									"district": appoint.house.county,
+									"street": appoint.house.street,
+									"address": appoint.house.address,
+									"phone": appoint.user.mobile,
+									"content": {
+										"house_group_id": appoint.houseGroups[0].id,
+										"room": [],
+										"schedule": fDelCheckImg(appoint.houseGroups[0].houseGroupSchedules),
+										"group_id": appoint.houseGroups[0].group_id,
+										"ordertime": lsvih.time.stampToStr(appoint.appointment_at * 1000, "datetime-local"),
+										"package": __fMapPackage(appoint.houseGroups[0].houseGroupPackages),
+										"skus": appoint.houseGroups[0].houseGroupSkus,
+										"price": appoint.houseGroups[0].group_amount,
+										"clear_amount": appoint.houseGroups[0].clear_amount,
+										"distance_rate": appoint.houseGroups[0].distance_rate,
+										"taxes_amount": appoint.houseGroups[0].taxes_amount,
+										"group_quotation": appoint.houseGroups[0].group_quotation,
+										"group_contract": appoint.houseGroups[0].group_contract,
+										"time_period": appoint.houseGroups[0].time_period,
+										"is_holiday_work": appoint.houseGroups[0].is_holiday_work,
+										"duration": appoint.houseGroups[0].duration,
+										"check": {
+											"selection": false,
+											"gauge": false,
+											"schedule": false
+										},
+										"start_at": appoint.houseGroups[0].start_at,
+										"property": {
+											"img": []
+										},
+										"pending_construction": {
+											"img": [],
+											"text": ""
+										},
+										"broadcast": {
+											"img": [],
+											"text": "",
+											"date": ""
+										},
+										"completed": {
+											"img": [],
+											"text": ""
+										}
 									}
 								}
 							}
+
 						}
 
 						var tempdata = JSON.parse(myStorage.getItem("data"));

@@ -55,7 +55,7 @@
 					<label>{{package.name}}</label>
 					<select v-bind:id="$index">
 						<option>请选择量房数据</option>
-						<option v-for="gauge_data in gauge" v-bind:value="$index">{{gauge_data.name}}({{gauge_data.alias}}):{{gauge_data.size}}㎡</option>
+						<option v-for="gauge_data in gauge" v-bind:value="$index">{{gauge_data.name}}({{gauge_data.alias}})</option>
 					</select>
 				</div>
 			</div>

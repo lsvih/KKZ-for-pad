@@ -96,7 +96,7 @@ function fPostHouseGroupPackage() {
 		house_group_packages.push({
 			"house_group_id": tempdata.event[eventsortid].content.house_group_id,
 			"package_id": thiseventpackage[i].package_id,
-			"area": thisRoom.size,
+			"graph_info": thisRoom.graph_info,
 			"num": 1,
 			"plan_t_img": thisRoom.remote_plan_t_img,
 			"measure_t_imgs": thisRoom.remote_measure_t_imgs
@@ -105,32 +105,42 @@ function fPostHouseGroupPackage() {
 	console.log(JSON.stringify(house_group_packages));
 	//批量创建houseGroupPackage
 	common.ajax("house-group-package/batch-create", {
-		"items": JSON.stringify(house_group_packages)
+		"jsbody": JSON.stringify(house_group_packages)
 	}, "POST", function() {
-		common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, {
-			'status': 1,
-		}, "PUT", function(data) {
-			for(let house_group_package of house_group_packages) {
-				var packagesortid = lsvih.array.getSubByKey({
-					"package_id": house_group_package.package_id
-				}, tempdata.event[eventsortid].content.package);
-				tempdata.event[eventsortid].content.package[packagesortid].size = house_group_package.area;
-				tempdata.event[eventsortid].content.package[packagesortid].images = house_group_package.measure_t_imgs;
-				tempdata.event[eventsortid].content.package[packagesortid].diagram = house_group_package.plan_t_img;
-			}
-			tempdata.event[eventsortid].status = 1;
-			myStorage.setItem("data", JSON.stringify(tempdata));
-			plus.webview.currentWebview().opener().setStyle({
-				mask: "none"
+
+		let custom_products = tempdata.event[eventsortid].content.custom_products;
+		const toUpload_product = [];
+		custom_products.map((e) => {
+			toUpload_product.push({
+				'house_group_id': tempdata.event[eventsortid].content.house_group_id,
+				'name': e.name,
+				'unit_price': e.price,
+				'num': e.num
+			})
+		})
+		common.ajax(`house-group-customproduct/batch-create`, {
+			"jsbody": JSON.stringify(toUpload_product)
+		}, "POST", function() {
+			common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, {
+				'status': 1,
+			}, "PUT", function(data) {
+				myStorage.setItem("data", JSON.stringify(tempdata));
+				plus.webview.currentWebview().opener().setStyle({
+					mask: "none"
+				});
+				mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
+				plus.webview.currentWebview().opener().evalJS("location.href='select_product.html?eventid='+eventid");
+				uploading.close();
+				plus.webview.currentWebview().close();
+			}, "", {
+				closeObj: uploading,
+				isReload: true
 			});
-			mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
-			plus.webview.currentWebview().opener().evalJS("location.href='select_product.html?eventid='+eventid");
-			uploading.close();
-			plus.webview.currentWebview().close();
 		}, "", {
 			closeObj: uploading,
 			isReload: true
-		});
+		})
+
 	}, "", {
 		closeObj: uploading
 	});

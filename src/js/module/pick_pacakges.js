@@ -7,6 +7,7 @@ var temptimeout;
 var eventid = GetRequest()["eventid"]; //获得eventid
 var thiseventpackage;
 var eventsortid;
+var uploading;
 mui.plusReady(function() {
 	tempdata = JSON.parse(myStorage.getItem("data"));
 	temppackage = JSON.parse(myStorage.getItem("packageinfo"));
@@ -18,10 +19,18 @@ mui.plusReady(function() {
 		"id": eventid
 	}, tempdata.event);
 	thiseventpackage = tempdata.event[eventsortid].content.package;
+	window.addEventListener('custom', function(event) { //接收别的webview发出的刷新指令
+		var custom_product = event.detail;
+		console.log(JSON.stringify(custom_product));
+		vueContent.custom_product_list.push(custom_product);
+	});
 	fAddVueCacheFilter();
 	vueContent = new Vue({
 		el: '#package',
-		data: temppackage,
+		data: {
+			packages: temppackage,
+			custom_product_list: []
+		},
 		ready: function() {
 			console.log(JSON.stringify(temppackage))
 			document.getElementById("mask").style.opacity = 0;
@@ -55,6 +64,34 @@ mui.plusReady(function() {
 			},
 			__fEditNum: function(thisValue) {
 				thisValue.setAttribute("data-id", thisValue.value);
+			},
+			fAddCustomProduct: function() {
+				console.log(tempdata.event[eventsortid].content.house_group_id)
+				plus.webview.currentWebview().setStyle({
+					mask: 'rgba(0,0,0,0.4)'
+				})
+				mui.openWindow({
+					url: `./step_sub/add_custom_product.html?${vueContent.custom_product_list.length+1}`,
+					id: "sub_form",
+					styles: {
+						top: 114 + common.topBarHeight + 'px',
+						left: "242px",
+						height: "540px",
+						width: '540px'
+					},
+					show: {
+						aniShow: "slide-in-up"
+					},
+					waiting: {
+						autoShow: false,
+					}
+				});
+			},
+			fDelCustomProduct: function(customProductId) {
+				mui.toast("成功删除自定义商品!");
+				vueContent.custom_product_list.$remove(lsvih.array.getObjByKey({
+					id: customProductId
+				}, vueContent.custom_product_list))
 			}
 		}
 	});
@@ -132,6 +169,7 @@ mui("body").on("tap", ".next-btn", function() {
 		mui.toast("请选择套餐");
 		return false;
 	} else {
+		tempdata.event[eventsortid].content.custom_products = vueContent.custom_product_list;
 		myStorage.setItem("data", JSON.stringify(tempdata));
 		plus.webview.currentWebview().setStyle({
 			mask: 'rgba(0,0,0,0.4)'

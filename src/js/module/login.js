@@ -73,6 +73,16 @@ mui.plusReady(function() {
 								"package": [],
 								"room": [],
 								"skus": [],
+								"schedule": null,
+								"group_id": null,
+								"group_quotation": null,
+								"group_contract": null,
+								"price": null,
+								"taxes_amount": null,
+								"distance_rate": null,
+								"time_period": null,
+								"is_holiday_work": null,
+								"duration": null,
 								"check": {
 									"selection": false,
 									"gauge": false,
@@ -141,7 +151,7 @@ mui.plusReady(function() {
 				}
 				myStorage.setItem("data", JSON.stringify(tempdata));
 				loading.close();
-				mui.toast("登陆成功!");
+				mui.toast("登录成功!");
 				plus.runtime.restart();
 			}, "", {
 				closeObj: loading
@@ -171,8 +181,8 @@ mui.plusReady(function() {
 			 * 删除不需要的验收图片
 			 * @param {Object} schedules
 			 */
-			function fDelCheckImg(schedules){
-				for(var a =0;a<schedules.length;a++){
+			function fDelCheckImg(schedules) {
+				for(var a = 0; a < schedules.length; a++) {
 					if(schedules[a].check != null) schedules[a].check.description_t_imgs = [];
 				}
 				return schedules;
@@ -316,7 +326,7 @@ function fDownloadFiles() {
 					mui("body").progressbar().setProgress(successfilecount / arr.length * 100);
 				}
 				if(true) {
-//									if(successfilecount == arr.length) {
+					//									if(successfilecount == arr.length) {
 					clearInterval(processController);
 					mui("body").progressbar().setProgress(100);
 					localStorage.setItem("firstrun", lsvih.time.day());
