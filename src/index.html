@@ -238,8 +238,16 @@
 			mui.plusReady(function() {
 
 				window.addEventListener('addhouse', function(event) { //接收别的webview发出的刷新指令
-					var ids = event.detail.toString();
-					fRefreshData(ids.split("|"));
+					/**
+					 * event.detail中包含了一下信息:
+					 * ids {String} 需要更新的eventId,用|分割
+					 * webviewId {String} 如果需要更新通知的时候通知的WebviewId
+					 * content {JSON} 通知发生时发送的信息
+					 */
+					var ids = event.detail.ids.toString();
+					var webviewId = event.detail.webviewId;
+					var content = event.detail.content;
+					fRefreshData(ids.split("|"),webviewId,content);
 				});
 				window.addEventListener('reloadhouse', function(event) { //状态流转
 					console.log("house-appointment: " + event.detail + " is reloading...");
@@ -475,10 +483,13 @@
 			/**
 			 * 刷新指定eventid的局部数据
 			 * @param {Array} eventids
+			 * @param {String} webviewId 成功或失败后通知的webview的Id
+			 * @param {JSON} 返回的JSON,最终形式为：
+			 * {success:true,data:<JSON>}或
+			 * {success:false,message:<String>}
 			 */
 			var loading;
-
-			function fRefreshData(eventids) {
+			function fRefreshData(eventids,webviewId,content) {
 				var successCount = 0;
 				loading = plus.nativeUI.showWaiting("正在更新数据，请稍后");
 				for(var a = 0; a < eventids.length; a++) {
@@ -651,7 +662,16 @@
 							}
 							return schedules;
 						}
-					}, "", {
+						//将成功的消息通知页面
+						if(webviewId!==null&&webviewId!==undefined){
+							mui.fire(plus.webview.getWebviewById(webviewId),"callback",{success:true,data:content});
+						}
+					}, function(msg){
+						//把失败的消息通知页面
+						if(webviewId!==null&&webviewId!==undefined){
+							mui.fire(plus.webview.getWebviewById(webviewId),"callback",{success:false,message:msg});
+						}
+					}, {
 						closeObj: loading
 					});
 				}

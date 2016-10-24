@@ -92,10 +92,12 @@
 				position: absolute;
 				top: 340px;
 			}
-			#expect{
+			
+			#expect {
 				position: absolute;
-				top:250px;
+				top: 250px;
 			}
+			
 			#isholidaywork {
 				position: absolute;
 				top: 467px;
@@ -184,6 +186,19 @@
 		var house_group_id;
 		var uploaddata;
 		mui.plusReady(function() {
+			window.addEventListener('callback', function(event) {
+				if(event.detail.success) {
+					mui.toast("生成合同成功！请查看");
+					uploading.close();
+					plus.webview.currentWebview().loadURL("../step/contract.html?eventid=" + eventid);
+				} else {
+					mui.alert("生成合同失败，失败原因如下:" + event.detail.message, common.appName, "确认", function() {
+						plus.webview.currentWebview().reload();
+					});
+					uploading.close();
+				}
+			});
+
 			tempdata = JSON.parse(myStorage.getItem("data"));
 			eventsortid = lsvih.array.getSubByKey({
 				"id": eventid
@@ -202,7 +217,7 @@
 				var from = document.getElementById("from").value;
 				var to = document.getElementById("to").value;
 				var isholidaywork = document.getElementById("isholidaywork").getElementsByTagName("input")[0].checked ? 1 : 0;
-				if(!expect){
+				if(!expect) {
 					mui.toast("请正确输入预估施工时间");
 					return false;
 				}
@@ -212,7 +227,7 @@
 					start_at: startat,
 					time_period: from + "-" + to,
 					is_holiday_work: isholidaywork,
-					duration:expect
+					duration: expect
 				}, "PUT", function(data) {
 					if(isModify) {
 						mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
@@ -241,9 +256,13 @@
 					'status': 3
 				}, "PUT", function(data) {
 					mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
-					mui.fire(plus.webview.getLaunchWebview(), "addhouse", String(eventid));
+					mui.fire(plus.webview.getLaunchWebview(), "addhouse", {
+						ids: String(eventid),
+						webviewId: plus.webview.currentWebview().id,
+						content: ""
+					});
 					mui.toast("信息已上传，请等待安排");
-					plus.webview.currentWebview().loadURL("../step/contract.html?eventid=" + eventid);
+					uploading.setTitle("正在生成合同，请稍后...");
 					//					common.ajax('house-group-schedules?sort=schedule_at&expand=process,check.checkStandards,sku.productBrand.product&max-per-page=100&per-page=100&filter=house_group_id:' + house_group_id, {}, "GET", function(data) {
 					//						var temp = JSON.parse(myStorage.getItem("data"));
 					//						temp.event[eventsortid].content.schedule = data.items;

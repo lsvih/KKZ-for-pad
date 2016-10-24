@@ -72,7 +72,7 @@
 				}, "POST", function(data) {
 					mui.toast("预约成功！请在待上门工作步骤中查看！");
 					var appointment_id = data.id;
-					mui.fire(plus.webview.getLaunchWebview(), "addhouse", appointment_id);
+					mui.fire(plus.webview.getLaunchWebview(), "addhouse", {ids:String(appointment_id)});
 					loading.close();
 					plus.webview.close(plus.webview.currentWebview());
 					plus.webview.currentWebview().opener().setStyle({

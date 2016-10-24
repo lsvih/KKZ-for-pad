@@ -118,9 +118,30 @@ function fPostHouseGroupPackage() {
 				'num': e.num
 			})
 		})
-		common.ajax(`house-group-customproduct/batch-create`, {
-			"jsbody": JSON.stringify(toUpload_product)
-		}, "POST", function() {
+		if(custom_products.length) {
+			common.ajax(`house-group-customproduct/batch-create`, {
+				"jsbody": JSON.stringify(toUpload_product)
+			}, "POST", function() {
+				common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, {
+					'status': 1,
+				}, "PUT", function(data) {
+					myStorage.setItem("data", JSON.stringify(tempdata));
+					plus.webview.currentWebview().opener().setStyle({
+						mask: "none"
+					});
+					mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
+					plus.webview.currentWebview().opener().evalJS("location.href='select_product.html?eventid='+eventid");
+					uploading.close();
+					plus.webview.currentWebview().close();
+				}, "", {
+					closeObj: uploading,
+					isReload: true
+				});
+			}, "", {
+				closeObj: uploading,
+				isReload: true
+			})
+		} else {
 			common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, {
 				'status': 1,
 			}, "PUT", function(data) {
@@ -136,11 +157,7 @@ function fPostHouseGroupPackage() {
 				closeObj: uploading,
 				isReload: true
 			});
-		}, "", {
-			closeObj: uploading,
-			isReload: true
-		})
-
+		}
 	}, "", {
 		closeObj: uploading
 	});

@@ -70,38 +70,29 @@
 			mui.plusReady(function() {
 				var eventid = GetRequest()["eventid"]; //获得eventid
 				var tempdata = JSON.parse(myStorage.getItem("data"));
-				var uploading;
 				var temppackage = JSON.parse(myStorage.getItem("packageinfo"));
 				var eventsortid = lsvih.array.getSubByKey({
 					"id": eventid
 				}, tempdata.event);
 				mui.toast("正在下载报价清单，请稍后...");
-				setTimeout(function() {
-					temppackage = JSON.parse(myStorage.getItem("packageinfo"));
-					var _doc = tempdata.event[eventsortid].content.group_quotation;
-					if(!_doc){
-						mui.alert("报价清单生成过慢，请直接进行下一步操作或返回首页查看报价清单。")
-					}else{
-						mui.openWindow({
-						url: common.server + "uploads/files/" + _doc,
-						id: "sub_doc",
-						styles: {
-							top: "110px",
-							bottom: 0,
-							right: 0,
-							width: "100%",
-							height: "100%"
-						},
-						show: {
-							aniShow: "fade-in"
-						},
-						waiting: {
-							autoShow: false,
-						}
-					});
+				var _doc = tempdata.event[eventsortid].content.group_quotation;
+				mui.openWindow({
+					url: common.server + "uploads/files/" + _doc,
+					id: "sub_doc",
+					styles: {
+						top: "110px",
+						bottom: 0,
+						right: 0,
+						width: "100%",
+						height: "100%"
+					},
+					show: {
+						aniShow: "fade-in"
+					},
+					waiting: {
+						autoShow: false,
 					}
-					
-				}, 5000);
+				});
 
 				mui("body").on("tap", ".close-btn", function() {
 					plus.webview.close("sub_doc");

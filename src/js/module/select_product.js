@@ -28,6 +28,19 @@ function __fGetCurrentGroup(packageinfo, groupid) {
 	}
 }
 mui.plusReady(function() {
+	window.addEventListener('callback', function(event) {
+		if(event.detail.success) {
+			mui.toast("生成报价单成功！请查看");
+			uploading.close();
+			plus.webview.currentWebview().loadURL("../step/group_quotation.html?eventid=" + eventid);
+		} else {
+			mui.alert("生成报价单失败，失败原因如下:" + event.detail.message, common.appName, "确认", function() {
+				plus.webview.currentWebview().reload();
+			});
+			uploading.close();
+		}
+	});
+
 	temppackage = JSON.parse(myStorage.getItem("packageinfo")).packageinfo;
 	thisgroup = __fGetCurrentGroup(temppackage, group_id)
 	loading = plus.nativeUI.showWaiting("正在加载，请稍后...");
@@ -197,9 +210,11 @@ mui("body").on("tap", ".next-btn", function() {
 				"jsbody": JSON.stringify(uploadinfo)
 			}, "POST", function(data) {
 				common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, status, "PUT", function(data) {
-					
+
 					mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
-					mui.fire(plus.webview.getLaunchWebview(), "addhouse", String(eventid))
+					mui.fire(plus.webview.getLaunchWebview(), "addhouse", {
+						ids: String(eventid)
+					})
 					uploading.close();
 					mui.toast("选材修改完毕!请确认");
 					plus.webview.currentWebview().close();
@@ -219,12 +234,14 @@ mui("body").on("tap", ".next-btn", function() {
 			"jsbody": JSON.stringify(uploadinfo)
 		}, "POST", function(data) {
 			common.ajax(`house-groups/${tempdata.event[eventsortid].content.house_group_id}`, status, "PUT", function(data) {
-				
+
 				mui.fire(plus.webview.getLaunchWebview(), "reloadhouse", eventid);
-				mui.fire(plus.webview.getLaunchWebview(), "addhouse", String(eventid))
+				mui.fire(plus.webview.getLaunchWebview(), "addhouse", {
+					ids: String(eventid),
+					webviewId: plus.webview.currentWebview().id,
+					content: ""
+				});
 				uploading.close();
-				mui.toast("选材完毕，报价清单已生成。");
-				plus.webview.currentWebview().loadURL("../step/group_quotation.html?eventid=" + eventid);
 			}, "", {
 				closeObj: uploading,
 				isReload: true
