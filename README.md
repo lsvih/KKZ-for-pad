@@ -3,14 +3,15 @@
 Powered by mui,vuejs
 
 ##Build
+```sh
 $sudo npm install --global gulp
 
 $npm install gulp --save-dev
 
 $npm install --save-dev gulp-babel babel-core babel-preset-es2015
 
-$npm install gulp-uglify gulp-minify-css gulp-sourcemaps gulp-less gulp-concat gulp-rename gulp-imagemin gulp-replace gulp-htmlmin --save-dev
-
+$npm install less del gulp-uglify gulp-minify-css gulp-sourcemaps gulp-less gulp-concat gulp-rename gulp-imagemin gulp-replace gulp-htmlmin --save-dev
+```
 
 ###字典
 
